@@ -24,7 +24,7 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
 
   public function upgrade_0003() {
     CRM_CiviMobileAPI_Install_Install::run();
-    
+
     return TRUE;
   }
 
@@ -41,7 +41,7 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     try {
       $this->executeSql('ALTER TABLE civicrm_contact_push_notification_messages ADD invoke_contact_id INT(10) UNSIGNED NULL');
     } catch (Exception $e) {}
-    
+
     return TRUE;
   }
 
@@ -49,7 +49,7 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     try {
       $this->executeSql('ALTER TABLE civicrm_contact_push_notification_messages ADD message_title varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL');
     } catch (Exception $e) {}
-    
+
     return TRUE;
   }
 
