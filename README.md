@@ -8,20 +8,21 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 
 [CiviMobile](https://civimobile.org) Features:
 
-- **Graphical Calendar** - all the scheduled information is displayed in a graphical calendar on the dashboard on the mobile app;  
-- **Contacts** - users can view the list of all contacts in the system, add new contacts and edit contact information. A variety of contact information options is available including several phone numbers, websites, social media profiles, etc. The app supports custom fields that are configured in CiviCRM
+- **Graphical Calendar** – all the scheduled information is displayed in a graphical calendar on the dashboard on the mobile app;  
+- **Contacts** – users can view the list of all contacts in the system, add new contacts and edit contact information. A variety of contact information options is available including several phone numbers, websites, social media profiles, etc. The app supports custom fields that are configured in CiviCRM
+- **Groups and Tags** – ability to organize the contacts by adding tags and creating contact groups 
 - **Membership** – users can access and renew their membership 
 - **Contributions** – access to the history of all contributions, aggregated total and average payments.   
 - **Relationships** – users can create a relationship between oneself and other individuals or organizations and optionally set a start date and end date for the relationship
-- **Events & Registration** - ability to filter all the available events by type, date or title, check the event description, register yourself or others for the chosen event, view past and future events, share the information about events, and view events’ locations on the map
+- **Events & Registration** – ability to filter all the available events by type, date or title, check the event description, register yourself or others for the chosen event, view past and future events, share the information about events, and view events’ locations on the map
 - **Participants Management & Check-In** - ability to view and manage event participants and their statuses. Additionally, a user can use Check-In functionality to mark participants who have attended an event while an built-in QR scanner will make this process fast and reliable 
-- **Navigation** - users can switch to map navigation to easily find a direction to the location (e.g. a branch office or an event location)
-- **Cases** - grants immediate access to user’s cases details
-- **Activities** - allows to access details of user’s activities, their priority statuses and information about other constituents engaged in them
-- **Push-notifications** - notifications about the updates in the system are displayed on the dashboard of the mobile phone
-- **Working Offline** - can work in the offline mode
+- **Navigation** – users can switch to map navigation to easily find a direction to the location (e.g. a branch office or an event location)
+- **Cases** – grants immediate access to user’s cases details
+- **Activities** – allows to access details of user’s activities, their priority statuses and information about other constituents engaged in them
+- **Push-notifications** – notifications about the updates in the system are displayed on the dashboard of the mobile phone
+- **Working Offline** – can work in the offline mode
 - **Settings** – users can configurate a set of parameters customizing the view and work of the application
-- **7 locales** - currently, supports 7 locales: English, German, French, Italian, Dutch, Hungarian and Ukrainian
+- **8 locales** – supports English, German, French, Italian, Dutch, Hungarian, Polish and Ukrainian
 
 
 More details about how to install CiviMobileAPI extension and start using CiviMobile can be found at official CiviMobile website [https://civimobile.org](https://civimobile.org).   
