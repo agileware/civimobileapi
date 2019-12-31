@@ -19,6 +19,7 @@
     <develStage>stable</develStage>
     <compatibility>
         <ver>4.7</ver>
+        <ver>5.20</ver>
     </compatibility>
     <comments>The CiviMobileAPI extension is an CiviCRM component which allows to use a mobile application CiviMobile.</comments>
     <civix>
