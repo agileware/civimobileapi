@@ -29,12 +29,30 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
   }
 
   /**
+   * Check with API version is being called.
+   *
+   * @param $result - either apiv3 or apiv4 result
+   *
+   * @return Boolean - TRUE if the api result is from version 3.
+   */
+  private static function isApiVersion3($result) {
+    if (is_array($result) && $result['version'] == 3) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  /**
    * @param array $apiRequest
    * @param array $result
    *
    * @return mixed
    */
   private function fillFinancialTypeName($apiRequest, $result) {
+    if (!self::isApiVersion3($result)) {
+      return $result;
+    }
+
     if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'financial_type_name') !== FALSE) {
       if ($apiRequest['action'] == 'getsingle') {
         $result['financial_type_name'] = $this->getFinancialTypeName($result);
@@ -56,6 +74,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
    * @return mixed
    */
   private function fillFormatTotalAmount($apiRequest, $result) {
+    if (!self::isApiVersion3($result)) {
+      return $result;
+    }
+
     if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'total_amount') !== FALSE) {
       if ($apiRequest['action'] == 'getsingle') {
         $result['format_total_amount'] = CRM_Utils_Money::format($result['total_amount'], $result['currency']);
