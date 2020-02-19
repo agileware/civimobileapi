@@ -25,7 +25,6 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 - **8 locales** – supports English, German, French, Italian, Dutch, Hungarian, Polish and Ukrainian;
 - **CMS registration** – create an account in CiviCRM from CiviMobile app;
 - **Public Events** – view and register for public events as an unauthenticated user;
-- **Settings** - use a Settings screen to configure your app to your preferences;
 
 
 More details about how to install CiviMobileAPI extension and start using CiviMobile can be found at official CiviMobile website [https://civimobile.org](https://civimobile.org).   
