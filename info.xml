@@ -10,13 +10,12 @@
     </maintainer>
     <urls>
         <url desc="Main Extension Page">https://lab.civicrm.org/extensions/civimobileapi</url>
-        <url desc="documentation">https://civimobile.org</url>
+        <url desc="Documentation">https://civimobile.org</url>
         <url desc="Support">https://agiliway.com</url>
         <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
     </urls>
     <releaseDate>2020-05-04</releaseDate>
     <version>5.1.0</version>
-    <develStage>stable</develStage>
     <compatibility>
         <ver>4.7</ver>
         <ver>5.20</ver>
