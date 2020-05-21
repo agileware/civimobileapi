@@ -26,11 +26,11 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 - **Settings** - users can configure a set of parameters customizing the view and work of the application.
 - **9 locales** - supports: English, German, French, Italian, Spanish, Dutch, Hungarian, Polish and Ukrainian.
 
-More details about how to install CiviMobileAPI extension and start using CiviMobile can be found at official CiviMobile website [https://civimobile.org](https://civimobile.org).   
+More details about how to install CiviMobileAPI extension and start using CiviMobile can be found at official CiviMobile website [https://civimobile.org](https://civimobile.org).
 
-Also, our step-by-step videos will lead you through the process of installing the CiviMobileAPI on [Drupal](https://www.youtube.com/watch?v=jNVMLSfU1ug), [Joomla](https://www.youtube.com/watch?v=mli8HkxVu60) and [WordPress](https://www.youtube.com/watch?v=mDjHEglfVT4&t=4s).    
+Also, our step-by-step videos will lead you through the process of installing the CiviMobileAPI on [Drupal](https://www.youtube.com/watch?v=jNVMLSfU1ug), [Joomla](https://www.youtube.com/watch?v=mli8HkxVu60) and [WordPress](https://www.youtube.com/watch?v=mDjHEglfVT4&t=4s).
 
-The latest CiviMobile application can be downloaded from [AppStore](https://itunes.apple.com/us/app/civimobile/id1404824793?mt=8) of [Google PlayMarket](https://play.google.com/store/apps/details?id=com.agiliway.civimobile), which should be accessed from the mobile devices of users.  
+The latest CiviMobile application can be downloaded from [AppStore](https://itunes.apple.com/us/app/civimobile/id1404824793?mt=8) of [Google PlayMarket](https://play.google.com/store/apps/details?id=com.agiliway.civimobile), which should be accessed from the mobile devices of users.
 
 
 ## Requirements
@@ -38,7 +38,7 @@ The latest CiviMobile application can be downloaded from [AppStore](https://itun
 - CiviCRM v4.7.x+
 - PHP v5.4+
 - Drupal 7.x
-- Joomla 3.x
+- Joomla 3.x (CiviCRM 5.1+)
 - WordPress 4.8+
 
 *WordPress API patch is required. Please install ["CiviCRM WP REST API Wrapper" plugin](https://github.com/mecachisenros/civicrm-wp-rest) or [contact us](mailto:civicrm@agiliway.com) for details.

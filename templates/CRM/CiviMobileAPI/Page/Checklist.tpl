@@ -34,13 +34,15 @@
 
 {literal}
 <script>
-  var authUrl = '{/literal}{$authUrl}{literal}';
-  var restPathUrl = '{/literal}{$restPathUrl}{literal}';
-  var restUrl = '{/literal}{$restUrl}{literal}';
+  var authUrl = '{/literal}{$authUrl}{literal}'.replace(/&amp;/g, '&');
+  var restPathUrl = '{/literal}{$restPathUrl}{literal}'.replace(/&amp;/g, '&');
+  var restUrl = '{/literal}{$restUrl}{literal}'.replace(/&amp;/g, '&');
 
   CRM.$(function ($) {
-    $.get(authUrl).always(function(data) {
-      if (data.responseJSON.is_error !== null) {
+    $.get(authUrl, function () {
+      $("#checklist-items-block").append(generateCheckBlock('Is auth link correct?', 'Auth link is incorrect.', 'error'));
+    }).fail(function(data) {
+      if (data.responseJSON && data.responseJSON.is_error !== null) {
         $("#checklist-items-block").append(generateCheckBlock('Is auth link correct?', 'Auth link is correct.', 'success'));
       } else {
         $("#checklist-items-block").append(generateCheckBlock('Is auth link correct?', 'Auth link is incorrect.', 'error'));
@@ -50,20 +52,24 @@
     CRM.api3('CiviMobileSystem', 'get', {
       "sequential": 1
     }).then(function(result) {
-      $.get(restUrl).always(function(data) {
+      $.get(restUrl, function(data) {
         if (JSON.stringify(result) === JSON.stringify(data)) {
           $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is not correct.', 'success'));
         } else {
           $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is not correct.', 'error'));
         }
+      }).fail(function() {
+        $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is not correct.', 'error'));
       });
 
-      $.get(restPathUrl).always(function(data) {
+      $.get(restPathUrl, function(data) {
         if (JSON.stringify(result) === JSON.stringify(data)) {
           $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'success'));
         } else {
           $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'error'));
         }
+      }).fail(function() {
+        $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'error'));
       });
 
     });
