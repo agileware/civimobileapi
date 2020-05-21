@@ -33,15 +33,16 @@ class CRM_CiviMobileAPI_Utils_Cms {
    */
   public static function getCmsRssUrl() {
     $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
+    $config = CRM_Core_Config::singleton();
 
     if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_WORDPRESS && function_exists('get_feed_link')) {
       return get_feed_link('rss2');
     }
     elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA ) {
-      return str_replace("/administrator/", "", CIVICRM_UF_BASEURL) . "/?format=feed&type=rss";
+      return str_replace("/administrator/", "/", $config->userFrameworkBaseURL) . "?format=feed&type=rss";
     }
     elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7) {
-      return CIVICRM_UF_BASEURL . "/rss.xml";
+      return $config->userFrameworkBaseURL . "rss.xml";
     }
 
     return '';

@@ -26,9 +26,9 @@ class CRM_CiviMobileAPI_Install_Entity_ApplicationQrCode implements CRM_CiviMobi
     $path = $directoryName . DIRECTORY_SEPARATOR . $imageName;
 
     if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA ) {
-      $siteUrl = str_replace("/administrator/", "", CIVICRM_UF_BASEURL);
+      $siteUrl = str_replace("/administrator/", "/", $config->userFrameworkBaseURL);
     } else {
-      $siteUrl = CIVICRM_UF_BASEURL;
+      $siteUrl = $config->userFrameworkBaseURL;
     }
     $params = [
       'attachFile_1' => [

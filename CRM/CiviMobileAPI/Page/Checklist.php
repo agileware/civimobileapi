@@ -8,6 +8,7 @@ class CRM_CiviMobileAPI_Page_Checklist extends CRM_Core_Page {
   public function run() {
     $checklist = new CRM_CiviMobileAPI_Utils_Checklist();
     $checklist->checkAllAvailableItems();
+    $config = CRM_Core_Config::singleton();
 
     $currentContact = CRM_Contact_BAO_Contact::findById(CRM_Core_Session::singleton()->getLoggedInContactID());
     $apiKey = $currentContact->api_key ? $currentContact->api_key : CRM_CiviMobileAPI_Authentication_Login::setApiKey($currentContact->id);
@@ -15,7 +16,7 @@ class CRM_CiviMobileAPI_Page_Checklist extends CRM_Core_Page {
 
     $authUrl = CRM_Utils_System::url('civicrm/civimobile/auth', NULL, TRUE);
     $restPathUrl = self::concatenateUrl(
-      str_replace("/administrator/", "", CIVICRM_UF_BASEURL) . substr((new CRM_CiviMobileAPI_Utils_RestPath())->get(),1),
+      str_replace("/administrator/", "", $config->userFrameworkBaseURL) . (new CRM_CiviMobileAPI_Utils_RestPath())->get(),
       $paramsToRest);
     $restUrl = self::concatenateUrl((new CRM_CiviMobileAPI_Utils_RestPath())->getAbsoluteUrl(), $paramsToRest);
 

@@ -81,7 +81,7 @@ class CRM_CiviMobileAPI_Utils_RestPath {
    * @return string
    */
   private function getJoomlaRestPath() {
-    return '/administrator' . Civi::paths()->getUrl("[civicrm.root]/extern/rest.php");
+    return '/administrator' . str_replace('/administrator','', Civi::paths()->getUrl("[civicrm.root]/extern/rest.php"));
   }
 
   /**

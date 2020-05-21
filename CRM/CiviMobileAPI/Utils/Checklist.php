@@ -209,19 +209,17 @@ class CRM_CiviMobileAPI_Utils_Checklist {
    */
   public function _checkCron() {
     $checkCron = CRM_Utils_Check_Component_Env::checkLastCron();
-
     $this->checkedItems['last_cron']['title'] = 'Is CRON running correct?';
-    $this->checkedItems['last_cron']['message'] = $checkCron[0]->getTitle() . "<br>" . $checkCron[0]->getMessage();
 
     switch ($checkCron[0]->getLevel()) {
       case CRM_Utils_Check::severityMap(\Psr\Log\LogLevel::INFO):
         $this->checkedItems['last_cron']['status'] = 'success';
+        $this->checkedItems['last_cron']['message'] = 'CRON is running correct.';
         break;
       case CRM_Utils_Check::severityMap(\Psr\Log\LogLevel::WARNING):
-        $this->checkedItems['last_cron']['status'] = 'warning';
-        break;
       case CRM_Utils_Check::severityMap(\Psr\Log\LogLevel::ERROR):
-        $this->checkedItems['last_cron']['status'] = 'error';
+        $this->checkedItems['last_cron']['status'] = 'warning';
+        $this->checkedItems['last_cron']['message'] = 'CRON isn`t running. If CRON isn`t enabled, it can clog your database.';
         break;
     }
 
@@ -281,6 +279,17 @@ class CRM_CiviMobileAPI_Utils_Checklist {
     $this->systemInfo[] = [
       'title' => 'Absolute rest url',
       'message' => (new CRM_CiviMobileAPI_Utils_RestPath())->getAbsoluteUrl(),
+    ];
+  }
+
+  /**
+   *  Adds baseURL to $systemInfo
+   */
+  public function _siBaseUrl() {
+    $config = CRM_Core_Config::singleton();
+    $this->systemInfo[] = [
+      'title' => 'userFrameworkBaseURL(Config)',
+      'message' => $config->userFrameworkBaseURL,
     ];
   }
 
