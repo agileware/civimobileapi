@@ -340,6 +340,162 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
           'transforms' => []
         ]
       ]
+    ],
+    [
+      'entityName' => 'CiviMobileEventSession',
+      'availableActions' => [
+        [
+          'actionName' => 'get',
+          'actionPermissions' => ['view Agenda'],
+          'availableParams' => [
+            'id',
+            'event_id',
+            'title',
+            'speaker',
+            'venue_id',
+            'description',
+            'start_time',
+            'end_time',
+            'is_display'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'title',
+            'start_time',
+            'end_time',
+            'event_id',
+            'description',
+            'venue_id',
+            'speakers_id',
+            'date_formatted',
+            'start_time_formatted',
+            'end_time_formatted',
+            'is_display',
+            'speakers_names',
+            'venue_name'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'forbiddenForJoomla',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ]
+    ],
+    [
+      'entityName' => 'CiviMobileVenue',
+      'availableActions' => [
+        [
+          'actionName' => 'get',
+          'actionPermissions' => ['view Agenda'],
+          'availableParams' => [
+            'location_id',
+            'name',
+            'id',
+            'is_active',
+            'description',
+            'address',
+            'address_description',
+            'options'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'name',
+            'description',
+            'attached_files',
+            'address_description',
+            'address',
+            'longitude',
+            'latitude',
+            'is_active',
+            'location_id',
+            'background_color',
+            'border_color',
+            'weight'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'forbiddenForJoomla',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ]
+    ],
+    [
+      'entityName' => 'CiviMobileAgendaConfig',
+      'availableActions' => [
+        [
+          'actionName' => 'get',
+          'actionPermissions' => ['view Agenda'],
+          'availableParams' => [
+            'event_id'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'is_active',
+            'event_id'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'forbiddenForJoomla',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ]
+    ],
+    [
+      'entityName' => 'CiviMobileSpeaker',
+      'availableActions' => [
+        [
+          'actionName' => 'get',
+          'actionPermissions' => ['view Agenda'],
+          'availableParams' => [
+            'event_id'
+          ],
+          'availableReturnFields' => [
+            'contact_id',
+            'participant_id',
+            'display_name',
+            'participant_register_date',
+            'participant_bio',
+            'image_URL',
+            'job_title',
+            'current_employer',
+            'current_employer_id',
+            'first_name',
+            'last_name'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'forbiddenForJoomla',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ]
     ]
   ];
 

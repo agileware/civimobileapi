@@ -19,6 +19,7 @@
     cj('#pricesetTotal').parents().show();
     cj('#pricesetTotal, #pricesetTotal *').show();
     cj('.event_info_link-section').hide();
+    cj('.location.vcard').parent().find('a').css('display','none');
   });
 </script>
 
@@ -152,6 +153,37 @@
     .payment_processor-section .content label {
       width: calc(100% - 40px);
       display: inline-block;
+    }
+    #page .crm-submit-buttons {
+      display: flex;
+      height: auto;
+    }
+    #page .crm-submit-buttons .crm-button {
+      background: #5589B7;
+      color: white;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #5589B7;
+    }
+    #page .crm-submit-buttons .crm-button input {
+      width: 100%;
+      height: 100%;
+      padding: 15px 0;
+      text-shadow: none;
+      color: inherit;
+      font-weight: bold;
+    }
+    #page .crm-submit-buttons .crm-button input:focus {
+      outline:none;
+    }
+    #page .crm-submit-buttons .crm-button.crm-button-type-back {
+      background: none;
+      color: #5589B7;
+    }
+    #page .crm-submit-buttons .crm-button .crm-i {
+      display: none;
     }
   }
 </style>

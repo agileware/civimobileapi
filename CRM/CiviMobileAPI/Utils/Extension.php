@@ -160,7 +160,7 @@ class CRM_CiviMobileAPI_Utils_Extension {
    * @return string|null
    */
   public static function getSiteName() {
-    if(Civi::settings()->get('civimobile_site_name_to_use') == 'custom_site_name') {
+    if (Civi::settings()->get('civimobile_site_name_to_use') == 'custom_site_name') {
       return Civi::settings()->get('civimobile_custom_site_name');
     }
 
@@ -215,6 +215,31 @@ class CRM_CiviMobileAPI_Utils_Extension {
    */
   public static function isShowedNewsInPublicArea() {
     return (Civi::settings()->get('civimobile_is_allow_public_info_api') == 1 && Civi::settings()->get('civimobile_is_showed_news') == 1) ? 1 : 0;
+  }
+
+  /**
+   * Is CiviCRM version supported
+   *
+   * @return bool
+   */
+  public static function isCiviCRMSupportedVersion() {
+    return CRM_CiviMobileAPI_Utils_Extension::LATEST_SUPPORTED_CIVICRM_VERSION <= CRM_Utils_System::version();
+  }
+
+  /**
+   * Is Server key valid
+   *
+   * @return bool
+   */
+  public static function isServerKeyValid() {
+    return Civi::settings()->get('civimobile_is_server_key_valid') == 1;
+  }
+
+  /**
+   * Is curl extension enabled
+   */
+  public static function isCurlExtensionEnabled() {
+    return in_array('curl', get_loaded_extensions());
   }
 
 }

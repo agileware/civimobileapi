@@ -68,7 +68,7 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
    */
   public function postProcess() {
     parent::postProcess();
-    $changed = $this->_submitValues;//TODO: use $this->exportValues();
+    $params = $this->exportValues();
     $settings = $this->getFormSettings(TRUE);
 
     foreach ($settings as &$setting) {
@@ -80,7 +80,7 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
       }
     }
 
-    $settingsToSave = array_merge($settings, array_intersect_key($changed, $settings));
+    $settingsToSave = array_merge($settings, array_intersect_key($params, $settings));
     $this->saveSetting($settingsToSave);
     CRM_Core_Session::singleton()->setStatus(ts('Configuration Updated'), ts('CiviMobile Calendar Settings'), 'success');
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/civimobile/calendar/settings'));

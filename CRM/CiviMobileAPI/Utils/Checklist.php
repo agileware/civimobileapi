@@ -55,8 +55,6 @@ class CRM_CiviMobileAPI_Utils_Checklist {
 
   /**
    * Checks Extension Version
-   *
-   * @return bool
    */
   public function _checkExtensionVersion() {
     $version = CRM_CiviMobileAPI_Utils_VersionController::getInstance();
@@ -69,143 +67,95 @@ class CRM_CiviMobileAPI_Utils_Checklist {
         2 => 'v' . $version->getLatestFullVersion(),
       ]);
       $this->checkedItems['latest_version']['status'] = 'warning';
-
-      return false;
     } else {
       $this->checkedItems['latest_version']['message'] = ts('Your extension version is up to date - CiviMobile <strong>%1</strong>', [1 => 'v' . $version->getCurrentFullVersion()]);
       $this->checkedItems['latest_version']['status'] = 'success';
     }
-
-    return !$isOlderVersion;
   }
 
   /**
    * Checks CiviCRM Supported version
-   *
-   * @return bool
    */
   public function _checkCiviCRMSupportedVersion() {
-    $isCiviCRMSupported = CRM_CiviMobileAPI_Utils_Extension::LATEST_SUPPORTED_CIVICRM_VERSION <= CRM_Utils_System::version();
+    $isCiviCRMSupported = CRM_CiviMobileAPI_Utils_Extension::isCiviCRMSupportedVersion();
     $this->checkedItems['is_civicrm_version_supported'] = [
       'title' => 'Is CiviCRM version supported by CiviMobileAPI?',
       'message' => $isCiviCRMSupported ? 'Your CiviCRM version is supported' : 'You should to install CiviCRM with minimum version ' . CRM_CiviMobileAPI_Utils_Extension::LATEST_SUPPORTED_CIVICRM_VERSION,
       'status' => $isCiviCRMSupported ? 'success' : 'warning',
     ];
-
-    return $isCiviCRMSupported;
   }
 
   /**
    * Checks Is valid Extension folder name
-   *
-   * @param bool $boolOnly
-   * @return bool
    */
-  public function _checkExtensionFolderName($boolOnly = false) {
+  public function _checkExtensionFolderName() {
     $isRightExtensionFolderName = CRM_CiviMobileAPI_Utils_Extension::hasExtensionRightFolderName();
-
-    if ($boolOnly) {
-      return $isRightExtensionFolderName;
-    }
 
     $this->checkedItems['is_civimobile_ext_has_right_folder_name'] = [
       'title' => 'Is CivimobileAPI`s folder name correct?',
       'message' => $isRightExtensionFolderName ? 'Folder name is correct.' : 'You should rename CivimobileAPI extension`s folder to <b>"' . CRM_CiviMobileAPI_ExtensionUtil::LONG_NAME . '"</b> and then reinstall extension.',
       'status' => $isRightExtensionFolderName ? 'success' : 'error',
     ];
-
-    return $isRightExtensionFolderName;
   }
 
   /**
    * Checks is extension folder writable
-   *
-   * @return bool|float
    */
   public function _checkIsExtensionFolderWritable() {
-    if ($this->_checkExtensionFolderName(true)) {
+    if (CRM_CiviMobileAPI_Utils_Extension::hasExtensionRightFolderName()) {
       $isDirectoryWritable = CRM_CiviMobileAPI_Utils_Extension::directoryIsWritable();
       $this->checkedItems['is_directory_writable'] = [
         'title' => 'Is CiviMobileAPI extension`s directory writable?',
         'message' => $isDirectoryWritable ? 'Extension directory is writable.' : 'Please give permissions to write for CiviMobileAPI extension`s directory.',
         'status' => $isDirectoryWritable ? 'success' : 'warning',
       ];
-
-      return $isDirectoryWritable;
     }
-
-    return false;
   }
 
   /**
    * Checks is additional Wordpress plugin installed
-   *
-   * @return bool
    */
   public function _checkIsAdditionWpRestPluginInstalled() {
     if (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem() == CRM_CiviMobileAPI_Utils_CmsUser::CMS_WORDPRESS) {
       $this->checkedItems['is_wp_rest_plugin_active']['title'] = 'Do you have the additional plugin for Wordpress?';
       $isWpRestPluginActive = (new CRM_CiviMobileAPI_Utils_RestPath())->isWpRestPluginActive();
 
-      if ($isWpRestPluginActive) {
-        $this->checkedItems['is_wp_rest_plugin_active']['message'] = 'You have the additional plugin for Wordpress.';
-        $this->checkedItems['is_wp_rest_plugin_active']['status'] = 'success';
-      } else {
-        $this->checkedItems['is_wp_rest_plugin_active']['message'] = 'You don`t have the additional plugin for Wordpress. CivimobileAPI cannot work without this plugin. You can read about this plugin on <a href="https://github.com/mecachisenros/civicrm-wp-rest">https://github.com/mecachisenros/civicrm-wp-rest</a>';
-        $this->checkedItems['is_wp_rest_plugin_active']['status'] = 'error';
-      }
-
-      return $isWpRestPluginActive;
+      $this->checkedItems['is_wp_rest_plugin_active'] = [
+        'title' => 'Do you have the additional plugin for Wordpress?',
+        'message' => $isWpRestPluginActive ? 'You have the additional plugin for Wordpress.' : 'You don`t have the additional plugin for Wordpress. CivimobileAPI cannot work without this plugin. You can read about this plugin on <a href="https://github.com/mecachisenros/civicrm-wp-rest">https://github.com/mecachisenros/civicrm-wp-rest</a>',
+        'status' => $isWpRestPluginActive ? 'success' : 'error',
+      ];
     }
-
-    return false;
   }
 
   /**
    * Checks is Server key valid
-   *
-   * @return bool
    */
   public function _checkIsServerKeyValid() {
-    $isServerKeyValid = Civi::settings()->get('civimobile_is_server_key_valid') == 1;
+    $isServerKeyValid = CRM_CiviMobileAPI_Utils_Extension::isServerKeyValid();
 
-    $this->checkedItems['is_server_key_valid']['title'] = 'Is server key valid?';
-
-    if ($isServerKeyValid) {
-      $this->checkedItems['is_server_key_valid']['message'] = 'Your server key is valid.';
-      $this->checkedItems['is_server_key_valid']['status'] = 'success';
-    } else {
-      $this->checkedItems['is_server_key_valid']['message'] = 'Your server key is invalid. Please add correct server key on <a href="' . CRM_Utils_System::url('civicrm/civimobile/settings') . '" target="_blank">CiviMobile Settings</a> to activate Push Notifications on application.';
-      $this->checkedItems['is_server_key_valid']['status'] = 'warning';
-    }
-
-    return $isServerKeyValid;
+    $this->checkedItems['is_server_key_valid'] = [
+      'title' => 'Is server key valid?',
+      'message' => $isServerKeyValid ? 'Your server key is valid.' : 'Your server key is invalid. Please add correct server key on <a href="' . CRM_Utils_System::url('civicrm/civimobile/settings') . '" target="_blank">CiviMobile Settings</a> to activate Push Notifications on application.',
+      'status' => $isServerKeyValid ? 'success' : 'warning',
+    ];
   }
 
   /**
    * Checks is php-extension enabled
-   *
-   * @return bool
    */
   public function _checkIsCurlEnabled() {
-    $this->checkedItems['is_curl_enabled']['title'] = 'Is curl php-extension enabled?';
-    $isCurlEnabled = !in_array('curl', get_loaded_extensions());
+    $isCurlEnabled = CRM_CiviMobileAPI_Utils_Extension::isCurlExtensionEnabled();
 
-    if ($isCurlEnabled) {
-      $this->checkedItems['is_curl_enabled']['message'] = 'Curl php-extension is not available on your web server. It`s necessary for PushNotifications.';
-      $this->checkedItems['is_curl_enabled']['status'] = 'error';
-    } else {
-      $this->checkedItems['is_curl_enabled']['message'] = 'Curl php-extension is available on your web server.';
-      $this->checkedItems['is_curl_enabled']['status'] = 'success';
-    }
-
-    return $isCurlEnabled;
+    $this->checkedItems['is_curl_enabled'] = [
+      'title' => 'Is curl php-extension enabled?',
+      'message' => $isCurlEnabled ? 'Curl php-extension is available on your web server.' : 'Curl php-extension is not available on your web server. It`s necessary for PushNotifications.',
+      'status' => $isCurlEnabled ? 'success' : 'error',
+    ];
   }
 
   /**
    * Checks is Cron running
-   *
-   * @return bool
    */
   public function _checkCron() {
     $checkCron = CRM_Utils_Check_Component_Env::checkLastCron();
@@ -222,8 +172,6 @@ class CRM_CiviMobileAPI_Utils_Checklist {
         $this->checkedItems['last_cron']['message'] = 'CRON isn`t running. If CRON isn`t enabled, it can clog your database.';
         break;
     }
-
-    return $checkCron[0]->getLevel() == \Psr\Log\LogLevel::INFO;
   }
 
   /**

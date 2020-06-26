@@ -16,6 +16,7 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
     $result = civicrm_api3('Participant', 'create', [
       'event_id' => $this->validParams["event_id"],
       'contact_id' => $this->validParams["contact_id"],
+      'role_id' => $this->validParams["default_role_id"]
     ]);
 
     $publicKey = CRM_CiviMobileAPI_Utils_Participant::generatePublicKey($result['id']);
@@ -47,9 +48,13 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
       throw new api_Exception(ts('Event(id=' . $params['event_id'] . ') does not exist or is not public.'), 'public_event_does_not_exist');
     }
 
+    $contactId = $this->getContactId($params);
+    $this->updateContactFields($contactId, $params);
+
     $result = [
       'event_id' => $params["event_id"],
-      'contact_id' => $this->getContactId($params),
+      'contact_id' => $contactId,
+      'default_role_id' => $event->default_role_id
     ];
 
     return $result;
@@ -106,6 +111,24 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
     }
 
     return (int) $contact["id"];
+  }
+
+  /**
+   * Updates first_name and last_name for contact by contact_id
+   *
+   * @param $contactId
+   * @param $params
+   */
+  private function updateContactFields($contactId, $params) {
+    try {
+      civicrm_api3('Contact', 'create', [
+        'contact_id' => $contactId,
+        'first_name' => $params["first_name"],
+        'last_name' => $params["last_name"],
+      ]);
+    } catch (CiviCRM_API3_Exception $e) {
+      throw new api_Exception(ts('Can not update Contact. Error: ') . $e->getMessage(), 'can_not_update_contact');
+    }
   }
 
 }

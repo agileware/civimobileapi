@@ -40,6 +40,7 @@ function civicrm_api3_civi_mobile_permission_get() {
     $accessAllCustomData = CRM_Core_Permission::check('access all custom data');
     $profileCreate = CRM_Core_Permission::check('profile create');
     $canCheckInOnEvent = CRM_Core_Permission::check(CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT);
+    $viewAgenda = CRM_Core_Permission::check('view Agenda');
 
     $permissions['access'] = [
       'accessCiviCRM' => $accessToCiviCrm && $viewMyContact ? 1 : 0,
@@ -262,12 +263,16 @@ function civicrm_api3_civi_mobile_permission_get() {
       ],
       'add' => [
         'all' => $accessToCiviCrm && $viewMyContact && $editAllContacts ? 1 : 0,
-        'my' => $accessToCiviCrm && $viewMyContact && ($editMyContact || $editAllContacts)? 1 : 0,
+        'my' => $accessToCiviCrm && $viewMyContact && ($editMyContact || $editAllContacts) ? 1 : 0,
       ],
       'remove' => [
         'all' => $accessToCiviCrm && $viewMyContact && $editAllContacts ? 1 : 0,
-        'my' => $accessToCiviCrm && $viewMyContact && ($editMyContact || $editAllContacts)? 1 : 0,
+        'my' => $accessToCiviCrm && $viewMyContact && ($editMyContact || $editAllContacts) ? 1 : 0,
       ],
+    ];
+
+    $permissions['agenda'] = [
+      'view' => $viewAgenda ? 1 : 0
     ];
 
     $nullObject = CRM_Utils_Hook::$_nullObject;

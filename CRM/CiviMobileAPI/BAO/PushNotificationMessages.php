@@ -37,6 +37,10 @@ class CRM_CiviMobileAPI_BAO_PushNotificationMessages extends CRM_CiviMobileAPI_D
       CRM_Utils_Hook::pre('create', self::getEntityName(), NULL, $params);
     }
 
+    if (!empty($params['data'])) {
+      $params['data'] = json_encode($params['data']);
+    }
+
     $entityData = self::add($params);
 
     if (is_a($entityData, 'CRM_Core_Error')) {
@@ -167,7 +171,7 @@ class CRM_CiviMobileAPI_BAO_PushNotificationMessages extends CRM_CiviMobileAPI_D
    */
   public static function deleteOlderThan($day) {
     $query = '
-      DELETE FROM civicrm_contact_push_notification_messages 
+      DELETE FROM civicrm_contact_push_notification_messages
       WHERE send_date < NOW() - INTERVAL %1 DAY;
     ';
 

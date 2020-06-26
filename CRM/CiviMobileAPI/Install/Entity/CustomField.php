@@ -19,6 +19,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
   const QR_CODE = 'civi_mobile_qr_code';
   const QR_IMAGE = 'civi_mobile_qr_image';
   const PUBLIC_KEY = 'public_key';
+  const AGENDA_PARTICIPANT_BIO = 'civi_mobile_agenda_participant_bio';
 
   /**
    * Params for checking Entity existence
@@ -75,6 +76,13 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
         'html_type' => 'Text',
         'data_type' => 'String',
         'is_view' => 1,
+      ],
+      [
+        'name' => self::AGENDA_PARTICIPANT_BIO,
+        'label' => ts('Bio'),
+        'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::AGENDA_PARTICIPANT,
+        'html_type' => 'TextArea',
+        'data_type' => 'Memo',
       ],
     ];
   }

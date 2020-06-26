@@ -15,7 +15,9 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 - **Contributions** - access to the history of all contributions, aggregated total and average payments.
 - **Relationships** - users can create a relationship between oneself and other individuals or organizations and optionally set a start date and end date for the relationship.
 - **Events &amp; Registration** - ability to filter all the available events by type, date or title, check the event description, register yourself or others for the chosen event, view past and future events, share the information about events, and view events&#39; locations on the map.
+- **Event Agenda** - supports multitrack event schedule with multiple sessions, speakers and venues. There is ability to view session and speaker details as well as mark favorite sessions.
 - **Participants Management &amp; Check-In** - ability to view and manage event participants and their statuses. Additionally, a user can use Check-In functionality to mark participants who have attended an event while an built-in QR scanner will make this process fast and reliable.
+- **Payment** - ability to register for paid events directly through the app.
 - **Navigation** - users can switch to map navigation to easily find a direction to the location (e.g. a branch office or an event location).
 - **Cases** - immediate access to cases details; ability to change the status of the case.
 - **Activities** - access user&#39;s activities details; ability to add, edit and assign activities.

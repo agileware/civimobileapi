@@ -1,6 +1,47 @@
 <?php
 
 /**
+ * Returns participants
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_civi_mobile_participant_get($params) {
+  if (!CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForGetParticipant()) {
+    throw new api_Exception('You don`t have enough permissions.', 'do_not_have_enough_permissions');
+  }
+
+  return civicrm_api3_create_success(civicrm_api3('Participant', 'get', $params)['values']);
+}
+
+/**
+ * Specify Metadata for get action.
+ *
+ * @param array $params
+ */
+function _civicrm_api3_civi_mobile_participant_get_spec(&$params) {
+  $params['event_id'] = [
+    'title' => 'Event id',
+    'description' => ts('Event id'),
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+  ];
+  $params['contact_id'] = [
+    'title' => 'Contact id',
+    'description' => ts('Contact id'),
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+  ];
+  $params['name'] = [
+    'title' => 'Display name',
+    'description' => ts('Display name'),
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 0,
+  ];
+}
+
+/**
  * Updates Participant status to 'Registered' or 'Attended'
  *
  * @param array $params
@@ -44,7 +85,7 @@ function civicrm_api3_civi_mobile_participant_create($params) {
   $participant = new CRM_Event_DAO_Participant();
   $participant->id = $participantId;
   $participant->find(TRUE);
-  
+
   if ($participant->status_id == $participantStatusId) {
     throw new api_Exception('Participant(id = '. $participantId .') already has this status.' , 'error_same_status');
   }
@@ -60,7 +101,7 @@ function civicrm_api3_civi_mobile_participant_create($params) {
 }
 
 /**
- * Specify Metadata for get action.
+ * Specify Metadata for create action.
  *
  * @param array $params
  */
@@ -88,4 +129,43 @@ function _civicrm_api3_civi_mobile_participant_create_spec(&$params) {
     'description' => ts('Qr token'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
+}
+
+/**
+ * Params for CiviMobileParticipant getlist
+ *
+ * @param $request
+ */
+function _civicrm_api3_civi_mobile_participant_getlist_params(&$request) {
+  unset($request['params']['options']);
+  $request['params']['options']['limit'] = 0;
+}
+
+/**
+ * Get output for CiviMobileParticipant list.
+ *
+ * @param array $result
+ * @param array $request
+ *
+ * @param $entity
+ * @param $fields
+ * @return array
+ * @see _civicrm_api3_generic_getlist_output
+ *
+ */
+function _civicrm_api3_civi_mobile_participant_getlist_output($result, $request, $entity, $fields) {
+  $output = [];
+  foreach ($result['values'] as $participant) {
+    if (!empty($request['input']) && !preg_match('/' . $request['input'] . '/i', $participant['display_name'])) {
+      continue;
+    }
+
+    $output[] = [
+      'id' => $participant['participant_id'],
+      'label' => $participant['display_name'],
+      'description' => []
+    ];
+  }
+
+  return $output;
 }

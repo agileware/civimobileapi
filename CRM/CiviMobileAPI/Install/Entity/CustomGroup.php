@@ -11,6 +11,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
   const QR_CODES = 'civi_mobile_qr_codes';
   const CONTACT_SETTINGS = 'contact_settings';
   const PUBLIC_INFO = 'civi_mobile_public_info';
+  const AGENDA_PARTICIPANT = 'civi_mobile_agenda_participant';
 
   /**
    * Entity name
@@ -36,18 +37,28 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
         'title' => ts('Qr options'),
         'extends' => 'Event',
         'is_public' => 0,
+        'is_reserved' => 1
+      ],
+      [
+        'name' => self::AGENDA_PARTICIPANT,
+        'title' => ts('Agenda'),
+        'extends' => 'Participant',
+        'is_public' => 0,
+        'is_reserved' => 1
       ],
       [
         'name' => self::QR_CODES,
         'title' => ts('Qr codes'),
         'extends' => 'Participant',
         'is_public' => 0,
+        'is_reserved' => 1
       ],
       [
         'name' => self::PUBLIC_INFO,
         'title' => ts('Public Info'),
         'extends' => 'Participant',
         'is_public' => 0,
+        'is_reserved' => 1
       ],
     ];
   }
