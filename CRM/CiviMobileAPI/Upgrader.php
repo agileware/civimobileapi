@@ -83,6 +83,25 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
       $this->executeSql('ALTER TABLE civicrm_contact_push_notification_messages ADD data varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL');
       CRM_CiviMobileAPI_Utils_CustomGroup::delete(CRM_CiviMobileAPI_Install_Entity_CustomGroup::CONTACT_SETTINGS);
       CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
+
+      return TRUE;
+    } catch (Exception $e) {
+      return FALSE;
+    }
+  }
+
+  public function upgrade_0016() {
+    try {
+      $this->executeSqlFile('sql/create_event_agenda_config.sql');
+      $this->executeSqlFile('sql/create_location_venue.sql');
+      $this->executeSqlFile('sql/create_event_session.sql');
+      $this->executeSqlFile('sql/create_favourite_event_session.sql');
+      $this->executeSqlFile('sql/create_event_session_speaker.sql');
+      (new CRM_CiviMobileAPI_Install_Entity_CustomGroup())->install();
+      (new CRM_CiviMobileAPI_Install_Entity_CustomField())->install();
+      $this->executeSql("ALTER TABLE `civicrm_contact_push_notification_messages` CHANGE COLUMN `data` `data` TEXT NULL DEFAULT NULL;");
+      CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
+
       return TRUE;
     } catch (Exception $e) {
       return FALSE;
@@ -96,6 +115,13 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
    */
   public function install() {
     CRM_CiviMobileAPI_Install_Install::run();
+
+    $this->executeSqlFile('sql/create_location_venue.sql');
+    $this->executeSqlFile('sql/create_event_session.sql');
+    $this->executeSqlFile('sql/create_event_agenda_config.sql');
+    $this->executeSqlFile('sql/create_favourite_event_session.sql');
+    $this->executeSqlFile('sql/create_event_session_speaker.sql');
+
     CRM_CiviMobileAPI_Settings_Calendar::setCalendarIsAllowToUseCiviCalendarSettings(
       CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarEnable()
       && CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarCompatible()
@@ -111,6 +137,13 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
    */
   public function uninstall() {
     CRM_CiviMobileAPI_Install_Install::uninstall();
+
+    $this->executeSqlFile('sql/drop_event_session_speaker.sql');
+    $this->executeSqlFile('sql/drop_favourite_event_session.sql');
+    $this->executeSqlFile('sql/drop_event_agenda_config.sql');
+    $this->executeSqlFile('sql/drop_event_session.sql');
+    $this->executeSqlFile('sql/drop_location_venue.sql');
+
     $this->uninstallPushNotificationCustomGroup();
     CRM_CiviMobileAPI_Utils_CustomGroup::delete(CRM_CiviMobileAPI_Install_Entity_CustomGroup::CONTACT_SETTINGS);
   }

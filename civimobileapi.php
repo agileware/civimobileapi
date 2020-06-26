@@ -213,6 +213,7 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       ($entity == 'civi_mobile_get_price_set_by_event' and $action == 'get') ||
       ($entity == 'my_event' and $action == 'get') ||
       ($entity == 'civi_mobile_system' and $action == 'get') ||
+      ($entity == 'setting' and $action == 'get') ||
       ($entity == 'civi_mobile_calendar' and $action == 'get') ||
       ($entity == 'civi_mobile_my_ticket' and $action == 'get') ||
       ($entity == 'relationship' and $action == 'update') ||
@@ -242,6 +243,15 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       $params['check_permissions'] = FALSE;
     }
   }
+
+  $permissions['civi_mobile_favourite_event_session']['create'] = ['view Agenda'];
+  $permissions['civi_mobile_agenda_config']['create'] = ['access CiviCRM', 'view my contact', 'access CiviEvent', 'view Agenda'];
+  $permissions['civi_mobile_agenda_config']['get'] = ['view Agenda'];
+  $permissions['civi_mobile_speaker']['get'] = ['view Agenda'];
+  $permissions['civi_mobile_venue']['get'] = ['view Agenda'];
+  $permissions['civi_mobile_event_session']['get'] = ['view Agenda'];
+  $permissions['civi_mobile_venue_attach_file']['delete'] = ['access CiviCRM', 'view my contact', 'access CiviEvent', 'view Agenda'];
+  $permissions['civi_mobile_participant_payment_link']['get'] = ['view event info', 'register for events'];
 }
 
 /**
@@ -249,6 +259,36 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
  * this website
  */
 function civimobileapi_civicrm_pageRun(&$page) {
+  civimobile_add_qr_popup();
+  $pageName = $page->getVar('_name');
+  if ($pageName == 'CRM_Event_Page_EventInfo') {
+    if (CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent(CRM_Utils_Request::retrieve('id', 'Positive'))) {
+      $sessionsValues = CRM_CiviMobileAPI_Utils_Agenda_SessionSchedule::getEventSessionsValues(CRM_Utils_Request::retrieve('id', 'Positive'));
+      if (!empty($sessionsValues)) {
+        $smarty = CRM_Core_Smarty::singleton();
+        $smarty->assign('session_schedule_data', json_encode(CRM_CiviMobileAPI_Utils_Agenda_SessionSchedule::getSessionScheduleData(CRM_Utils_Request::retrieve('id', 'Positive'))));
+        CRM_Core_Region::instance('page-body')->add([
+          'template' => CRM_CiviMobileAPI_ExtensionUtil::path() . '/templates/CRM/CiviMobileAPI/Form/SessionSchedule.tpl',
+        ]);
+      }
+    }
+  }
+
+  if($pageName == 'CRM_Event_Page_ManageEvent'){
+    $smarty = CRM_Core_Smarty::singleton();
+    foreach ($smarty->_tpl_vars["rows"] as $key => &$row) {
+      if ($key == 'tab') {
+        continue;
+      }
+      $row['is_agenda'] = CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent($row['id']);
+    }
+  }
+}
+
+/**
+ * Adds qr popup to page-body
+ */
+function civimobile_add_qr_popup() {
   if(empty($_COOKIE["civimobile_popup_close"])) {
     if (empty($_GET['snippet'])) {
       if (Civi::settings()->get('civimobile_is_allow_public_website_url_qrcode') == 1 || CRM_Core_Permission::check('administer CiviCRM')) {
@@ -309,8 +349,14 @@ function is_mobile_request() {
 }
 
 function civimobileapi_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  if ($objectName == 'Participant' && $op == 'create') {
-    CRM_CiviMobileAPI_Utils_QRcode::generateQRcode($objectId);
+  if ($objectName == 'Participant') {
+    if ($op == 'create') {
+      CRM_CiviMobileAPI_Utils_QRcode::generateQRcode($objectId);
+    }
+
+    if ($op == 'delete') {
+      CRM_CiviMobileAPI_BAO_EventSessionSpeaker::deleteAllSpeakersByParticipantId($objectId);
+    }
   }
 
   if ($objectName == 'Individual' && $op == 'edit') {
@@ -343,11 +389,37 @@ function civimobileapi_civicrm_post($op, $objectName, $objectId, &$objectRef) {
   if (isset($notificationManager)) {
     $notificationManager->sendNotification();
   }
+  /**
+   * Rebuild venue after changing event location data.
+   */
+  if ($objectName == 'Address') {
+    $locBlocks = civicrm_api3('LocBlock', 'get', [
+      'address_id' => $objectId,
+      'options' => ['limit' => 0],
+    ])['values'];
+
+    foreach ($locBlocks as $locBlock) {
+      CRM_CiviMobileAPI_Utils_Agenda_Venue::rebuildVenueGeoDate($locBlock['id']);
+    }
+  }
 
   CRM_CiviMobileAPI_Hook_Post_Register::run($op, $objectName, $objectId, $objectRef);
 }
 
 function civimobileapi_civicrm_postProcess($formName, &$form) {
+  //TODO: think about how to remove all venues on hook_pre
+  /**
+   * Removes all venues in EventSession if loc_block_id was changed.
+   */
+  if ($formName == 'CRM_Event_Form_ManageEvent_Location') {
+    try {
+      $event = CRM_Event_BAO_Event::findById($form->_id);
+      if(!empty($event->loc_block_id) && $event->loc_block_id != $form->getVar('_oldLocBlockId')){
+        CRM_CiviMobileAPI_BAO_EventSession::deleteAllVenues($event->id);
+      }
+    } catch (Exception $e) {}
+  }
+
   /**
    * This hook run only when create or update Activity from WEB,
    * if it has made by API notification will send
@@ -366,6 +438,10 @@ function civimobileapi_civicrm_postProcess($formName, &$form) {
 
   if (isset($notificationManager)) {
     $notificationManager->sendNotification();
+  }
+
+  if ($formName == 'CRM_Event_Form_Participant' && $action == 'create') {
+    setcookie("civimobile_speaker_id", $form->_id, 0, '/');
   }
 }
 
@@ -404,6 +480,20 @@ function civimobileapi_civicrm_tabset($tabsetName, &$tabs, $context) {
       ];
     }
   }
+  if ($tabsetName == 'civicrm/event/manage') {
+    $isActiveAgenda = !empty($context['event_id']) ? CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent($context['event_id']) : false;
+    $tabs['agenda'] = [
+      'title' => ts('Agenda'),
+      'url' => 'civicrm/civimobile/event/agenda',
+      'link' => CRM_Utils_System::url('civicrm/civimobile/event/agenda', (isset($context['event_id']) ? 'id=' . $context['event_id'] : NULL)),
+      'valid' => $isActiveAgenda,
+      'active' => true,
+      'current' => true,
+      'class' => 'ajaxForm',
+      'field' => 'is_agenda'
+    ];
+  }
+
 }
 
 /**
@@ -437,6 +527,11 @@ function civimobileapi_civicrm_permission(&$permissionList) {
   $permissionList[CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT] = [
     $permissionsPrefix . CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT,
     ts("It means User can only update Participant status to 'Registered' or 'Attended'. Uses by QR Code."),
+  ];
+
+  $permissionList['view Agenda'] = [
+    $permissionsPrefix . 'view Agenda',
+    ts("View Agenda."),
   ];
 }
 
@@ -506,6 +601,15 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
     'separator' => NULL,
   ];
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileCalendarSettings);
+
+  $civiMobileEventLocations = [
+    'name' => ts('CiviMobile Event Locations'),
+    'url' => 'civicrm/civimobile/event-locations',
+    'permission' => 'administer CiviCRM',
+    'operator' => NULL,
+    'separator' => NULL,
+  ];
+  _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviEvent/', $civiMobileEventLocations);
 }
 
 /**
@@ -514,6 +618,7 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_buildForm/
  */
 function civimobileapi_civicrm_buildForm($formName, &$form) {
+  civimobile_add_qr_popup();
   $action = $form->getAction();
   if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && $action == CRM_Core_Action::ADD) {
     $templatePath = realpath(dirname(__FILE__)."/templates");
@@ -556,6 +661,21 @@ function civimobileapi_civicrm_alterBadge( &$labelName, &$label, &$format, &$par
         if ($token['token'] == '{participant.' . $qrCodeCustomFieldName . '}') {
           $format['token'][$key]['value'] =  '';
         }
+      }
+    }
+  }
+}
+
+function civimobileapi_civicrm_alterContent(&$content, $context, $tplName, &$object) {
+  if($context == "form") {
+    if($tplName == "CRM/Event/Form/ManageEvent/Location.tpl") {
+      if(CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent($object->_id)) {
+        $content = "<div class='status'>If you change the location for an event, all venues will be deleted from sessions.</div>" . $content;
+      }
+    }
+    if($tplName == "CRM/Event/Form/ManageEvent/EventInfo.tpl") {
+      if(CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent($object->_id)) {
+        $content = "<div class='status'>If you change the date, some event sessions may stop displaying.</div>" . $content;
       }
     }
   }

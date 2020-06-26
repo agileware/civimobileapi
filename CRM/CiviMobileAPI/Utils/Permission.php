@@ -154,6 +154,7 @@ class CRM_CiviMobileAPI_Utils_Permission {
       $editEventParticipants = CRM_Core_Permission::check('edit event participants');
       $profileCreate = CRM_Core_Permission::check('profile create');
       $accessUploadedFiles = CRM_Core_Permission::check('access uploaded files');
+      $viewAgenda = CRM_Core_Permission::check('view Agenda');
     } catch (Exception $e) {
       return [];
     }
@@ -164,7 +165,166 @@ class CRM_CiviMobileAPI_Utils_Permission {
       'view_public_participant' => $viewAllEvent && $viewEventParticipants ? 1 : 0,
       'edit_public_participant' => $viewEventParticipants && $viewAllEvent && $editEventParticipants ? 1 : 0,
       'access_uploaded_files' => $accessUploadedFiles ? 1 : 0,
+      'view_agenda' => $viewAgenda ? 1 : 0
     ];
+  }
+
+  /**
+   * Is enough permissions for getting EventSession
+   */
+  public static function isEnoughPermissionForGetEventSession() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for creating EventSession
+   */
+  public static function isEnoughPermissionForCreateEventSession() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('view my contact')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for deleting EventSession
+   */
+  public static function isEnoughPermissionForDeleteEventSession() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('view my contact')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for getting EventVenues
+   */
+  public static function isEnoughPermissionForGetEventVenues() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for creating EventVenues
+   */
+  public static function isEnoughPermissionForCreateEventVenues() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('view my contact')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for deleting EventVenues
+   */
+  public static function isEnoughPermissionForDeleteEventVenues() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('view my contact')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for getting AgendaConfig
+   */
+  public static function isEnoughPermissionForGetAgendaConfig() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for creating AgendaConfig
+   */
+  public static function isEnoughPermissionForCreateAgendaConfig() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('view my contact')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for getting Speakers in Agenda
+   */
+  public static function isEnoughPermissionForGetSpeaker() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for getting Participant for Agenda
+   */
+  public static function isEnoughPermissionForGetParticipant() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions to set favourite EventSession
+   */
+  public static function isEnoughPermissionToSetFavouriteEventSession() {
+    if (CRM_Core_Permission::check('view Agenda')) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Is enough permissions for editing Speaker
+   */
+  public static function isEnoughPermissionToEditSpeaker() {
+    if (CRM_Core_Permission::check('access CiviCRM')
+      && CRM_Core_Permission::check('access CiviEvent')
+      && CRM_Core_Permission::check('view Agenda')
+      && CRM_Core_Permission::check('access all custom data')
+      && CRM_Core_Permission::check('edit event participants')
+      && CRM_Core_Permission::check('edit all contacts')
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
 }

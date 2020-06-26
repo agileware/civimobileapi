@@ -121,7 +121,7 @@ class CRM_CiviMobileAPI_Calendar_Handler {
         AND civicrm_event.event_type_id = event_type_value.value )
       WHERE civicrm_event.is_active = 1
         AND civicrm_event.is_template = 0
-        AND ( civicrm_event.created_id = %1 OR civicrm_participant.contact_id = %1)
+        AND civicrm_participant.contact_id = %1
         AND (
           civicrm_event.start_date BETWEEN %2 AND %3
           OR civicrm_event.end_date BETWEEN %2 AND %3
