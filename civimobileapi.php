@@ -619,8 +619,7 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
  */
 function civimobileapi_civicrm_buildForm($formName, &$form) {
   civimobile_add_qr_popup();
-  $action = $form->getAction();
-  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && $action == CRM_Core_Action::ADD) {
+  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && $form->getAction() == CRM_Core_Action::ADD) {
     $templatePath = realpath(dirname(__FILE__)."/templates");
 
     $form->add('checkbox', 'default_qrcode_checkin_event', ts('When generating QR Code tokens, use this Event'));
@@ -633,7 +632,7 @@ function civimobileapi_civicrm_buildForm($formName, &$form) {
     ]);
   }
 
-  if ($formName == 'CRM_Event_Form_Participant' && $action == CRM_Core_Action::ADD) {
+  if ($formName == 'CRM_Event_Form_Participant' && $form->getAction() == CRM_Core_Action::ADD) {
     $elementName = 'send_receipt';
     if ($form->elementExists($elementName)) {
       $element = $form->getElement($elementName);
