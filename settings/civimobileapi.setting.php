@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 return [
   'civimobileapi_calendar_activity_types' => [
     'group_name' => 'Civimobileapi Calendar Settings',
@@ -10,7 +12,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'default' => [],
-    'description' => ts('Shows certain activity types on the calendar'),
+    'description' => E::ts('Shows certain activity types on the calendar'),
     'html_type' => 'Select',
     'html_attributes' => [
       'size' => 20,
@@ -29,7 +31,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'default' => [],
-    'description' => ts('Shows certain event types on the calendar'),
+    'description' => E::ts('Shows certain event types on the calendar'),
     'html_type' => 'Select',
     'html_attributes' => [
       'size' => 20,
@@ -48,7 +50,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'default' => [],
-    'description' => ts('Shows certain case types on the calendar'),
+    'description' => E::ts('Shows certain case types on the calendar'),
     'html_type' => 'Select',
     'html_attributes' => [
       'size' => 20,
@@ -67,7 +69,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'default' => '0',
-    'description' => ts('Hide past events'),
+    'description' => E::ts('Hide past events'),
     'html_type' => 'Checkbox',
   ],
 
@@ -80,7 +82,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'default' => '0',
-    'description' => ts('Synchronize with CiviCalendar'),
+    'description' => E::ts('Synchronize with CiviCalendar'),
     'html_type' => 'Checkbox',
   ],
 ];

@@ -5,17 +5,17 @@
     <description>The CiviMobileAPI extension is an CiviCRM component which allows to use a mobile application CiviMobile.</description>
     <license>AGPL-3.0</license>
     <maintainer>
-        <author>Agiliway</author>
-        <email>civicrm@agiliway.com</email>
+        <author>CIVIMOBILE SOLUTIONS, LLC</author>
+        <email>info@civimobile.org</email>
     </maintainer>
     <urls>
         <url desc="Main Extension Page">https://lab.civicrm.org/extensions/civimobileapi</url>
         <url desc="Documentation">https://civimobile.org</url>
-        <url desc="Support">https://agiliway.com</url>
+        <url desc="Support">https://civimobile.org</url>
         <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
     </urls>
-    <releaseDate>2020-06-26</releaseDate>
-    <version>5.2.0</version>
+    <releaseDate>2020-09-02</releaseDate>
+    <version>5.3.0</version>
     <compatibility>
         <ver>4.7</ver>
         <ver>5.20</ver>

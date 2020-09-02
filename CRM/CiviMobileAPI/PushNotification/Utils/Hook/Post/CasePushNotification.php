@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_PushNotification_Utils_Hook_Post_CasePushNotification extends CRM_CiviMobileAPI_PushNotification_Utils_BasePushNotificationManager {
 
   /**
@@ -53,14 +55,14 @@ class CRM_CiviMobileAPI_PushNotification_Utils_Hook_Post_CasePushNotification ex
       return $this->objectRef->subject;
     }
 
-    return ts('Case');
+    return E::ts('Case');
   }
 
   /**
    * @inheritdoc
    */
   protected function getText() {
-    return isset($this->actionText[$this->action]) ? ts($this->actionText[$this->action]) : $this->action;
+    return isset($this->actionText[$this->action]) ? E::ts($this->actionText[$this->action]) : $this->action;
   }
 
   private function getContactFromCreateAction() {

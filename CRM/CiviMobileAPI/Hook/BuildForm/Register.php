@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Hook_BuildForm_Register {
 
   /**
@@ -33,6 +35,7 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
 
       // check if set $cmbHash (if we are using call from mobile application)
       if ($cmbHash) {
+        CRM_CiviMobileAPI_Utils_Extension::hideCiviMobileQrPopup();
         if ($tmpData = CRM_CiviMobileAPI_BAO_CivimobileEventPaymentInfo::getByHash($cmbHash)) {
           $priceSet = json_decode($tmpData['price_set'], true);
           $personalFields = $this->findPersonalFields($tmpData);
@@ -158,7 +161,7 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
           'id' => $contactId
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new api_Exception(ts('Contact (id = %1) User can not be registered because contact do not exist', [1 => $contactId]), 'contact_does_not_exist');
+        throw new api_Exception(E::ts('Contact (id = %1) User can not be registered because contact do not exist', [1 => $contactId]), 'contact_does_not_exist');
       }
 
       try {
@@ -169,7 +172,7 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
           'is_primary' => 1,
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new api_Exception(ts('User was not registered.'), 'contact_cannot_be_registered');
+        throw new api_Exception(E::ts('User was not registered.'), 'contact_cannot_be_registered');
       }
 
       $firstName = $contact['first_name'];

@@ -1,5 +1,6 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
 
 /**
@@ -73,7 +74,7 @@ class CRM_CiviMobileAPI_Authentication_DisablePushToken {
     $pushNotificationRow = array_shift(CRM_CiviMobileAPI_BAO_PushNotification::getAll($listOfSearchedParameters));
 
     if (!isset($pushNotificationRow['id']) || empty($pushNotificationRow['id'])) {
-      JsonResponse::sendErrorResponse(ts('No such id'));
+      JsonResponse::sendErrorResponse(E::ts('No such id'));
     }
 
     return $pushNotificationRow;

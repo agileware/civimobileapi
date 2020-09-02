@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Class provide extension version helper methods
  */
@@ -24,7 +26,7 @@ class CRM_CiviMobileAPI_Utils_Contact {
       CRM_CiviMobileAPI_BAO_PushNotification::del($pushNotification->id);
     }
 
-    CRM_Core_Session::setStatus(ts('Your Api key has removed and all device disconnected from account.'));
+    CRM_Core_Session::setStatus(E::ts('Your Api key has removed and all device disconnected from account.'));
 
     CRM_Utils_System::redirect($_SERVER['HTTP_REFERER']);
   }

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @param $params
  * @return array
@@ -20,31 +22,31 @@ function civicrm_api3_civi_mobile_cms_registration_create($params) {
 function _civicrm_api3_civi_mobile_cms_registration_create_spec(&$params) {
   $params['email'] = [
     'title' => 'Email',
-    'description' => ts('Email'),
+    'description' => E::ts('Email'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['username'] = [
     'title' => 'Username',
-    'description' => ts('Username'),
+    'description' => E::ts('Username'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['first_name'] = [
     'title' => 'First name',
-    'description' => ts('First name'),
+    'description' => E::ts('First name'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['last_name'] = [
     'title' => 'Last name',
-    'description' => ts('Last name'),
+    'description' => E::ts('Last name'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['password'] = [
     'title' => 'password',
-    'description' => ts('Password'),
+    'description' => E::ts('Password'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];

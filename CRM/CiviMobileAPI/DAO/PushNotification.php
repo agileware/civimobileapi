@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
 
   /**
@@ -102,7 +104,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('id'),
+          'title' => E::ts('id'),
           'description' => 'id',
           'required' => TRUE,
           'import' => TRUE,
@@ -117,7 +119,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'contact_id' => [
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact id'),
+          'title' => E::ts('Contact id'),
           'description' => 'Contact id',
           'required' => TRUE,
           'import' => TRUE,
@@ -132,7 +134,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'token' => [
           'name' => 'token',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Token'),
+          'title' => E::ts('Token'),
           'description' => 'Token',
           'required' => TRUE,
           'import' => TRUE,
@@ -147,7 +149,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'platform' => [
           'name' => 'platform',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Platform'),
+          'title' => E::ts('Platform'),
           'description' => 'Platform',
           'required' => TRUE,
           'import' => TRUE,
@@ -162,7 +164,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'created_date' => [
           'name' => 'created_date',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Create date'),
+          'title' => E::ts('Create date'),
           'description' => 'Create date',
           'required' => TRUE,
           'import' => TRUE,
@@ -177,7 +179,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'modified_date' => [
           'name' => 'modified_date',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Update date'),
+          'title' => E::ts('Update date'),
           'description' => 'Update date',
           'required' => TRUE,
           'import' => TRUE,
@@ -192,7 +194,7 @@ class CRM_CiviMobileAPI_DAO_PushNotification extends CRM_Core_DAO {
         'is_active' => [
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Is active'),
+          'title' => E::ts('Is active'),
           'description' => 'Is active',
           'required' => FALSE,
           'import' => TRUE,

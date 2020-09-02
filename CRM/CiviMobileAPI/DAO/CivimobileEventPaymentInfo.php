@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
 
   /**
@@ -116,8 +118,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Id'),
-          'description' => ts('Id'),
+          'title' => E::ts('Id'),
+          'description' => E::ts('Id'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.id',
@@ -131,8 +133,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'event_id' => [
           'name' => 'event_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Event Id'),
-          'description' => ts('Event Id'),
+          'title' => E::ts('Event Id'),
+          'description' => E::ts('Event Id'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.event_id',
@@ -146,8 +148,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'cmb_hash' => [
           'name' => 'cmb_hash',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('CMB Hash'),
-          'description' => ts('CMB Hash'),
+          'title' => E::ts('CMB Hash'),
+          'description' => E::ts('CMB Hash'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.hash',
@@ -161,8 +163,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'price_set' => [
           'name' => 'price_set',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Price Set'),
-          'description' => ts('Price Set'),
+          'title' => E::ts('Price Set'),
+          'description' => E::ts('Price Set'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.price_set',
@@ -176,8 +178,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'contact_id' => [
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact Id'),
-          'description' => ts('Contact Id'),
+          'title' => E::ts('Contact Id'),
+          'description' => E::ts('Contact Id'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.contact_id',
@@ -191,8 +193,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'first_name' => [
           'name' => 'first_name',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('First Name'),
-          'description' => ts('First Name'),
+          'title' => E::ts('First Name'),
+          'description' => E::ts('First Name'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.first_name',
@@ -206,8 +208,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'last_name' => [
           'name' => 'last_name',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Last Name'),
-          'description' => ts('Last Name'),
+          'title' => E::ts('Last Name'),
+          'description' => E::ts('Last Name'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.last_name',
@@ -221,8 +223,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'email' => [
           'name' => 'email',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Email'),
-          'description' => ts('Email'),
+          'title' => E::ts('Email'),
+          'description' => E::ts('Email'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.email',
@@ -236,8 +238,8 @@ class CRM_CiviMobileAPI_DAO_CivimobileEventPaymentInfo extends CRM_Core_DAO {
         'public_key' => [
           'name' => 'public_key',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Public Key'),
-          'description' => ts('Public Key'),
+          'title' => E::ts('Public Key'),
+          'description' => E::ts('Public Key'),
           'required' => TRUE,
           'import' => TRUE,
           'where' => self::getTableName() . '.public_key',

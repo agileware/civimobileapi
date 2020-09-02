@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets my Tickets
  *
@@ -9,7 +11,7 @@
  */
 function civicrm_api3_civi_mobile_my_ticket_get($params) {
   if (!CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForViewMyTickets()) {
-    throw new \API_Exception(ts('Permission is required.'));
+    throw new \API_Exception(E::ts('Permission is required.'));
   }
 
   $event = new CRM_Event_BAO_Event();
@@ -39,13 +41,13 @@ function civicrm_api3_civi_mobile_my_ticket_get($params) {
 function _civicrm_api3_civi_mobile_my_ticket_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID ',
-    'description' => ts('Contact id'),
+    'description' => E::ts('Contact id'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['event_id'] = [
     'title' => 'Event Id',
-    'description' => ts('Event Id'),
+    'description' => E::ts('Event Id'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @deprecated will be deleted in version 7.0.0
  */
@@ -25,7 +27,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Create implements API_Wrapper {
     $participantExist = $participant->find(TRUE);
 
     if (!empty($participantExist)) {
-      throw new api_Exception(ts('This contact has already been assigned to this event.'), 'contact_already_registered');
+      throw new api_Exception(E::ts('This contact has already been assigned to this event.'), 'contact_already_registered');
     }
 
     if (empty($apiRequest['params']['fee_currency'])) {
@@ -41,7 +43,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Create implements API_Wrapper {
     }
 
     if (empty($apiRequest['params']['status_id'])) {
-      throw new \API_Exception(ts('Empty participant status field(status_id). Please fill it.'));
+      throw new \API_Exception(E::ts('Empty participant status field(status_id). Please fill it.'));
     }
 
     return $apiRequest;

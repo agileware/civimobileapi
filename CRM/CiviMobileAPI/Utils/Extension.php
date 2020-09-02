@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Class provide extension helper methods
  */
@@ -53,7 +55,7 @@ class CRM_CiviMobileAPI_Utils_Extension {
 
     foreach ($revisions as $revision) {
       if ($revision > $currentRevision) {
-        $title = ts('Upgrade %1 to revision %2', [
+        $title = E::ts('Upgrade %1 to revision %2', [
           1 => CRM_CiviMobileAPI_ExtensionUtil::LONG_NAME,
           2 => $revision,
         ]);
@@ -82,7 +84,7 @@ class CRM_CiviMobileAPI_Utils_Extension {
   public static function directoryIsWritable() {
     $extensionPath = CRM_Core_Config::singleton()->extensionsDir . CRM_CiviMobileAPI_ExtensionUtil::LONG_NAME;
 
-    return is_writable_r($extensionPath);
+    return is_writable(CRM_Core_Config::singleton()->extensionsDir) && is_writable_r($extensionPath);
   }
 
   /**
@@ -240,6 +242,14 @@ class CRM_CiviMobileAPI_Utils_Extension {
    */
   public static function isCurlExtensionEnabled() {
     return in_array('curl', get_loaded_extensions());
+  }
+
+  /**
+   *  Sets cookie to hide QR popup
+   */
+  public static function hideCiviMobileQrPopup() {
+    setcookie('civimobile_popup_close', true, 0, '/');
+    $_COOKIE["civimobile_popup_close"] = true;
   }
 
 }

@@ -1,5 +1,6 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 /**
  * Get speakers
@@ -24,13 +25,13 @@ function civicrm_api3_civi_mobile_speaker_get($params) {
 function _civicrm_api3_civi_mobile_speaker_get_spec(&$params) {
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];
   $params['participant_id'] = [
     'title' => 'Participant ID',
-    'description' => ts('Participant ID'),
+    'description' => E::ts('Participant ID'),
     'type' => CRM_Utils_Type::T_INT,
   ];
 }

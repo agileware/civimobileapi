@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
 
   private $speaker;
@@ -10,7 +12,7 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
     $eventId = CRM_Utils_Request::retrieve('eid', 'Positive');
 
     if ($this->getAction() == CRM_Core_Action::UPDATE && !CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionToEditSpeaker()) {
-      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', ts('Permission Denied'));
+      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', E::ts('Permission Denied'));
     }
 
     if (!$participantId) {
@@ -31,7 +33,7 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
         'reset' => '1',
         'id' => $eventId
       ]));
-      CRM_Core_Error::statusBounce('The speaker doesn`t exists.', $url, ts('Not Found'));
+      CRM_Core_Error::statusBounce('The speaker doesn`t exists.', $url, E::ts('Not Found'));
     }
 
     $this->assign('speaker', $this->speaker);
@@ -54,11 +56,11 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
       $this->add('hidden', 'pid', $this->speaker['participant_id']);
       $this->add('hidden', 'eid', $this->speaker['event_id']);
 
-      $this->add('text', 'first_name', ts('First name'), ['class' => 'huge']);
-      $this->add('text', 'last_name', ts('Last name'), ['class' => 'huge']);
-      $this->add('text', 'job_title', ts('Position'), ['class' => 'huge']);
-      $this->add('textarea', 'participant_bio', ts('Bio'), ['class' => 'big']);
-      $this->addField('image_URL', ['maxlength' => '255', 'label' => ts('Image')]);
+      $this->add('text', 'first_name', E::ts('First name'), ['class' => 'huge']);
+      $this->add('text', 'last_name', E::ts('Last name'), ['class' => 'huge']);
+      $this->add('text', 'job_title', E::ts('Position'), ['class' => 'huge']);
+      $this->add('textarea', 'participant_bio', E::ts('Bio'), ['class' => 'big']);
+      $this->addField('image_URL', ['maxlength' => '255', 'label' => E::ts('Image')]);
       $this->addEntityRef('current_employer_id', 'Company', [
         'create' => TRUE,
         'multiple' => FALSE,
@@ -70,7 +72,7 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
 
       $buttons[] = [
         'type' => 'upload',
-        'name' => ts('Save'),
+        'name' => E::ts('Save'),
         'isDefault' => TRUE,
       ];
     }
@@ -81,7 +83,7 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
 
     $buttons[] = [
       'type' => 'cancel',
-      'name' => ts($cancelButtonLabel),
+      'name' => E::ts($cancelButtonLabel),
       'class' => 'cancel',
       'js' => ['onclick' => "
          if( CRM.$('.ui-dialog').length ) {
@@ -108,17 +110,22 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
     }
 
     if ($this->getAction() == CRM_Core_Action::UPDATE) {
+      $contactParams = [
+        'id' => $this->speaker['contact_id'],
+        'first_name' => $inputValues['first_name'],
+        'last_name' => $inputValues['last_name'],
+        'job_title' => $inputValues['job_title'],
+        'employer_id' => $inputValues['current_employer_id']
+      ];
+
+      if (!empty($inputValues['image_URL'])) {
+        $contactParams['image_URL'] = $inputValues['image_URL'];
+      }
+
       try {
-        civicrm_api3('Contact', 'create', [
-          'id' => $this->speaker['contact_id'],
-          'first_name' => $inputValues['first_name'],
-          'last_name' => $inputValues['last_name'],
-          'job_title' => $inputValues['job_title'],
-          'employer_id' => $inputValues['current_employer_id'],
-          'image_URL' => !empty($inputValues['image_URL']) ? $inputValues['image_URL'] : ''
-        ]);
+        civicrm_api3('Contact', 'create', $contactParams);
       } catch (Exception $e) {
-        CRM_Core_Session::setStatus(ts('Contact info wasn`t saved!'), ts('Error'), 'error');
+        CRM_Core_Session::setStatus(E::ts('Contact info wasn`t saved!'), E::ts('Error'), 'error');
       }
 
       $participantBioFieldName = $customFieldName = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::AGENDA_PARTICIPANT, CRM_CiviMobileAPI_Install_Entity_CustomField::AGENDA_PARTICIPANT_BIO);
@@ -129,7 +136,7 @@ class CRM_CiviMobileAPI_Form_Speaker extends CRM_Core_Form {
           $participantBioFieldName => $inputValues['participant_bio']
         ]);
       } catch (Exception $e) {
-        CRM_Core_Session::setStatus(ts('Participant bio wasn`t saved!'), ts('Error'), 'error');
+        CRM_Core_Session::setStatus(E::ts('Participant bio wasn`t saved!'), E::ts('Error'), 'error');
       }
     }
     $session->replaceUserContext(CRM_Utils_System::url("civicrm/civimobile/event/agenda", 'reset=1&id=' . $this->speaker['event_id']));

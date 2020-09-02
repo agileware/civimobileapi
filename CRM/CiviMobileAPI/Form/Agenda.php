@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_Agenda extends CRM_Event_Form_ManageEvent {
 
   /**
@@ -26,7 +28,7 @@ class CRM_CiviMobileAPI_Form_Agenda extends CRM_Event_Form_ManageEvent {
     try {
       $event = CRM_Event_BAO_Event::findById($this->eventId);
     } catch (Exception $e) {
-      CRM_Core_Error::statusBounce('Invalid eventId parameter.', $url, ts('Not Found'));
+      CRM_Core_Error::statusBounce('Invalid eventId parameter.', $url, E::ts('Not Found'));
     }
 
     $isActive = [
@@ -59,17 +61,17 @@ class CRM_CiviMobileAPI_Form_Agenda extends CRM_Event_Form_ManageEvent {
     $venues = CRM_CiviMobileAPI_Utils_Agenda_Venue::getVenuesNamesByEventId($this->eventId);
     $localeId = CRM_CiviMobileAPI_Utils_Agenda_Venue::getLocaleId($this->eventId);
     if (empty($localeId)) {
-      $this->assign('notice', ts('If you want to fill Agenda, you need to add the location for the event.'));
+      $this->assign('notice', E::ts('If you want to fill Agenda, you need to add the location for the event.'));
     }
 
     $this->add('hidden', 'event_id', $this->eventId);
-    $this->add('select', 'speaker', ts('Speaker'), $preparedSpeakers, FALSE,
-      ['id' => 'speaker', 'class' => 'crm-select2', 'placeholder' => ts('- any -')]
+    $this->add('select', 'speaker', E::ts('Speaker'), $preparedSpeakers, FALSE,
+      ['id' => 'speaker', 'class' => 'crm-select2', 'placeholder' => E::ts('- any -')]
     );
-    $this->add('select', 'venue', ts('Venue'), $venues, FALSE,
-      ['id' => 'venue', 'class' => 'crm-select2', 'placeholder' => ts('- any -')]
+    $this->add('select', 'venue', E::ts('Venue'), $venues, FALSE,
+      ['id' => 'venue', 'class' => 'crm-select2', 'placeholder' => E::ts('- any -')]
     );
-    $this->add('text', 'name_include', ts('Name include'));
+    $this->add('text', 'name_include', E::ts('Name include'));
   }
 
   /**

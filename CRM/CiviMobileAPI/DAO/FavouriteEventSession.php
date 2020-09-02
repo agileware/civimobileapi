@@ -1,4 +1,5 @@
 <?php
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_DAO_FavouriteEventSession extends CRM_Core_DAO {
 
@@ -74,7 +75,7 @@ class CRM_CiviMobileAPI_DAO_FavouriteEventSession extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('id'),
+          'title' => E::ts('id'),
           'description' => 'id',
           'required' => TRUE,
           'import' => TRUE,
@@ -89,7 +90,7 @@ class CRM_CiviMobileAPI_DAO_FavouriteEventSession extends CRM_Core_DAO {
         'contact_id' => [
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('ContactID'),
+          'title' => E::ts('ContactID'),
           'description' => 'ContactID',
           'required' => TRUE,
           'import' => TRUE,
@@ -104,7 +105,7 @@ class CRM_CiviMobileAPI_DAO_FavouriteEventSession extends CRM_Core_DAO {
         'event_session_id' => [
           'name' => 'event_session_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('EventSessionID'),
+          'title' => E::ts('EventSessionID'),
           'description' => 'EventSessionID',
           'required' => TRUE,
           'import' => TRUE,

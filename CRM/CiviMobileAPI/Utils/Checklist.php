@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Utils_Checklist {
 
   /**
@@ -62,13 +64,13 @@ class CRM_CiviMobileAPI_Utils_Checklist {
     $this->checkedItems['latest_version']['title'] = 'Do you have last extension version?';
 
     if ($isOlderVersion) {
-      $this->checkedItems['latest_version']['message'] = ts('You are using CiviMobileAPI <strong>%1</strong>. The latest version is CiviMobileAPI <strong>%2</strong>', [
+      $this->checkedItems['latest_version']['message'] = E::ts('You are using CiviMobileAPI <strong>%1</strong>. The latest version is CiviMobileAPI <strong>%2</strong>', [
         1 => 'v' . $version->getCurrentFullVersion(),
         2 => 'v' . $version->getLatestFullVersion(),
       ]);
       $this->checkedItems['latest_version']['status'] = 'warning';
     } else {
-      $this->checkedItems['latest_version']['message'] = ts('Your extension version is up to date - CiviMobile <strong>%1</strong>', [1 => 'v' . $version->getCurrentFullVersion()]);
+      $this->checkedItems['latest_version']['message'] = E::ts('Your extension version is up to date - CiviMobile <strong>%1</strong>', [1 => 'v' . $version->getCurrentFullVersion()]);
       $this->checkedItems['latest_version']['status'] = 'success';
     }
   }

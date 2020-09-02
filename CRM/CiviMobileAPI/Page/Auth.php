@@ -2,6 +2,7 @@
 
 use CRM_CiviMobileAPI_Utils_Request as Request;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 /**
  * Provides authentication functionality for CiviMobile application
@@ -66,7 +67,7 @@ class CRM_CiviMobileAPI_Page_Auth extends CRM_Core_Page {
   private function getEmailOrUsername() {
     $emailOrUsername = Request::getInstance()->post('email', 'String');
     if (!$emailOrUsername) {
-      JsonResponse::sendErrorResponse(ts('Required field'), 'email');
+      JsonResponse::sendErrorResponse(E::ts('Required field'), 'email');
     }
 
     return $emailOrUsername;
@@ -80,7 +81,7 @@ class CRM_CiviMobileAPI_Page_Auth extends CRM_Core_Page {
   private function getPassword() {
     $password = Request::getInstance()->post('password', 'String');
     if (!$password) {
-      JsonResponse::sendErrorResponse(ts('Required field'), 'password');
+      JsonResponse::sendErrorResponse(E::ts('Required field'), 'password');
     }
 
     return $password;

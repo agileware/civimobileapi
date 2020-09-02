@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @deprecated will be deleted in version 7.0.0
  */
@@ -39,7 +41,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
           'id' => $value['contact_id'],
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(ts("Something wrong with getting img url of contact: " . $e->getMessage()));
+        throw new \API_Exception(E::ts("Something wrong with getting img url of contact: " . $e->getMessage()));
       }
 
       if ($activeParam == 1) {

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets custom field values by contact
  *
@@ -27,13 +29,13 @@ function civicrm_api3_civi_mobile_custom_fields_get($params) {
 function _civicrm_api3_civi_mobile_custom_fields_get_spec(&$params) {
   $params['entity'] = [
     'title' => 'Entity',
-    'description' => ts('Entity') . implode(', ', CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get::getAvailableEntities()),
+    'description' => E::ts('Entity') . implode(', ', CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get::getAvailableEntities()),
     'type' => CRM_Utils_Type::T_STRING,
     'api.required' => 1,
   ];
   $params['entity_id'] = [
     'title' => 'Entity id',
-    'description' => ts('Entity id'),
+    'description' => E::ts('Entity id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];

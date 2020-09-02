@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Saves push tokens
  *
@@ -38,19 +40,19 @@ function civicrm_api3_push_notification_create($params) {
 function _civicrm_api3_push_notification_create_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['token'] = [
     'title' => 'Token',
-    'description' => ts('Token'),
+    'description' => E::ts('Token'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['platform'] = [
     'title' => 'Platform',
-    'description' => ts('Platform'),
+    'description' => E::ts('Platform'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
     'options' => ['Android' => 'Android', 'IOS' => 'IOS']
@@ -88,7 +90,7 @@ function civicrm_api3_push_notification_get_by_user($params) {
 function _civicrm_api3_push_notification_get_by_user_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];
@@ -130,7 +132,7 @@ function civicrm_api3_push_notification_delete_by_user($params) {
 function _civicrm_api3_push_notification_delete_by_user_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];

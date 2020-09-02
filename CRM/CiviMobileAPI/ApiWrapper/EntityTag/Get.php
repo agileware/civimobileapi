@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @deprecated will be deleted in version 7.0.0
  */
@@ -36,7 +38,7 @@ class CRM_CiviMobileAPI_ApiWrapper_EntityTag_Get implements API_Wrapper {
           'id' => $value['tag_id'],
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(ts("Something wrong with getting info for tag: " . $e->getMessage()));
+        throw new \API_Exception(E::ts("Something wrong with getting info for tag: " . $e->getMessage()));
       }
 
       $value['name'] = !empty($tagInfo['name']) ? $tagInfo['name'] : '';
@@ -52,7 +54,7 @@ class CRM_CiviMobileAPI_ApiWrapper_EntityTag_Get implements API_Wrapper {
             'id' => $tagInfo['parent_id'],
           ]);
         } catch (CiviCRM_API3_Exception $e) {
-          throw new \API_Exception(ts("Something wrong with getting info for parent tag: " . $e->getMessage()));
+          throw new \API_Exception(E::ts("Something wrong with getting info for parent tag: " . $e->getMessage()));
         }
 
         if ($parentTagInfo['is_tagset'] == '1') {

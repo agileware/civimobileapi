@@ -4,11 +4,11 @@
       {if $action eq 4}
         {if $can_edit_session}
           <a href="{crmURL p='civicrm/civimobile/event/session' q='reset=1&action=update&id='}{$eventSession.id}"
-             class="edit button" title="{ts}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts}Edit{/ts}</span></a>
+             class="edit button" title="{ts domain=com.agiliway.civimobileapi}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts domain=com.agiliway.civimobileapi}Edit{/ts}</span></a>
         {/if}
         {if $can_delete_session}
           <a href="{crmURL p='civicrm/civimobile/event/session' q='reset=1&action=delete&id='}{$eventSession.id}"
-             class="delete button" title="{ts}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts}Delete{/ts}</span></a>
+             class="delete button" title="{ts domain=com.agiliway.civimobileapi}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts domain=com.agiliway.civimobileapi}Delete{/ts}</span></a>
         {/if}
       {/if}
       {include file="CRM/common/formButtons.tpl" location="top"  multiple="multiple"}
@@ -83,7 +83,7 @@
               {$form.speakers.html}
               <a href="{crmURL p='civicrm/participant/add' q='reset=1&action=add&context=standalone&eid='}{$event_id}"
                  class="crm-option-edit-link medium-popup crm-hover-button" target="_blank"
-                 title="{ts}New Speaker{/ts}"><i class="crm-i fa-plus-circle"></i></a>
+                 title="{ts domain=com.agiliway.civimobileapi}New Speaker{/ts}"><i class="crm-i fa-plus-circle"></i></a>
               <br/>
               <span class="description">If you can’t find the participant you want in the list, you can always create a new one by tapping "+".</span>
             </td>
@@ -101,7 +101,7 @@
               {if !$venueNotice}
                 <a href="{crmURL p='civicrm/civimobile/manage-venues?reset=1&location_id='}{$location}"
                    class="crm-option-edit-link medium-popup crm-hover-button" target="_blank"
-                   title="{ts}Manage venues{/ts}"><i class="crm-i fa-wrench"></i></a>
+                   title="{ts domain=com.agiliway.civimobileapi}Manage venues{/ts}"><i class="crm-i fa-wrench"></i></a>
               {/if}
             </td>
           </tr>
@@ -116,11 +116,11 @@
       {if $action eq 4}
         {if $can_edit_session}
           <a href="{crmURL p='civicrm/civimobile/event/session' q='reset=1&action=update&id='}{$eventSession.id}"
-             class="edit button" title="{ts}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts}Edit{/ts}</span></a>
+             class="edit button" title="{ts domain=com.agiliway.civimobileapi}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts domain=com.agiliway.civimobileapi}Edit{/ts}</span></a>
         {/if}
         {if $can_delete_session}
         <a href="{crmURL p='civicrm/civimobile/event/session' q='reset=1&action=delete&id='}{$eventSession.id}"
-           class="delete button" title="{ts}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts}Delete{/ts}</span></a>
+           class="delete button" title="{ts domain=com.agiliway.civimobileapi}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts domain=com.agiliway.civimobileapi}Delete{/ts}</span></a>
         {/if}
       {/if}
       {include file="CRM/common/formButtons.tpl" location="bottom"  multiple="multiple"}

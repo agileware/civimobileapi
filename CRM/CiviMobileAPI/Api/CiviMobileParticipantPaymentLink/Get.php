@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_CiviMobileAPI_Api_CiviMobileBase {
 
   /**
@@ -19,7 +21,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
       $this->validParams['email']
     )) {
       if (!CRM_CiviMobileAPI_BAO_CivimobileEventPaymentInfo::deleteByHash($tmpData['cmb_hash'])) {
-        throw new api_Exception(ts('Previous Payment cannot be deleted (hash=%1). Please complete payment', [1 => $tmpData['cmb_hash']]), 'participant_previous_payment_not_completed');
+        throw new api_Exception(E::ts('Previous Payment cannot be deleted (hash=%1). Please complete payment', [1 => $tmpData['cmb_hash']]), 'participant_previous_payment_not_completed');
       }
     }
 
@@ -59,7 +61,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
   protected function getValidParams($params) {
     $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
     if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
-      throw new api_Exception(ts('Joomla does not support that functionality'), 'joomla_does_not_support_that_functionality');
+      throw new api_Exception(E::ts('Joomla does not support that functionality'), 'joomla_does_not_support_that_functionality');
     }
 
     $eventId = (int) $params['event_id'];
@@ -69,7 +71,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
     try {
       civicrm_api3('Event', 'getsingle', ['id' => $eventId]);
     } catch (CiviCRM_API3_Exception $e) {
-      throw new api_Exception(ts('Event(id = %1) User can not be registered because event does not exist.', $eventId), 'event_does_not_exist');
+      throw new api_Exception(E::ts('Event(id = %1) User can not be registered because event does not exist.', $eventId), 'event_does_not_exist');
     }
 
     if ($contactId) {
@@ -80,41 +82,41 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
         'sequential' => 1,
       ]);
       if (!empty($participants['values'])) {
-        throw new api_Exception(ts('Contact(id = %1) is already registered on the Event(id = %2).', [1 => $contactId, 2 => $eventId]), 'participant_already_exist');
+        throw new api_Exception(E::ts('Contact(id = %1) is already registered on the Event(id = %2).', [1 => $contactId, 2 => $eventId]), 'participant_already_exist');
       }
 
       try {
         civicrm_api3('Contact', 'getsingle', ['id' => $contactId]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new api_Exception(ts('Contact(id = %1) does not exist.', [1 => $contactId]), 'contact_does_not_exist');
+        throw new api_Exception(E::ts('Contact(id = %1) does not exist.', [1 => $contactId]), 'contact_does_not_exist');
       }
     } else {
       if (empty($params['first_name'])) {
-        throw new api_Exception(ts('First name \'%1\' cannot be empty.', [1 => $params['first_name']]), 'contact_has_invalid_first_name');
+        throw new api_Exception(E::ts('First name \'%1\' cannot be empty.', [1 => $params['first_name']]), 'contact_has_invalid_first_name');
       }
 
       if (empty($params['last_name'])) {
-        throw new api_Exception(ts('Last name \'%1\' cannot be empty.', [1 => $params['last_name']]), 'contact_has_invalid_last_name');
+        throw new api_Exception(E::ts('Last name \'%1\' cannot be empty.', [1 => $params['last_name']]), 'contact_has_invalid_last_name');
       }
 
       if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
-        throw new api_Exception(ts('Email \'%1\' have to be valid.', [1 => $params['email']]), 'contact_has_invalid_email');
+        throw new api_Exception(E::ts('Email \'%1\' have to be valid.', [1 => $params['email']]), 'contact_has_invalid_email');
       }
     }
 
     $priceSetId = CRM_Price_BAO_PriceSet::getFor(CRM_Event_BAO_Event::getTableName(), $eventId);
     if (empty($priceSetId)) {
-      throw new api_Exception(ts('Can not get price set assigned to event.'), 'event_empty_price_set');
+      throw new api_Exception(E::ts('Can not get price set assigned to event.'), 'event_empty_price_set');
     }
 
     $priceSet = $this->getPriceSet($priceSetId);
     if (empty($priceSet)) {
-      throw new api_Exception(ts('Can not get price set assigned to event.'), 'event_empty_price_set');
+      throw new api_Exception(E::ts('Can not get price set assigned to event.'), 'event_empty_price_set');
     }
 
     $priceSetFields = CRM_CiviMobileAPI_Utils_PriceSet::getFields($priceSetId);
     if (empty($priceSetFields) && empty($priceSetFields['values'])) {
-      throw new api_Exception(ts('Can not get price set fields assigned to event.'), 'event_empty_price_set_fields');
+      throw new api_Exception(E::ts('Can not get price set fields assigned to event.'), 'event_empty_price_set_fields');
     }
 
     $this->validatePriceSetItems($selPriceSet, $priceSetFields['values']);
@@ -153,41 +155,41 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
    */
   private function validatePriceSetItems($selPriceSet, $priceSetFields) {
     if (!is_array($selPriceSet)) {
-      throw new api_Exception(ts('Can not parse selected price set'), 'can_not_parse_selected_price_set');
+      throw new api_Exception(E::ts('Can not parse selected price set'), 'can_not_parse_selected_price_set');
     }
 
     if (!empty($selPriceSet)) {
       foreach ($selPriceSet as $psId => $psFieldIds) {
         foreach ($psFieldIds[0] as $psFieldId => $psFieldValues) {
           if (empty($psFieldValues)) {
-            throw new api_Exception(ts('Can not parse selected value for field (id = %1) for price set (id = %2)', [1 => $psFieldId, 2 => $psId]), 'field_value_does_not_exist');
+            throw new api_Exception(E::ts('Can not parse selected value for field (id = %1) for price set (id = %2)', [1 => $psFieldId, 2 => $psId]), 'field_value_does_not_exist');
           }
 
           $priceField = $this->findPriceSetFiled($priceSetFields, $psId, $psFieldId);
           if (empty($priceField)) {
-            throw new api_Exception(ts('Price Field (id = %1) does not exist for Event\'s', [1 => $psFieldId]), 'field_id_does_not_exist');
+            throw new api_Exception(E::ts('Price Field (id = %1) does not exist for Event\'s', [1 => $psFieldId]), 'field_id_does_not_exist');
           }
 
           $priceSetFieldValues = $this->getPriceSetFieldValues($priceField['id']);
           if (empty($priceSetFieldValues['values'])) {
-            throw new api_Exception(ts('Empty filed values for price set field (id = %1). Please create it in administer.', [1 => $priceField['id']]), 'empty_price_set_field_values');
+            throw new api_Exception(E::ts('Empty filed values for price set field (id = %1). Please create it in administer.', [1 => $priceField['id']]), 'empty_price_set_field_values');
           }
 
           foreach ($psFieldValues as $item => $psFieldValueId) {
             if ($priceField['html_type'] == 'Text' && empty($psFieldValueId[key($psFieldValueId)])) {
-              throw new api_Exception(ts('"filed_value_count" must be filled for field with "Text" "html_type"'), 'invalid_filed_value_count');
+              throw new api_Exception(E::ts('"filed_value_count" must be filled for field with "Text" "html_type"'), 'invalid_filed_value_count');
             }
 
             $priceSetFieldValue = $this->findPriceSetFiledValue($priceSetFieldValues['values'], key($psFieldValueId));
             if (empty($priceSetFieldValue)) {
-              throw new api_Exception(ts('Not valid value(id = %1) for price set field (id = %2).', [1 => key($psFieldValueId), 2 => $psFieldId]), 'not_valid_value_for_price_set_field');
+              throw new api_Exception(E::ts('Not valid value(id = %1) for price set field (id = %2).', [1 => key($psFieldValueId), 2 => $psFieldId]), 'not_valid_value_for_price_set_field');
             }
           }
         }
 
         foreach ($priceSetFields as $priceSetField) {
           if ($priceSetField['is_required'] == 1  && !in_array($priceSetField['id'], array_keys($psFieldIds[0]))) {
-            throw new api_Exception(ts('Price field (id = %1) is required field for price set(id = %2)', [1 => $priceSetField['id'], 2 => $priceSetField['price_set_id']]), 'required_filed_for_price_set');
+            throw new api_Exception(E::ts('Price field (id = %1) is required field for price set(id = %2)', [1 => $priceSetField['id'], 2 => $priceSetField['price_set_id']]), 'required_filed_for_price_set');
           }
         }
       }

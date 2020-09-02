@@ -1,5 +1,6 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 use CRM_CiviMobileAPI_PushNotification_Helper as PushNotification_Helper;
 
 class CRM_CiviMobileAPI_PushNotification_Utils_Hook_Pre_ParticipantPushNotification extends CRM_CiviMobileAPI_PushNotification_Utils_BasePushNotificationManager {
@@ -31,7 +32,7 @@ class CRM_CiviMobileAPI_PushNotification_Utils_Hook_Pre_ParticipantPushNotificat
       }
     }
 
-    return (!empty($eventTitle)) ? $eventTitle : ts('Participant');
+    return (!empty($eventTitle)) ? $eventTitle : E::ts('Participant');
   }
 
 
@@ -39,7 +40,7 @@ class CRM_CiviMobileAPI_PushNotification_Utils_Hook_Pre_ParticipantPushNotificat
    * @inheritdoc
    */
   protected function getText() {
-    return isset($this->actionText[$this->action]) ? ts($this->actionText[$this->action]) : $this->action;
+    return isset($this->actionText[$this->action]) ? E::ts($this->actionText[$this->action]) : $this->action;
   }
 
 }

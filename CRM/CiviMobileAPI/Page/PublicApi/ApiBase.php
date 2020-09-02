@@ -1,5 +1,5 @@
 <?php
-
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
 
 abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
@@ -35,7 +35,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
   public function __construct() {
     civimobileapi_secret_validation();
     if (!CRM_CiviMobileAPI_Authentication_AuthenticationHelper::isRequestValid()) {
-      JsonResponse::sendErrorResponse(ts('Not valid request'));
+      JsonResponse::sendErrorResponse(E::ts('Not valid request'));
     }
 
     $this->requestJsonData = $this->findRequestJsonData();
@@ -61,7 +61,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
         array_merge($this->requestJsonData, ["sequential" => 1])
       );
     } catch (CiviCRM_API3_Exception $e) {
-      JsonResponse::sendErrorResponse(ts('Api error.') . ' Error message: ' . $e->getMessage() ,'entityData', $e->getErrorCode());
+      JsonResponse::sendErrorResponse(E::ts('Api error.') . ' Error message: ' . $e->getMessage() ,'entityData', $e->getErrorCode());
     }
 
     if (!empty($result['values'])) {
@@ -82,7 +82,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
    */
   function findRequestEntityName() {
     if (empty($_POST['entityName'])) {
-      JsonResponse::sendErrorResponse(ts("The 'entityName' field is required field."), 'entityName');
+      JsonResponse::sendErrorResponse(E::ts("The 'entityName' field is required field."), 'entityName');
     }
 
     return (string) $_POST['entityName'];
@@ -95,12 +95,12 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
    */
   private function findRequestJsonData() {
     if (!isset($_POST['entityData'])) {
-      JsonResponse::sendErrorResponse(ts("The 'entityData' field is required field."), 'entityData');
+      JsonResponse::sendErrorResponse(E::ts("The 'entityData' field is required field."), 'entityData');
     }
 
     $jsonData = json_decode($_POST['entityData'], true);
     if (json_last_error() != JSON_ERROR_NONE) {
-      JsonResponse::sendErrorResponse(ts("The 'entityData' has not valid json."), 'entityData');
+      JsonResponse::sendErrorResponse(E::ts("The 'entityData' has not valid json."), 'entityData');
     }
 
     return $jsonData;
@@ -113,7 +113,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
    */
   private function findRequestActionName() {
     if (empty($_POST['actionName'])) {
-      JsonResponse::sendErrorResponse(ts("The 'actionName' field is required field."), 'actionName');
+      JsonResponse::sendErrorResponse(E::ts("The 'actionName' field is required field."), 'actionName');
     }
 
     return (string) $_POST['actionName'];
@@ -131,7 +131,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
     }
 
     if (empty($apiSettings)) {
-      JsonResponse::sendErrorResponse(ts("Value '%1' is not allow entity name.", [1 => $this->requestEntity]), 'entityName');
+      JsonResponse::sendErrorResponse(E::ts("Value '%1' is not allow entity name.", [1 => $this->requestEntity]), 'entityName');
     }
 
     return $apiSettings;
@@ -153,7 +153,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
     }
 
     if (empty($actionSettings)) {
-      JsonResponse::sendErrorResponse(ts("Value '%1' is not allow action name.", [1 => $this->requestAction]), 'actionName');
+      JsonResponse::sendErrorResponse(E::ts("Value '%1' is not allow action name.", [1 => $this->requestAction]), 'actionName');
     }
 
     return $actionSettings;
@@ -168,7 +168,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
     if (!empty($actionSettings['actionPermissions'])) {
       foreach ($actionSettings['actionPermissions'] as $permission) {
         if (!CRM_Core_Permission::check($permission)) {
-          JsonResponse::sendErrorResponse(ts("'1%' Permission denied.", [1 => $permission]));
+          JsonResponse::sendErrorResponse(E::ts("'1%' Permission denied.", [1 => $permission]));
         }
       }
     }
@@ -191,7 +191,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
       try {
         $requestJsonData = forward_static_call($middleware['class'] . "::" . $middleware['method'], $requestJsonData);
       } catch (Exception $e) {
-        JsonResponse::sendErrorResponse(ts($e->getMessage()));
+        JsonResponse::sendErrorResponse(E::ts($e->getMessage()));
       }
     }
 
@@ -261,7 +261,7 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
       try {
         $apiResult = forward_static_call($middleware['class'] . "::" . $middleware['method'], $apiResult);
       } catch (Exception $e) {
-        JsonResponse::sendErrorResponse(ts($e->getMessage()));
+        JsonResponse::sendErrorResponse(E::ts($e->getMessage()));
       }
     }
 

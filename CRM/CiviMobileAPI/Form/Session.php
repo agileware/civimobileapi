@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
 
   /**
@@ -35,7 +37,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
 
     if (in_array($this->getAction(), [CRM_Core_Action::ADD, CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE])
       && !CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForCreateEventSession()) {
-      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', ts('Permission Denied'));
+      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', E::ts('Permission Denied'));
     }
 
     $url = CRM_Utils_System::url('civicrm/event/manage');
@@ -48,7 +50,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
       try {
         $event = CRM_Event_BAO_Event::findById($eventId);
       } catch (Exception $e) {
-        CRM_Core_Error::statusBounce('Invalid eventId parameter.', $url, ts('Not Found'));
+        CRM_Core_Error::statusBounce('Invalid eventId parameter.', $url, E::ts('Not Found'));
       }
       $this->eventId = $event->id;
       $this->setTitle($event->title . ' - Add Session');
@@ -64,12 +66,12 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
           'id' => $sessionId
         ]);
       } catch (Exception $e) {
-        CRM_Core_Error::statusBounce('Invalid sessionId parameter.', $url, ts('Not Found'));
+        CRM_Core_Error::statusBounce('Invalid sessionId parameter.', $url, E::ts('Not Found'));
       }
       try {
         $event = CRM_Event_BAO_Event::findById($session["event_id"]);
       } catch (Exception $e) {
-        CRM_Core_Error::statusBounce('Event does not exists.', $url, ts('Not Found'));
+        CRM_Core_Error::statusBounce('Event does not exists.', $url, E::ts('Not Found'));
       }
       $this->sessionId = $session["id"];
       $this->eventId = $event->id;
@@ -124,12 +126,12 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
     }
 
     if (($this->getAction() == CRM_Core_Action::UPDATE || $this->getAction() == CRM_Core_Action::ADD)) {
-      $this->add('text', 'title', ts('Title'), ['class' => 'huge'], TRUE);
-      $this->add('datepicker', 'date', ts('Date'), [], TRUE, ['time' => FALSE]);
-      $this->add('datepicker', 'start_time', ts('Start time'), [], TRUE, ['time' => TRUE, 'date' => FALSE]);
-      $this->add('datepicker', 'end_time', ts('End time'), [], TRUE, ['time' => TRUE, 'date' => FALSE]);
+      $this->add('text', 'title', E::ts('Title'), ['class' => 'huge'], TRUE);
+      $this->add('datepicker', 'date', E::ts('Date'), [], TRUE, ['time' => FALSE]);
+      $this->add('datepicker', 'start_time', E::ts('Start time'), [], TRUE, ['time' => TRUE, 'date' => FALSE]);
+      $this->add('datepicker', 'end_time', E::ts('End time'), [], TRUE, ['time' => TRUE, 'date' => FALSE]);
 
-      $this->addEntityRef('speakers', ts('Speakers'), [
+      $this->addEntityRef('speakers', E::ts('Speakers'), [
         'placeholder' => '- select speakers -',
         'multiple' => TRUE,
         'entity' => 'CiviMobileParticipant',
@@ -140,7 +142,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
         'select' => ['minimumInputLength' => 0]
       ]);
 
-      $this->addEntityRef('venue_id', ts('Venue'), [
+      $this->addEntityRef('venue_id', E::ts('Venue'), [
         'placeholder' => '- select venue -',
         'entity' => 'CiviMobileVenue',
         'api' => [
@@ -149,18 +151,18 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
         'select' => ['minimumInputLength' => 0]
       ], TRUE);
 
-      $this->add('textarea', 'description', ts('Description'), ['class' => 'big']);
+      $this->add('textarea', 'description', E::ts('Description'), ['class' => 'big']);
       if (CRM_CiviMobileAPI_Utils_Event::isEventHaveLocation($this->eventId)) {
         $this->assign('location', CRM_CiviMobileAPI_Utils_Agenda_Venue::getLocaleId($this->eventId));
       }
       if (!CRM_CiviMobileAPI_Utils_Event::isEventHaveLocation($this->eventId)) {
         $this->getElement('venue_id')->freeze();
-        $this->assign('venueNotice', ts('This event does not have location'));
+        $this->assign('venueNotice', E::ts('This event does not have location'));
       }
 
       $buttons[] = [
         'type' => 'submit',
-        'name' => ts('Save'),
+        'name' => E::ts('Save'),
         'isDefault' => TRUE,
       ];
     }
@@ -168,7 +170,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
     if ($this->getAction() == CRM_Core_Action::DELETE) {
       $buttons[] = [
         'type' => 'submit',
-        'name' => ts('Delete'),
+        'name' => E::ts('Delete'),
         'isDefault' => TRUE
       ];
     }
@@ -176,7 +178,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
     if ($this->getAction() == CRM_Core_Action::ADD) {
       $buttons[] = [
         'type' => 'next',
-        'name' => ts('Save and continue'),
+        'name' => E::ts('Save and continue'),
         'isDefault' => TRUE,
       ];
     }
@@ -187,7 +189,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
 
     $buttons[] = [
       'type' => 'cancel',
-      'name' => ts($cancelButtonName),
+      'name' => E::ts($cancelButtonName),
       'js' => ['onclick' => "
          if( CRM.$('.ui-dialog').length ) {
            var active = 'a.crm-popup';
@@ -222,11 +224,11 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
       civicrm_api3('CiviMobileEventSession', 'create', $apiParams);
 
       if ($this->getAction() == CRM_Core_Action::ADD) {
-        CRM_Core_Session::setStatus(ts('The Session was successfully created!'), ts('Success'), 'success');
+        CRM_Core_Session::setStatus(E::ts('The Session was successfully created!'), E::ts('Success'), 'success');
       }
 
       if ($this->getAction() == CRM_Core_Action::UPDATE) {
-        CRM_Core_Session::setStatus(ts('The Session was successfully updated!'), ts('Success'), 'success');
+        CRM_Core_Session::setStatus(E::ts('The Session was successfully updated!'), E::ts('Success'), 'success');
       }
 
       if (!empty($params['_qf_Session_next'])) {
@@ -240,9 +242,9 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
           'id' => $params["session_id"]
         ]);
       } catch(Exception $e) {
-        CRM_Core_Session::setStatus(ts('The Session was not deleted!'), ts('Error'), 'error');
+        CRM_Core_Session::setStatus(E::ts('The Session was not deleted!'), E::ts('Error'), 'error');
       }
-      CRM_Core_Session::setStatus(ts('The Session was successfully deleted!'), ts('Success'), 'success');
+      CRM_Core_Session::setStatus(E::ts('The Session was successfully deleted!'), E::ts('Success'), 'success');
     }
     CRM_Utils_System::redirect(CRM_Utils_System::url("civicrm/civimobile/event/agenda", 'reset=1&id=' . $params["event_id"]));
   }
@@ -260,7 +262,7 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
           'id' => $this->sessionId
         ]);
       } catch (Exception $e) {
-        CRM_Core_Error::statusBounce('Invalid sessionId parameter.', $url, ts('Not Found'));
+        CRM_Core_Error::statusBounce('Invalid sessionId parameter.', $url, E::ts('Not Found'));
       }
 
       $defaults["title"] = $session["title"];
@@ -301,46 +303,46 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
       try {
         $event = CRM_Event_BAO_Event::findById($values["event_id"]);
       } catch (Exception $e) {
-        $errors["event_id"] = ts('Invalid eventId parameter.');
+        $errors["event_id"] = E::ts('Invalid eventId parameter.');
         return $errors;
       }
       if (empty($values["title"])) {
-        $errors["title"] = ts('Title can`t be empty!');
+        $errors["title"] = E::ts('Title can`t be empty!');
       }
       if (strlen($values["title"]) > 255) {
-        $errors["title"] = ts('Title length must be less than 255 characters.');
+        $errors["title"] = E::ts('Title length must be less than 255 characters.');
       }
       if (strtotime($startTime) >= strtotime($endTime)) {
-        $errors["start_time"] = ts('Start time can`t be later than End time.');
+        $errors["start_time"] = E::ts('Start time can`t be later than End time.');
       } elseif (strtotime($startTime) + 15*60 > strtotime($endTime)) {
-        $errors["start_time"] = ts('Event Session duration can`t be less than 15 min.');
+        $errors["start_time"] = E::ts('Event Session duration can`t be less than 15 min.');
       }
       $startEventDate = strtotime(date('Y-m-d',strtotime($event->start_date)));
       if (strtotime($values["date"]) < $startEventDate) {
-        $errors["date"] = ts('Session start date can`t be early than start time on the Event. (Start time on Event: ' . $event->start_date . ')');
+        $errors["date"] = E::ts('Session start date can`t be early than start time on the Event. (Start time on Event: ' . $event->start_date . ')');
       } elseif (strtotime($startTime) < strtotime($event->start_date)) {
-        $errors["start_time"] = ts('Start date can`t be early than start time on Event. (Start time on Event: ' . $event->start_date . ')');
+        $errors["start_time"] = E::ts('Start date can`t be early than start time on Event. (Start time on Event: ' . $event->start_date . ')');
       }
       if (!empty($event->end_date) && (strtotime($values["date"]) > strtotime($event->end_date))) {
-        $errors["date"] = ts('End date can`t be later than end date on Event. (End time on Event: ' . $event->end_date . ')');
+        $errors["date"] = E::ts('End date can`t be later than end date on Event. (End time on Event: ' . $event->end_date . ')');
       } elseif (!empty($event->end_date) && (strtotime($endTime) > strtotime($event->end_date))) {
-        $errors["end_time"] = ts('End time can`t be later than end time on Event. (End time on Event: ' . $event->end_date . ')');
+        $errors["end_time"] = E::ts('End time can`t be later than end time on Event. (End time on Event: ' . $event->end_date . ')');
       }
       if (!empty($values['speakers']) && !CRM_CiviMobileAPI_Utils_Agenda_Speakers::issetSpeakers($values['speakers'], $values["event_id"])) {
-        $errors["speakers"] = ts('Some speakers does not exists.');
+        $errors["speakers"] = E::ts('Some speakers does not exists.');
       }
       if (isset($values["speakers"]) && CRM_CiviMobileAPI_BAO_EventSession::isSpeakersBusy($values["speakers"], $sessionId, $startTime, $endTime)) {
-        $errors["speakers"] = ts('Some speakers are busy on other Event Session at this time.');
+        $errors["speakers"] = E::ts('Some speakers are busy on other Event Session at this time.');
       }
       if (!empty($values["venue_id"])) {
         if (!CRM_CiviMobileAPI_Utils_Agenda_Venue::issetVenue($values['venue_id'], $values["event_id"])) {
-          $errors["venue_id"] = ts('Venue does not exists.');
+          $errors["venue_id"] = E::ts('Venue does not exists.');
         }
         if (CRM_CiviMobileAPI_BAO_EventSession::isVenueBusy($values["venue_id"], $sessionId, $startTime, $endTime)) {
-          $errors["venue_id"] = ts('Venue is booked on other Event Session at this time.');
+          $errors["venue_id"] = E::ts('Venue is booked on other Event Session at this time.');
         }
       } else {
-        $errors["venue_id"] = ts('Venue is required.');
+        $errors["venue_id"] = E::ts('Venue is required.');
       }
     }
 

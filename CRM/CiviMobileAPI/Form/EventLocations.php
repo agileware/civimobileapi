@@ -1,4 +1,5 @@
 <?php
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_Form_EventLocations extends CRM_Core_Form {
 
@@ -14,7 +15,7 @@ class CRM_CiviMobileAPI_Form_EventLocations extends CRM_Core_Form {
     $buttons = [
       [
         'type' => 'cancel',
-        'name' => ts('Back'),
+        'name' => E::ts('Back'),
       ],
     ];
     $this->addButtons($buttons);

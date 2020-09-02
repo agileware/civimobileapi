@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
 
   /**
@@ -25,17 +27,18 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
 
     if (in_array($this->getAction(), [CRM_Core_Action::ADD, CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE])
       && !CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForCreateEventVenues()) {
-      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', ts('Permission Denied'));
+      CRM_Core_Error::statusBounce('You do not have all the permissions needed for this page.', '', E::ts('Permission Denied'));
     }
 
     $this->location_id = CRM_Utils_Request::retrieve('location_id', 'Positive');
     $this->assign('location_id', $this->location_id);
+    $this->assign('colors', CRM_CiviMobileAPI_Utils_Agenda_Venue::getColorList());
     if (empty($this->location_id)) {
-      CRM_Core_Error::fatal(ts('Empty location id.'));
+      CRM_Core_Error::fatal(E::ts('Empty location id.'));
     }
 
     if (!in_array($this->location_id, array_keys(CRM_Event_BAO_Event::getLocationEvents()))) {
-      CRM_Core_Error::fatal(ts('Wrong location id'));
+      CRM_Core_Error::fatal(E::ts('Wrong location id'));
     }
 
     if ($this->getAction() == CRM_Core_Action::UPDATE
@@ -48,11 +51,11 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
       }
 
       if (empty($this->id)) {
-        CRM_Core_Error::fatal(ts('Empty venue id.'));
+        CRM_Core_Error::fatal(E::ts('Empty venue id.'));
       }
 
       if (empty(CRM_CiviMobileAPI_BAO_LocationVenue::getAll(['id' => $this->id]))) {
-        CRM_Core_Error::fatal(ts('Venue id does not exist.'));
+        CRM_Core_Error::fatal(E::ts('Venue id does not exist.'));
       }
     }
     if ($this->getAction() == CRM_Core_Action::VIEW) {
@@ -60,8 +63,6 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
       $this->assign('can_edit_venue', CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForCreateEventVenues());
       $this->assign('can_delete_venue', $showDeleteButton);
     }
-
-
   }
 
   /**
@@ -100,21 +101,34 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
     if ($this->getAction() == CRM_Core_Action::ADD
       || $this->getAction() == CRM_Core_Action::UPDATE
       || $this->getAction() == CRM_Core_Action::VIEW) {
-      $this->add('text', 'venue_name', ts('Title'), ['class' => 'huge'], TRUE);
-      $this->add('textarea', 'description', ts('Description'), ['class' => 'big']);
-      $this->addRadio('is_active', ts('Is active'), $isActive);
-      $this->add('text', 'address_description', ts('Details'), ['class' => 'huge']);
-      $this->add('file', "attached_file", ts('Scheme'), ['accept' => 'image/jpeg,image/png,application/pdf']);
-      $this->add('text', 'address', ts('Address'), ['class' => 'huge']);
-      $this->add('number', 'weight', ts('Order'), [], TRUE);
+      $this->add('text', 'venue_name', E::ts('Title'), ['class' => 'huge'], TRUE);
+      $this->add('textarea', 'description', E::ts('Description'), ['class' => 'big']);
+      $this->addRadio('is_active', E::ts('Is active'), $isActive);
+      $this->add('text', 'address_description', E::ts('Details'), ['class' => 'huge']);
+      $this->add('text', 'address', E::ts('Address'), ['class' => 'huge']);
+      $this->add('number', 'weight', E::ts('Order'), [], TRUE);
+      $this->add('hidden', 'color', E::ts('Color'), [], TRUE);
+      CRM_Core_BAO_File::buildAttachment($this, 'civicrm_civimobile_location_venue', $this->id, NULL, TRUE);
+      $numAttachments = $this->get_template_vars('numAttachments');
+
+      for ($i = 1; $i <= $numAttachments; $i++) {
+        $this->addRule("attachFile_$i",
+          E::ts('You can upload only PDF, PNG and JPEG files.'),
+          'mimetype',
+          ['image/jpeg', 'image/png', 'application/pdf']
+        );
+
+        $this->updateElementAttr("attachFile_$i", ['accept' => 'image/jpeg,image/png,application/pdf']);
+      }
+
     }
     if ($this->getAction() == CRM_Core_Action::ADD
       || $this->getAction() == CRM_Core_Action::UPDATE) {
       $this->add('hidden', 'id', $this->id);
       $buttons = [
         [
-          'type' => 'submit',
-          'name' => ts('Save'),
+          'type' => 'upload',
+          'name' => E::ts('Save'),
           'isDefault' => TRUE,
         ]
       ];
@@ -123,7 +137,7 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
       $buttons = [
         [
           'type' => 'submit',
-          'name' => ts('Delete'),
+          'name' => E::ts('Delete'),
           'isDefault' => TRUE,
         ]
       ];
@@ -138,13 +152,13 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
 
         $this->assign('venue', $venue);
       } catch (Exception $e) {
-        CRM_Core_Error::statusBounce('Invalid venueId parameter.', ts('Venue Not Found'));
+        CRM_Core_Error::statusBounce('Invalid venueId parameter.', E::ts('Venue Not Found'));
       }
     }
 
     $buttons[] = [
       'type' => 'cancel',
-      'name' => ts($cancelButtonTittle),
+      'name' => E::ts($cancelButtonTittle),
       'class' => 'cancel',
       'js' => ['onclick' => "
          if( CRM.$('.ui-dialog').length ) {
@@ -163,10 +177,14 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
    * Process the form submission.
    */
   public function postProcess() {
-    $inputValues = $this->exportValues();
+    $inputValues = $this->controller->exportValues($this->_name);
     $url = CRM_Utils_System::url('civicrm/civimobile/manage-venues?reset=1&location_id=' . $inputValues['location_id']);
 
     $venueParams = [];
+
+    if ($this->getAction() == CRM_Core_Action::ADD || $this->getAction() == CRM_Core_Action::UPDATE) {
+      $color = json_decode($inputValues['color'], true);
+    }
 
     if ($this->getAction() == CRM_Core_Action::ADD) {
       $venueParams = [
@@ -176,6 +194,8 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
         'description' => $inputValues['description'],
         'address_description' => $inputValues['address_description'],
         'address' => $inputValues['address'],
+        'border_color' => $color['border'],
+        'background_color' => $color['background'],
         'weight' => $inputValues['weight'],
       ];
     }
@@ -189,29 +209,27 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
         'description' => $inputValues['description'],
         'address_description' => $inputValues['address_description'],
         'address' => $inputValues['address'],
+        'border_color' => $color['border'],
+        'background_color' => $color['background'],
         'weight' => $inputValues['weight'],
       ];
     }
 
     if ($this->getAction() == CRM_Core_Action::ADD || $this->getAction() == CRM_Core_Action::UPDATE) {
-      if ($this->getAction() == CRM_Core_Action::ADD) {
-        $venueParams['attached_file_url'] = self::generateFileURL();
-        if (!empty($venueParams['attached_file_url'])) {
-          $venueParams['attached_file_type'] = $_FILES['attached_file']['type'];
-        }
-      } elseif (!empty($_FILES['attached_file']['name'])) {
-        CRM_CiviMobileAPI_Utils_Agenda_Venue::removeVenueAttach($venueParams['id']);
-        $venueParams['attached_file_url'] = self::generateFileURL();
-        if (!empty($venueParams['attached_file_url'])) {
-          $venueParams['attached_file_type'] = $_FILES['attached_file']['type'];
-        }
-      }
-
       try {
-        civicrm_api3('CiviMobileVenue', 'create', $venueParams);
+        $venue = civicrm_api3('CiviMobileVenue', 'create', $venueParams)['values'][0];
       } catch (Exception $e) {
-        CRM_Core_Session::setStatus($e->getMessage(), ts('Venue wasn`t saved'), "error");
+        CRM_Core_Session::setStatus($e->getMessage(), E::ts('Venue wasn`t saved'), "error");
       }
+      $this->id = $venue['id'];
+
+      CRM_Core_BAO_File::formatAttachment($inputValues,
+        $inputValues,
+        'civicrm_civimobile_location_venue',
+        $this->id
+      );
+
+      CRM_Core_BAO_File::processAttachment($inputValues, 'civicrm_civimobile_location_venue', $this->id);
     }
 
     if ($this->getAction() == CRM_Core_Action::DELETE) {
@@ -226,7 +244,7 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
           'id' => $this->id,
           'location_id' => $inputValues['location_id']
         ]));
-        CRM_Core_Session::setStatus(ts('This Venue is used in the session. To remove it, first remove it from the session.'), ts("Venue is used"), "error");
+        CRM_Core_Session::setStatus(E::ts('This Venue is used in the session. To remove it, first remove it from the session.'), E::ts("Venue is used"), "error");
       }
     }
 
@@ -243,6 +261,9 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
       $defaults['is_active'] = 1;
       $fieldValues = ['location_id' => $this->location_id];
       $defaults['weight'] = CRM_Utils_Weight::getMax('CRM_CiviMobileAPI_DAO_LocationVenue', $fieldValues, 'weight') + 1;
+      $selectedColor = CRM_CiviMobileAPI_Utils_Agenda_Venue::getNextColorInListForLocation($this->location_id);
+      $defaults['color'] = json_encode($selectedColor);
+      $this->assign('selectedColor', $selectedColor);
     }
 
     if ($this->getAction() == CRM_Core_Action::UPDATE) {
@@ -253,6 +274,12 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
       $defaults['address_description'] = $venueData['address_description'];
       $defaults['address'] = $venueData['address'];
       $defaults['weight'] = $venueData['weight'];
+      $selectedColor = [
+        'background' => $venueData['background_color'],
+        'border' => $venueData['border_color']
+      ];
+      $defaults['color'] = json_encode($selectedColor);
+      $this->assign('selectedColor', $selectedColor);
     }
 
     return $defaults;
@@ -262,7 +289,7 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
    * AddRules hook
    */
   public function addRules() {
-    if ($this->getAction() == CRM_Core_Action::ADD && $this->getAction() == CRM_Core_Action::UPDATE) {
+    if ($this->getAction() == CRM_Core_Action::ADD || $this->getAction() == CRM_Core_Action::UPDATE) {
       $this->addFormRule([self::class, 'validateForm']);
     }
   }
@@ -278,24 +305,17 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
     $errors = [];
     if (array_key_exists("venue_name", $values)) {
       if (empty($values["venue_name"])) {
-        $errors["venue_name"] = ts('Name can`t be empty!');
+        $errors["venue_name"] = E::ts('Name can`t be empty!');
       }
       if (strlen($values["venue_name"]) > 255) {
-        $errors["venue_name"] = ts('Name length must be less than 255 characters.');
+        $errors["venue_name"] = E::ts('Name length must be less than 255 characters.');
       }
     }
-    if (array_key_exists("attached_file_url", $values)) {
-      if (strlen($values["attached_file_url"]) > 255) {
-        $errors["attached_file_url"] = ts('Attached file url length must be less than 255 characters.');
-      }
-    }
+
     if (array_key_exists("address", $values)) {
       if (strlen($values["address"]) > 255) {
-        $errors["address"] = ts('Venue location length must be less than 255 characters.');
+        $errors["address"] = E::ts('Venue location length must be less than 255 characters.');
       }
-    }
-    if (!empty($_FILES['attached_file']['type']) && !in_array($_FILES['attached_file']['type'], ['application/pdf', 'image/png', 'image/jpeg'])) {
-      $errors["attached_file"] = ts('You can upload only PDF, PNG and JPEG files.');
     }
 
     $venuesWithSameName = civicrm_api3('CiviMobileVenue', 'get', [
@@ -305,33 +325,10 @@ class CRM_CiviMobileAPI_Form_Venue extends CRM_Core_Form {
     ]);
 
     if (($venuesWithSameName['count'] && empty($values["id"])) || (!empty($values["id"]) && $venuesWithSameName['count'] && $venuesWithSameName['values'][0]['id'] != $values['id'])) {
-      $errors["venue_name"] = ts('Venue with same name already exists for this location.');
+      $errors["venue_name"] = E::ts('Venue with same name already exists for this location.');
     }
 
     return empty($errors) ? TRUE : $errors;
-  }
-
-  public static function generateFileURL() {
-    if (empty($_FILES['attached_file']['name'])) {
-      return '';
-    }
-    $fileName = basename($_FILES['attached_file']['name']);
-    $fileType = $_FILES['attached_file']['type'];
-    $fileStructure = pathinfo($fileName);
-    $fileSalt = "e787ada2e9a69a3bc67d14893ac3sdf3a67a21a2a" . time();
-    $newName = md5($fileName . $fileSalt) . time() . '.' . $fileStructure['extension'];
-    $pathToCustomFileUploadDir = CRM_CiviMobileAPI_Utils_File::getUploadDirPath() . $newName;
-
-    if (!move_uploaded_file($_FILES['attached_file']['tmp_name'], $pathToCustomFileUploadDir)) {
-      CRM_Core_Error::statusBounce(ts("Can`t upload file"));
-    }
-    $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
-    $fileUrl = CRM_Utils_System::url('civicrm/file', ['filename' => $newName, 'mime-type' => $fileType], TRUE);
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
-      $fileUrl = preg_replace('/administrator\//', 'index.php', $fileUrl);
-    }
-
-    return $fileUrl;
   }
 
 }

@@ -2,6 +2,7 @@
 
 use CRM_CiviMobileAPI_Utils_CmsUser as CmsUser;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
 
@@ -26,7 +27,7 @@ class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
   public static function getCiviContact($drupalUserId) {
     $contact = static::findContact($drupalUserId);
     if (!$contact) {
-      JsonResponse::sendErrorResponse(ts('There are no such contact in CiviCRM'));
+      JsonResponse::sendErrorResponse(E::ts('There are no such contact in CiviCRM'));
     }
 
     return $contact;
@@ -87,7 +88,7 @@ class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
       return TRUE;
     }
     else {
-      JsonResponse::sendErrorResponse(ts('Sorry, but CiviMobile are not supporting your system yet.'));
+      JsonResponse::sendErrorResponse(E::ts('Sorry, but CiviMobile are not supporting your system yet.'));
       return FALSE;
     }
   }
@@ -102,7 +103,7 @@ class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
       return TRUE;
     }
     else {
-      JsonResponse::sendErrorResponse(ts('You are blocked for a %1 min. Please try again later', [1 => self::BLOCK_MINUTES]));
+      JsonResponse::sendErrorResponse(E::ts('You are blocked for a %1 min. Please try again later', [1 => self::BLOCK_MINUTES]));
       return FALSE;
     }
   }
@@ -119,9 +120,9 @@ class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
     $cmsUserId = CmsUser::getInstance()->validateAccount($email, $password);
 
     if ($cmsUserId === FALSE) {
-      JsonResponse::sendErrorResponse(ts('Wrong email or password'));
+      JsonResponse::sendErrorResponse(E::ts('Wrong email or password'));
     }
-    
+
     return $cmsUserId;
   }
 
@@ -134,10 +135,32 @@ class CRM_CiviMobileAPI_Authentication_AuthenticationHelper {
     $userAccount = CmsUser::getInstance()->searchAccount($emailOrUsername);
 
     if (!isset($userAccount) && empty($userAccount)) {
-      JsonResponse::sendErrorResponse(ts('Wrong email/login'), 'email_or_username');
+      JsonResponse::sendErrorResponse(E::ts('Wrong email/login'), 'email_or_username');
     }
 
     return $userAccount->uid;
+  }
+
+  /**
+   * Returns contact_id by 'api_key' and 'key' GET-parameters
+   *
+   * @return bool|int
+   * @throws CRM_Core_Exception
+   */
+  public static function authenticateContact() {
+    $store = NULL;
+    $api_key = CRM_Utils_Request::retrieve('api_key', 'String', $store, FALSE, NULL, 'REQUEST');
+
+    if (!CRM_Utils_System::authenticateKey(FALSE) || empty($api_key)) {
+      return false;
+    }
+
+    $contactId = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $api_key, 'id', 'api_key');
+    if ($contactId) {
+      return (int) $contactId;
+    }
+
+    return false;
   }
 
 }

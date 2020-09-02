@@ -4,10 +4,10 @@
     <thead>
     <tr>
       <th>
-        {ts}Locations{/ts}
+        {ts domain=com.agiliway.civimobileapi}Locations{/ts}
       </th>
       <th>
-        {ts}Manage Venues{/ts}
+        {ts domain=com.agiliway.civimobileapi}Manage Venues{/ts}
       </th>
     </tr>
     </thead>

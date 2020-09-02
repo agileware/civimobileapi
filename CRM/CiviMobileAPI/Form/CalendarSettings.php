@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
 
   /**
@@ -14,11 +16,11 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
       if (isset($setting['html_type'])) {
         switch ($setting['html_type']) {
           case 'Text':
-            $this->addElement('text', $name, ts($setting['description']), $setting['html_attributes'], []);
+            $this->addElement('text', $name, E::ts($setting['description']), $setting['html_attributes'], []);
             break;
 
           case 'Checkbox':
-            $this->addElement('checkbox', $name, ts($setting['description']), '', '');
+            $this->addElement('checkbox', $name, E::ts($setting['description']), '', '');
             break;
 
           case 'Select':
@@ -32,7 +34,7 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
               ]);
               $options = $options['values'];
             }
-            $select = $this->addElement('select', $name, ts($setting['description']), $options, $setting['html_attributes']);
+            $select = $this->addElement('select', $name, E::ts($setting['description']), $options, $setting['html_attributes']);
             if (isset($setting['multiple'])) {
               $select->setMultiple($setting['multiple']);
             }
@@ -43,22 +45,22 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
 
     $this->assign('elementNames', $this->getRenderableElementNames());
     if (!CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarCompatible()) {
-      $this->assign('synchronizationNotice', ts('The CiviCRM has a CiviCalendar installed, but its version is not enough to work with CiviMobileAPI. We recommend updating your calendar to the 3.4.x version or latest.'));
+      $this->assign('synchronizationNotice', E::ts('The CiviCRM has a CiviCalendar installed, but its version is not enough to work with CiviMobileAPI. We recommend updating your calendar to the 3.4.x version or latest.'));
     } elseif (CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarEnable() && !CRM_CiviMobileAPI_Utils_Calendar::isActivateCiviCalendarSettings()) {
-      $this->assign('synchronizationNotice', ts('CiviCalendar and CiviMobile calendar are not synchronized! This may cause different info is shown on the calendar in CiviMobile app. It is recommended to set “Synchronize with CiviCalendar” flag to keep both calendars synchronized.'));
+      $this->assign('synchronizationNotice', E::ts('CiviCalendar and CiviMobile calendar are not synchronized! This may cause different info is shown on the calendar in CiviMobile app. It is recommended to set “Synchronize with CiviCalendar” flag to keep both calendars synchronized.'));
     } elseif (CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarEnable() && CRM_CiviMobileAPI_Utils_Calendar::isActivateCiviCalendarSettings()) {
-      $this->assign('synchronizationNotice', ts("CiviCalendar and CiviMobile calendar are  synchronized! You can change settings in <a href= " . CRM_Utils_System::url('civicrm/admin/calendar') . ">CiviCalendar Settings</a>"));
+      $this->assign('synchronizationNotice', E::ts("CiviCalendar and CiviMobile calendar are  synchronized! You can change settings in <a href= " . CRM_Utils_System::url('civicrm/admin/calendar') . ">CiviCalendar Settings</a>"));
     }
 
     $this->addButtons([
       [
         'type' => 'submit',
-        'name' => ts('Submit'),
+        'name' => E::ts('Submit'),
         'isDefault' => TRUE,
       ],
       [
         'type' => 'cancel',
-        'name' => ts('Cancel'),
+        'name' => E::ts('Cancel'),
       ],
     ]);
   }
@@ -82,7 +84,7 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
 
     $settingsToSave = array_merge($settings, array_intersect_key($params, $settings));
     $this->saveSetting($settingsToSave);
-    CRM_Core_Session::singleton()->setStatus(ts('Configuration Updated'), ts('CiviMobile Calendar Settings'), 'success');
+    CRM_Core_Session::singleton()->setStatus(E::ts('Configuration Updated'), E::ts('CiviMobile Calendar Settings'), 'success');
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/civimobile/calendar/settings'));
   }
 

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Get get list of available activity types
  *
@@ -22,19 +24,19 @@ function civicrm_api3_civi_mobile_allowed_activity_types_get($params) {
 function _civicrm_api3_civi_mobile_allowed_activity_types_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['sort'] = [
     'title' => 'Sort',
-    'description' => ts('Sort filed (default "label")'),
+    'description' => E::ts('Sort filed (default "label")'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['limit'] = [
     'title' => 'Limit',
-    'description' => ts('Limit (default unlimited)'),
+    'description' => E::ts('Limit (default unlimited)'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT,
   ];

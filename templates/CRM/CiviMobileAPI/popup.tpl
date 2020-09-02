@@ -1,4 +1,4 @@
-<div class="civi-mobile-popup-wrap">
+<div id="civimobile-popup" class="civi-mobile-popup-wrap">
   <div class="civi-mobile-popup-close"></div>
 
   <div class="civi-mobile-popup-block">
@@ -51,7 +51,7 @@
     font-style: normal;
   }
 
-  .civi-mobile-popup-wrap {
+  #civimobile-popup.civi-mobile-popup-wrap {
     font-family: 'Roboto', sans-serif;
     position: fixed;
     bottom: 0;
@@ -61,11 +61,11 @@
     box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.13);
   }
 
-  .civi-mobile-popup-block {
+  #civimobile-popup .civi-mobile-popup-block {
     width: 126px;
   }
 
-  .civi-mobile-popup-close {
+  #civimobile-popup .civi-mobile-popup-close {
     position: absolute;
     display: block;
     width: 22px;
@@ -77,7 +77,7 @@
     cursor: pointer;
   }
 
-  .civi-mobile-popup-close:before, .civi-mobile-popup-close:after {
+  #civimobile-popup .civi-mobile-popup-close:before, #civimobile-popup .civi-mobile-popup-close:after {
     position: absolute;
     left: 11px;
     top: 5px;
@@ -87,25 +87,25 @@
     background-color: #a0acb7;
   }
 
-  .civi-mobile-popup-close:before {
+  #civimobile-popup .civi-mobile-popup-close:before {
     transform: rotate(45deg);
   }
 
-  .civi-mobile-popup-close:after {
+  #civimobile-popup .civi-mobile-popup-close:after {
     transform: rotate(-45deg);
   }
 
-  .civi-mobile-popup-body {
+  #civimobile-popup .civi-mobile-popup-body {
     background: {/literal}{$small_popup_background_color}{literal};
     width: 100%;
     text-align: center;
   }
 
-  .civi-mobile-top {
+  #civimobile-popup .civi-mobile-top {
     padding: 8px;
   }
 
-  .civi-mobile-popup-more {
+  #civimobile-popup .civi-mobile-popup-more {
     display: block;
     width: 100%;
     height: 24px;
@@ -119,35 +119,35 @@
     cursor: pointer;
   }
 
-  .civi-mobile-popup-logo {
+  #civimobile-popup .civi-mobile-popup-logo {
     display: block;
     width: 100%;
     margin-top: 14px;
   }
 
-  .civi-mobile-popup-qr {
+  #civimobile-popup .civi-mobile-popup-qr {
     background: white;
     padding: 8px;
   }
 
-  .civi-mobile-popup-qr p {
+  #civimobile-popup .civi-mobile-popup-qr p {
     color: black;
     font-size: 12px;
     margin: 0;
   }
 
-  .civi-mobile-popup-qr img {
+  #civimobile-popup .civi-mobile-popup-qr img {
     width: 100px;
     padding: 5px;
   }
 
-  .civi-mobile-popup-block-advanced {
+  #civimobile-popup .civi-mobile-popup-block-advanced {
     box-sizing: border-box;
     width: 271px;
     display: none;
   }
 
-  .civi-mobile-popup-body-advanced {
+  #civimobile-popup .civi-mobile-popup-body-advanced {
     box-sizing: border-box;
     padding: 15px;
     padding-bottom: 0;
@@ -155,30 +155,30 @@
     background: {/literal}{$advanced_popup_background_color}{literal};
   }
 
-  .civi-mobile-popup-body-advanced > p {
+  #civimobile-popup .civi-mobile-popup-body-advanced > p {
     color: {/literal}{$description_text_color}{literal};
   }
 
-  .civi-mobile-popup-bottom {
+  #civimobile-popup .civi-mobile-popup-bottom {
     overflow: auto;
   }
 
-  .civi-mobile-popup-more-left-block {
+  #civimobile-popup .civi-mobile-popup-more-left-block {
     width: 126px;
     float: left;
     text-align: center;
   }
 
-  .civi-mobile-popup-more-right-block {
+  #civimobile-popup .civi-mobile-popup-more-right-block {
     width: 99px;
     float: right;
   }
 
-  .civi-mobile-popup-more-right-block img {
+  #civimobile-popup .civi-mobile-popup-more-right-block img {
     width: 100%;
   }
 
-  .civi-mobile-popup-more-left-block a img {
+  #civimobile-popup .civi-mobile-popup-more-left-block a img {
     width: 100%;
     margin-bottom: 8px;
   }

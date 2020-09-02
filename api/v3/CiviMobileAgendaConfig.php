@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @param $params
  * @return array
@@ -30,13 +32,13 @@ function civicrm_api3_civi_mobile_agenda_config_get($params) {
 function _civicrm_api3_civi_mobile_agenda_config_create_spec(&$params) {
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['is_active'] = [
     'title' => 'Is active?',
-    'description' => ts('Is active?'),
+    'description' => E::ts('Is active?'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_BOOLEAN
   ];
@@ -51,7 +53,7 @@ function _civicrm_api3_civi_mobile_agenda_config_create_spec(&$params) {
 function _civicrm_api3_civi_mobile_agenda_config_get_spec(&$params) {
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];

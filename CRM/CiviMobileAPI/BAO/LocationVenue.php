@@ -102,8 +102,6 @@ class CRM_CiviMobileAPI_BAO_LocationVenue extends CRM_CiviMobileAPI_DAO_Location
         id,
         name,
         description,
-        attached_file_url,
-        attached_file_type,
         address_description,
         address,
         longitude,
@@ -144,9 +142,6 @@ class CRM_CiviMobileAPI_BAO_LocationVenue extends CRM_CiviMobileAPI_DAO_Location
     }
     if (!empty($params['description'])) {
       $query->where('description = @description', ['description' => $params['description']]);
-    }
-    if (!empty($params['attached_file_url'])) {
-      $query->where('attached_file_url = @attached_file_url', ['attached_file_url' => $params['attached_file_url']]);
     }
     if (!empty($params['address_description'])) {
       $query->where('address_description = @address_description', ['address_description' => $params['address_description']]);

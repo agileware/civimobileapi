@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Uploads picture for Contact
  *
@@ -9,7 +11,7 @@
  */
 function civicrm_api3_civi_mobile_contact_create($params) {
   if (empty($params['contact_id'])) {
-    return civicrm_api3_create_error(ts("Required field 'contact_id'."));
+    return civicrm_api3_create_error(E::ts("Required field 'contact_id'."));
   }
 
   if ($_POST["method"] == 'DeletePic') {
@@ -22,7 +24,7 @@ function civicrm_api3_civi_mobile_contact_create($params) {
     $isFileExist = isset($_FILES['image_file']['name']);
     $isUploadPic = $_POST["method"] == 'UploadPic';
     if (!$isUploadPic || !$isFileExist) {
-      return civicrm_api3_create_error(ts("File not exist"));
+      return civicrm_api3_create_error(E::ts("File not exist"));
     }
 
     $photoName = basename($_FILES['image_file']['name']);
@@ -34,7 +36,7 @@ function civicrm_api3_civi_mobile_contact_create($params) {
     $pathToCustomFileUploadDir = CRM_CiviMobileAPI_Utils_File::getUploadDirPath() . $newName;
 
     if (!move_uploaded_file($_FILES['image_file']['tmp_name'], $pathToCustomFileUploadDir)) {
-      return civicrm_api3_create_error(ts("Can`t upload image"));
+      return civicrm_api3_create_error(E::ts("Can`t upload image"));
     }
 
     CRM_CiviMobileAPI_Utils_Contact::removeContactAvatar($params['contact_id']);
@@ -51,7 +53,7 @@ function civicrm_api3_civi_mobile_contact_create($params) {
 
     return civicrm_api3_create_success("Photo was updated", $params);
   } catch (Exception $e) {
-    return civicrm_api3_create_error(ts("Something go wrong with your file"));
+    return civicrm_api3_create_error(E::ts("Something go wrong with your file"));
   }
 }
 
@@ -65,7 +67,7 @@ function civicrm_api3_civi_mobile_contact_create($params) {
 function _civicrm_api3_civi_mobile_contact_create_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];

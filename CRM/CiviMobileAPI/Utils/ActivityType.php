@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Class provide ActivityType helper methods
  */
@@ -81,7 +83,7 @@ class CRM_CiviMobileAPI_Utils_ActivityType {
       list($name, $email, $doNotEmail, $onHold, $isDeceased) = CRM_Contact_BAO_Contact::getContactDetails($contactId);
       if (!$doNotEmail && $email && !$isDeceased) {
         $url = 'civicrm/activity/email/add';
-        $activityType['label'] = ts('Send an Email');
+        $activityType['label'] = E::ts('Send an Email');
       }
       else {
         return false;

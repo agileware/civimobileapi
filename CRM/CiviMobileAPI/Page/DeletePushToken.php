@@ -3,6 +3,7 @@
 use CRM_CiviMobileAPI_Utils_Request as Request;
 use CRM_CiviMobileAPI_Utils_CmsUser as CmsUser;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_Page_DeletePushToken extends CRM_Core_Page {
 
@@ -10,13 +11,13 @@ class CRM_CiviMobileAPI_Page_DeletePushToken extends CRM_Core_Page {
     $contactId = Request::getInstance()->post('contact_id', 'String');
 
     if (!isset($contactId) || empty($contactId)) {
-      JsonResponse::sendErrorResponse(ts('Wrong contact_id'), 'contact_id');
+      JsonResponse::sendErrorResponse(E::ts('Wrong contact_id'), 'contact_id');
     }
 
     $token = Request::getInstance()->post('token', 'String');
 
     if (!isset($token) || empty($token)) {
-      JsonResponse::sendErrorResponse(ts('Wrong token'), 'token');
+      JsonResponse::sendErrorResponse(E::ts('Wrong token'), 'token');
     }
 
     $pushNotification = new CRM_CiviMobileAPI_BAO_PushNotification();
@@ -25,7 +26,7 @@ class CRM_CiviMobileAPI_Page_DeletePushToken extends CRM_Core_Page {
 
     $pushNotification->find(TRUE);
     if (!isset($pushNotification->id) || empty($pushNotification->id)) {
-      JsonResponse::sendErrorResponse(ts("Token doesn't exist"), 'token_id');
+      JsonResponse::sendErrorResponse(E::ts("Token doesn't exist"), 'token_id');
     }
 
     CRM_CiviMobileAPI_BAO_PushNotification::del($pushNotification->id);
