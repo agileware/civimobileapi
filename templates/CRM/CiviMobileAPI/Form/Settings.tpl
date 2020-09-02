@@ -4,7 +4,7 @@
   </div>
 
   <div>
-    <h3>{ts}Extension Info{/ts}</h3>
+    <h3>{ts domain=com.agiliway.civimobileapi}Extension Info{/ts}</h3>
   </div>
 
   <div>
@@ -29,7 +29,7 @@
       </tr>
 
       <tr class="crm-group-form-block-isReserved">
-        <td class="label"><label>{ts}Version{/ts}</label></td>
+        <td class="label"><label>{ts domain=com.agiliway.civimobileapi}Version{/ts}</label></td>
         <td>
           {if $latestCivicrmMessage}
             <div class="help">
@@ -46,7 +46,7 @@
 
       <tr class="crm-group-form-block-isReserved">
         <td class="label">
-          <label>{ts}Software update{/ts} {help id="software-update-help"}</label>
+          <label>{ts domain=com.agiliway.civimobileapi}Software update{/ts} {help id="software-update-help"}</label>
         </td>
         <td>
           <div>
@@ -74,21 +74,21 @@
       {if !$isCorrectExtensionName}
         <tr class="crm-group-form-block-isReserved">
           <td class="label">
-            <label>{ts}Extension name doesn't correct{/ts}</label>
+            <label>{ts domain=com.agiliway.civimobileapi}Extension name doesn't correct{/ts}</label>
           </td>
           <td>
             <div>
               <div class="status">
                 <div>
-                  <span>{ts}Current extension name:{/ts}</span>
+                  <span>{ts domain=com.agiliway.civimobileapi}Current extension name:{/ts}</span>
                   <span><strong>{$currentExtensionName}</strong></span>
                 </div>
                 <div>
-                  <span>{ts}Required extension name:{/ts}</span>
+                  <span>{ts domain=com.agiliway.civimobileapi}Required extension name:{/ts}</span>
                   <span><strong>{$correctExtensionName}</strong></span>
                 </div>
                 <div>
-                  <span>{ts}Current extension path:{/ts}</span>
+                  <span>{ts domain=com.agiliway.civimobileapi}Current extension path:{/ts}</span>
                   <span><strong>{$currentExtensionPath}</strong></span>
                 </div>
               </div>
@@ -102,7 +102,7 @@
   </div>
 
   <div>
-    <h3>{ts}Public Area Settings{/ts}</h3>
+    <h3>{ts domain=com.agiliway.civimobileapi}Public Area Settings{/ts}</h3>
   </div>
 
   <div>
@@ -146,7 +146,7 @@
   </div>
 
   <div>
-    <h3>{ts}News{/ts}</h3>
+    <h3>{ts domain=com.agiliway.civimobileapi}News{/ts}</h3>
   </div>
 
   <div>
@@ -175,7 +175,7 @@
             {$form.civimobile_news_rss_feed_url.html}
             {if $defaultRssFeedUrl}
               <br /><span class="description">
-                <button class="crm-button default-rss-feed-url-btn" data-default-rss-feed-url="{$defaultRssFeedUrl}" type="button">{ts}Set default RSS feed on CMS{/ts}</button>
+                <button class="crm-button default-rss-feed-url-btn" data-default-rss-feed-url="{$defaultRssFeedUrl}" type="button">{ts domain=com.agiliway.civimobileapi}Set default RSS feed on CMS{/ts}</button>
               </span>
             {/if}
           </div>
@@ -188,7 +188,7 @@
   </div>
 
   <div>
-    <h3>{ts}Push Notifications{/ts} {help id="push-notifications-help"}</h3>
+    <h3>{ts domain=com.agiliway.civimobileapi}Push Notifications{/ts} {help id="push-notifications-help"}</h3>
   </div>
 
   <div>

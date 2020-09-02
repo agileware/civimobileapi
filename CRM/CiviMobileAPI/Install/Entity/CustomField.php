@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Install_Entity_EntityBase {
 
   /**
@@ -35,7 +37,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
     $this->entityParamList = [
       [
         'name' => self::IS_QR_USED,
-        'label' => ts('Is qr code used for this Event?'),
+        'label' => E::ts('Is qr code used for this Event?'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_USES,
         'html_type' => 'Radio',
         'data_type' => 'Boolean',
@@ -44,7 +46,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
       ],
       [
         'name' => self::QR_EVENT_ID,
-        'label' => ts('QR Event id'),
+        'label' => E::ts('QR Event id'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_CODES,
         'html_type' => 'Text',
         'data_type' => 'String',
@@ -53,7 +55,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
       ],
       [
         'name' => self::QR_CODE,
-        'label' => ts('Qr hash code'),
+        'label' => E::ts('Qr hash code'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_CODES,
         'html_type' => 'Text',
         'data_type' => 'String',
@@ -62,7 +64,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
       ],
       [
         'name' => self::QR_IMAGE,
-        'label' => ts('QR image url'),
+        'label' => E::ts('QR image url'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_CODES,
         'html_type' => 'Text',
         'data_type' => 'String',
@@ -71,7 +73,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
       ],
       [
         'name' => self::PUBLIC_KEY,
-        'label' => ts('Public key'),
+        'label' => E::ts('Public key'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::PUBLIC_INFO,
         'html_type' => 'Text',
         'data_type' => 'String',
@@ -79,7 +81,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
       ],
       [
         'name' => self::AGENDA_PARTICIPANT_BIO,
-        'label' => ts('Bio'),
+        'label' => E::ts('Bio'),
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::AGENDA_PARTICIPANT,
         'html_type' => 'TextArea',
         'data_type' => 'Memo',

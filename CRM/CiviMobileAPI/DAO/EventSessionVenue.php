@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_DAO_EventSessionVenue extends CRM_Core_DAO {
 
   /**
@@ -74,7 +76,7 @@ class CRM_CiviMobileAPI_DAO_EventSessionVenue extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('id'),
+          'title' => E::ts('id'),
           'description' => 'id',
           'required' => TRUE,
           'import' => TRUE,
@@ -89,7 +91,7 @@ class CRM_CiviMobileAPI_DAO_EventSessionVenue extends CRM_Core_DAO {
         'event_session_id' => [
           'name' => 'event_session_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('EventSessionId'),
+          'title' => E::ts('EventSessionId'),
           'description' => 'EventSessionId',
           'required' => TRUE,
           'import' => TRUE,
@@ -104,7 +106,7 @@ class CRM_CiviMobileAPI_DAO_EventSessionVenue extends CRM_Core_DAO {
         'venue_id' => [
           'name' => 'venue_id',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('VenueID'),
+          'title' => E::ts('VenueID'),
           'description' => 'VenueID',
           'required' => FALSE,
           'import' => TRUE,

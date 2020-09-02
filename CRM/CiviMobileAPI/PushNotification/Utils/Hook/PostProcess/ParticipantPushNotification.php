@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_PushNotification_Utils_Hook_PostProcess_ParticipantPushNotification extends CRM_CiviMobileAPI_Hook_BasePushNotificationManager {
 
   /**
@@ -48,14 +50,14 @@ class CRM_CiviMobileAPI_PushNotification_Utils_Hook_PostProcess_ParticipantPushN
       }
     }
 
-    return (!empty($eventTitle)) ? $eventTitle : ts('Participant');
+    return (!empty($eventTitle)) ? $eventTitle : E::ts('Participant');
   }
 
   /**
    * @inheritdoc
    */
   protected function getText() {
-    return isset($this->actionText[$this->action]) ? ts($this->actionText[$this->action]) : $this->action;
+    return isset($this->actionText[$this->action]) ? E::ts($this->actionText[$this->action]) : $this->action;
   }
 
 }

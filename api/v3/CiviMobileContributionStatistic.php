@@ -1,5 +1,6 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 /**
  * Gets statistic for Contact's Contribution
  *
@@ -39,7 +40,7 @@ function civicrm_api3_civi_mobile_contribution_statistic_get($params) {
 function _civicrm_api3_civi_mobile_contribution_statistic_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];

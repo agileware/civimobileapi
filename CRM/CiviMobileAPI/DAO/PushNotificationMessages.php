@@ -1,5 +1,8 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
+
 class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
 
   /**
@@ -116,7 +119,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('id'),
+          'title' => E::ts('id'),
           'description' => 'id',
           'required' => TRUE,
           'import' => TRUE,
@@ -131,7 +134,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'contactId' => [
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact id'),
+          'title' => E::ts('Contact id'),
           'description' => 'Contact id',
           'required' => TRUE,
           'import' => TRUE,
@@ -146,7 +149,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'data' => [
           'name' => 'data',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Data'),
+          'title' => E::ts('Data'),
           'description' => 'Data',
           'required' => TRUE,
           'import' => TRUE,
@@ -161,7 +164,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'message' => [
           'name' => 'message',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Message'),
+          'title' => E::ts('Message'),
           'description' => 'Message',
           'required' => TRUE,
           'import' => TRUE,
@@ -176,7 +179,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'entityTable' => [
           'name' => 'entity_table',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Entity table'),
+          'title' => E::ts('Entity table'),
           'description' => 'Entity table',
           'required' => TRUE,
           'import' => TRUE,
@@ -191,7 +194,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'entityId' => [
           'name' => 'entity_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Entity id'),
+          'title' => E::ts('Entity id'),
           'description' => 'Entity id',
           'required' => TRUE,
           'import' => TRUE,
@@ -206,7 +209,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'sendDate' => [
           'name' => 'send_date',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Send date'),
+          'title' => E::ts('Send date'),
           'description' => 'Send date',
           'required' => TRUE,
           'import' => TRUE,
@@ -221,7 +224,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'isRead' => [
           'name' => 'is_read',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Is read'),
+          'title' => E::ts('Is read'),
           'description' => 'Is read',
           'required' => FALSE,
           'import' => TRUE,
@@ -236,7 +239,7 @@ class CRM_CiviMobileAPI_DAO_PushNotificationMessages extends CRM_Core_DAO {
         'invokeContactId' => [
           'name' => 'invoke_contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Invoke Contact Id'),
+          'title' => E::ts('Invoke Contact Id'),
           'description' => 'Invoke Contact Id',
           'required' => FALSE,
           'import' => TRUE,

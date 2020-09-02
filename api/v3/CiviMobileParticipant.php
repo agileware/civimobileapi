@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Returns participants
  *
@@ -23,19 +25,19 @@ function civicrm_api3_civi_mobile_participant_get($params) {
 function _civicrm_api3_civi_mobile_participant_get_spec(&$params) {
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];
   $params['contact_id'] = [
     'title' => 'Contact id',
-    'description' => ts('Contact id'),
+    'description' => E::ts('Contact id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
   ];
   $params['name'] = [
     'title' => 'Display name',
-    'description' => ts('Display name'),
+    'description' => E::ts('Display name'),
     'type' => CRM_Utils_Type::T_STRING,
     'api.required' => 0,
   ];
@@ -95,7 +97,7 @@ function civicrm_api3_civi_mobile_participant_create($params) {
   $participant->status_id = $participantStatusId;
   $participant->save();
 
-  $result = ['message' => ts("Participant status successfully updated.")];
+  $result = ['message' => E::ts("Participant status successfully updated.")];
 
   return civicrm_api3_create_success($result);
 }
@@ -108,25 +110,25 @@ function civicrm_api3_civi_mobile_participant_create($params) {
 function _civicrm_api3_civi_mobile_participant_create_spec(&$params) {
   $params['participant_id'] = [
     'title' => 'Participant id',
-    'description' => ts('Participant id'),
+    'description' => E::ts('Participant id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];
   $params['status_id'] = [
     'title' => 'Participant status id',
-    'description' => ts('Participant status id. Allow statuses: "Registered" or "Attended"'),
+    'description' => E::ts('Participant status id. Allow statuses: "Registered" or "Attended"'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1,
   ];
   $params['qr_token'] = [
     'title' => 'QR token',
-    'description' => ts('Qr token'),
+    'description' => E::ts('Qr token'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
 }

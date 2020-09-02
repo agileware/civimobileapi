@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Api_CiviMobileEventSession_Get extends CRM_CiviMobileAPI_Api_CiviMobileBase {
 
   /**
@@ -104,7 +106,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileEventSession_Get extends CRM_CiviMobileAPI
 
     if (empty($session["venue_id"])) {
       $isDisplay = 0;
-      $displayStatus = ts('Venue does not exists in session');
+      $displayStatus = E::ts('Venue does not exists in session');
     }
 
     $event = $this->getCachedEventById($session["event_id"]);
@@ -114,15 +116,15 @@ class CRM_CiviMobileAPI_Api_CiviMobileEventSession_Get extends CRM_CiviMobileAPI
       && empty($session["venue"])
     ) {
       $isDisplay = 0;
-      $displayStatus = ts('Venue does not exists in session and session is outside of timeframe event');
+      $displayStatus = E::ts('Venue does not exists in session and session is outside of timeframe event');
     } elseif ((strtotime($session["end_time"]) > strtotime($event->end_date) && $event->end_date != NULL)
       || strtotime($session["start_time"]) < strtotime($event->start_date)
     ) {
       $isDisplay = 0;
-      $displayStatus = ts('Session is outside of timeframe event');
+      $displayStatus = E::ts('Session is outside of timeframe event');
     }
     if ($isDisplay == 1) {
-      $displayStatus = ts('Session is ready to use');
+      $displayStatus = E::ts('Session is ready to use');
     }
 
     return [

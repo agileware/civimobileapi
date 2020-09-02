@@ -1,5 +1,6 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 /**
  * Gets Relationship
  *
@@ -131,13 +132,13 @@ function _civicrm_api3_civi_mobile_active_relationship_get_spec(&$params) {
   ];
   $params['contact_id_a.is_deleted'] = [
     'title' => 'Contact id(a) is deleted?',
-    'description' => ts('Contact id(a) is deleted?'),
+    'description' => E::ts('Contact id(a) is deleted?'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['contact_id_b.is_deleted'] = [
     'title' => 'Contact id(b) is deleted?',
-    'description' => ts('Contact id(b) is deleted?'),
+    'description' => E::ts('Contact id(b) is deleted?'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT,
   ];

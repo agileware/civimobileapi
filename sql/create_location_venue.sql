@@ -3,8 +3,6 @@ CREATE TABLE IF NOT EXISTS `civicrm_civimobile_location_venue` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` TEXT NOT NULL,
   `description` TEXT NULL,
-  `attached_file_url` TEXT NULL,
-  `attached_file_type` VARCHAR(255) NULL,
   `address_description` TEXT NULL,
   `address` TEXT NULL,
   `latitude` TEXT NULL,

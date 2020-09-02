@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Utils_Agenda_SessionSchedule {
 
   /**
@@ -109,18 +111,18 @@ class CRM_CiviMobileAPI_Utils_Agenda_SessionSchedule {
    */
   private static function getLocaleMonthNames() {
     $month = [
-      1 => ts('January'),
-      2 => ts('February'),
-      3 => ts('March'),
-      4 => ts('April'),
-      5 => ts('May'),
-      6 => ts('June'),
-      7 => ts('July'),
-      8 => ts('August'),
-      9 => ts('September'),
-      10 => ts('October'),
-      11 => ts('November'),
-      12 =>ts('December')
+      1 => E::ts('January'),
+      2 => E::ts('February'),
+      3 => E::ts('March'),
+      4 => E::ts('April'),
+      5 => E::ts('May'),
+      6 => E::ts('June'),
+      7 => E::ts('July'),
+      8 => E::ts('August'),
+      9 => E::ts('September'),
+      10 => E::ts('October'),
+      11 => E::ts('November'),
+      12 => E::ts('December')
     ];
 
     return $month;

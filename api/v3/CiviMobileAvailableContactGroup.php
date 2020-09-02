@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets available ContactGroups in create select
  *
@@ -26,14 +28,14 @@ function civicrm_api3_civi_mobile_available_contact_group_get($params) {
 function _civicrm_api3_civi_mobile_available_contact_group_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];
 
   $params['is_hidden'] = [
     'title' => 'Is group hidden?',
-    'description' => ts('Is group hidden?'),
+    'description' => E::ts('Is group hidden?'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_BOOLEAN,
   ];

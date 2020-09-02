@@ -1,4 +1,6 @@
 <?php
+
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 /*--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
 +--------------------------------------------------------------------+
@@ -52,7 +54,7 @@ class CRM_CiviMobileAPI_Form_Dashboard extends CRM_Core_Form {
     $this->addButtons([
       [
         'type' => 'submit',
-        'name' => ts('Logout from mobile'),
+        'name' => E::ts('Logout from mobile'),
         'isDefault' => TRUE,
       ]
     ]);

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Install_Entity_EntityBase {
 
   /**
@@ -34,28 +36,28 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
     $this->entityParamList = [
       [
         'name' => self::QR_USES,
-        'title' => ts('Qr options'),
+        'title' => E::ts('Qr options'),
         'extends' => 'Event',
         'is_public' => 0,
         'is_reserved' => 1
       ],
       [
         'name' => self::AGENDA_PARTICIPANT,
-        'title' => ts('Agenda'),
+        'title' => E::ts('Agenda'),
         'extends' => 'Participant',
         'is_public' => 0,
         'is_reserved' => 1
       ],
       [
         'name' => self::QR_CODES,
-        'title' => ts('Qr codes'),
+        'title' => E::ts('Qr codes'),
         'extends' => 'Participant',
         'is_public' => 0,
         'is_reserved' => 1
       ],
       [
         'name' => self::PUBLIC_INFO,
-        'title' => ts('Public Info'),
+        'title' => E::ts('Public Info'),
         'extends' => 'Participant',
         'is_public' => 0,
         'is_reserved' => 1

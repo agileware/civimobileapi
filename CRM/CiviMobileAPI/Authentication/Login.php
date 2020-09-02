@@ -1,6 +1,7 @@
 <?php
 
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_Authentication_Login {
 
@@ -99,7 +100,7 @@ class CRM_CiviMobileAPI_Authentication_Login {
   private function getUserApiKey() {
     $apiKey = $this->civiContact->api_key ? $this->civiContact->api_key : $this->setApiKey($this->civiContact->id);
     if (!$apiKey) {
-      JsonResponse::sendErrorResponse(ts('Something went wrong, we can not create the API KEY'));
+      JsonResponse::sendErrorResponse(E::ts('Something went wrong, we can not create the API KEY'));
     }
 
     return $apiKey;

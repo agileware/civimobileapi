@@ -108,6 +108,40 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     }
   }
 
+  public function upgrade_0017() {
+    try {
+      $fields = CRM_Core_DAO::executeQuery("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'civicrm_civimobile_location_venue' AND COLUMN_NAME IN ('attached_file_type', 'attached_file_url')")->fetchAll();
+
+      if (count($fields) == 2) {
+        $query = CRM_Utils_SQL_Select::from(CRM_CiviMobileAPI_DAO_LocationVenue::getTableName());
+        $query->select('id, attached_file_url, attached_file_type');
+        $venues = CRM_Core_DAO::executeQuery($query->toSQL())->fetchAll();
+
+        foreach ($venues as $venue) {
+          parse_str(parse_url($venue['attached_file_url'], PHP_URL_QUERY), $params);
+
+          $fileDAO = new CRM_Core_DAO_File();
+          $fileDAO->uri = $params['filename'];
+          $fileDAO->mime_type = $venue['attached_file_type'];
+          $fileDAO->upload_date = date('YmdHis');
+          $fileDAO->save();
+
+          $entityFileDAO = new CRM_Core_DAO_EntityFile();
+          $entityFileDAO->entity_table = 'civicrm_civimobile_location_venue';
+          $entityFileDAO->entity_id = $venue['id'];
+          $entityFileDAO->file_id = $fileDAO->id;
+          $entityFileDAO->save();
+        }
+
+        $this->executeSql("ALTER TABLE `civicrm_civimobile_location_venue` DROP COLUMN `attached_file_type`, DROP COLUMN `attached_file_url`;");
+      }
+
+      return TRUE;
+    } catch (Exception $e) {
+      return FALSE;
+    }
+  }
+
   /**
    * Installs scheduled job
    *

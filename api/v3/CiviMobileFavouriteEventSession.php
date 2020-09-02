@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @param $params
  * @return array
@@ -41,13 +43,13 @@ function civicrm_api3_civi_mobile_favourite_event_session_create($params) {
 function _civicrm_api3_civi_mobile_favourite_event_session_create_spec(&$params) {
   $params['event_session_id'] = [
     'title' => 'EventSessionID',
-    'description' => ts('EventSessionID'),
+    'description' => E::ts('EventSessionID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['is_favourite'] = [
     'title' => 'Is favourite?',
-    'description' => ts('Is favourite?'),
+    'description' => E::ts('Is favourite?'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_BOOLEAN
   ];

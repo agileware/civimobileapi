@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @deprecated will be deleted in version 7.0.0
  */
@@ -26,7 +28,7 @@ class CRM_CiviMobileAPI_ApiWrapper_GroupContact_Create implements API_Wrapper {
    * @throws API_Exception
    */
   public function toApiOutput($apiRequest, $result) {
-    $status = $apiRequest['params']['status'];
+    $status = !empty($apiRequest['params']['status']) ? $apiRequest['params']['status'] : NULL;
     if (!empty($status) && !is_array($status) && ($status == "Added" || $status == "Removed")) {
       $groupId = $apiRequest['params']['group_id'];
 
@@ -36,7 +38,7 @@ class CRM_CiviMobileAPI_ApiWrapper_GroupContact_Create implements API_Wrapper {
           'id' => $groupId,
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(ts("Something wrong with getting info for group: " . $e->getMessage()));
+        throw new \API_Exception(E::ts("Something wrong with getting info for group: " . $e->getMessage()));
       }
 
       $result['title'] = !empty($groupInfo['title']) ? $groupInfo['title'] : '';

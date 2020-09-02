@@ -67,8 +67,18 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
       return [];
     }
 
-    foreach ($customGroups['values'] as $customGroup) {
-      $result[] = $this->prepareCustomGroup($customGroup);
+    if (!CRM_Core_Permission::check('administer CiviCRM') && !CRM_Core_Permission::check('access all custom data')) {
+      $accessibleCustomGroupsToView = CRM_Core_Permission::customGroup(CRM_Core_Permission::VIEW);
+
+      foreach ($customGroups['values'] as $customGroup) {
+        if (in_array($customGroup['id'], $accessibleCustomGroupsToView)) {
+          $result[] = $this->prepareCustomGroup($customGroup);
+        }
+      }
+    } else {
+      foreach ($customGroups['values'] as $customGroup) {
+        $result[] = $this->prepareCustomGroup($customGroup);
+      }
     }
 
     return $result;

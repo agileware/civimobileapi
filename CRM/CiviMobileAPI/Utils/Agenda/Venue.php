@@ -159,14 +159,8 @@ class CRM_CiviMobileAPI_Utils_Agenda_Venue {
     }
   }
 
-  /**
-   * Return next color in list of available colors by location id
-   *
-   * @param $locationId
-   * @return array
-   */
-  public static function getNextColorInListForLocation($locationId) {
-    $colors = [
+  public static function getColorList() {
+    return [
       [
         'background' => 'rgb(178,223,219)',
         'border' => 'rgb(128,203,196)'
@@ -208,6 +202,16 @@ class CRM_CiviMobileAPI_Utils_Agenda_Venue {
         'border' => 'rgb(165,214,167)'
       ]
     ];
+  }
+
+  /**
+   * Return next color in list of available colors by location id
+   *
+   * @param $locationId
+   * @return array
+   */
+  public static function getNextColorInListForLocation($locationId) {
+    $colors = self::getColorList();
 
     $color = $colors[0];
 
@@ -227,41 +231,4 @@ class CRM_CiviMobileAPI_Utils_Agenda_Venue {
 
     return $color;
   }
-
-  /**
-   * Remove venue attach file and file url
-   *
-   * @param $venueId
-   *
-   * @return bool
-   */
-  public static function removeVenueAttach($venueId) {
-    try {
-      $venue = civicrm_api3('CiviMobileVenue', 'getsingle', [
-        'id' => $venueId,
-      ]);
-    } catch (CiviCRM_API3_Exception $e) {
-      throw new api_Exception ('Venue not exist.', 'venue_not_exist');
-    }
-    if (!empty($venue['attached_files'][0]['url'])) {
-      parse_str(parse_url($venue['attached_files'][0]['url'])['query'], $parseUrlOutput);
-      $fileName = $parseUrlOutput['filename'];
-      if (empty($fileName)) {
-        throw new api_Exception ('Venue attached file not deleted.', 'venue_attached_file_not_deleted');
-      }
-      CRM_CiviMobileAPI_Utils_File::removeUploadFile($fileName);
-      try {
-        civicrm_api3('CiviMobileVenue', 'create', [
-          'id' => $venueId,
-          'attached_file_url' => "",
-          'attached_file_type' => ""
-        ]);
-      } catch (CiviCRM_API3_Exception $e) {
-        throw new api_Exception ('Venue attached file not deleted.', 'venue_attached_file_not_deleted');
-      }
-    }
-
-    return TRUE;
-  }
-
 }

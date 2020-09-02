@@ -2,6 +2,7 @@
 
 use CRM_CiviMobileAPI_Utils_Request as Request;
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 /**
  * Provides token disabling functionality for CiviMobile application
@@ -49,7 +50,7 @@ class CRM_CiviMobileAPI_Page_DisablePushToken extends CRM_Core_Page {
   private function getContactId() {
     $contactId = Request::getInstance()->post('contact_id', 'String');
     if (!$contactId) {
-      JsonResponse::sendErrorResponse(ts('Required field'), 'contact_id');
+      JsonResponse::sendErrorResponse(E::ts('Required field'), 'contact_id');
     }
 
     return $contactId;
@@ -63,7 +64,7 @@ class CRM_CiviMobileAPI_Page_DisablePushToken extends CRM_Core_Page {
   private function getToken() {
     $token = Request::getInstance()->post('token', 'String');
     if (!$token) {
-      JsonResponse::sendErrorResponse(ts('Required field'), 'token');
+      JsonResponse::sendErrorResponse(E::ts('Required field'), 'token');
     }
 
     return $token;
@@ -77,7 +78,7 @@ class CRM_CiviMobileAPI_Page_DisablePushToken extends CRM_Core_Page {
   private function getPlatform() {
     $platform = Request::getInstance()->post('platform', 'String');
     if (!$platform) {
-      JsonResponse::sendErrorResponse(ts('Required field'), 'platform');
+      JsonResponse::sendErrorResponse(E::ts('Required field'), 'platform');
     }
 
     return $platform;

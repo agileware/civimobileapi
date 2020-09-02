@@ -53,6 +53,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             'registration_start_date',
             'registration_end_date',
             'is_map',
+            'registration_link_text',
             'loc_block_id',
             'loc_block_id.email_id.email',
             'loc_block_id.email_2_id.email',

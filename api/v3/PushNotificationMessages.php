@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets notification messages
  *
@@ -38,13 +40,13 @@ function civicrm_api3_push_notification_messages_get($params) {
 function _civicrm_api3_push_notification_messages_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['direction'] = [
     'title' => 'Direction',
-    'description' => ts('Direction'),
+    'description' => E::ts('Direction'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING,
     'options' => ['ASC' => 'ASC', 'DESC' => 'DESC']
@@ -75,7 +77,7 @@ function civicrm_api3_push_notification_messages_clear_old($params) {
 function _civicrm_api3_push_notification_messages_clear_old_spec(&$params) {
   $params['count_of_day'] = [
     'title' => 'Count of days',
-    'description' => ts('Deletes "Push notification messages" older than this param. Default 90.'),
+    'description' => E::ts('Deletes "Push notification messages" older than this param. Default 90.'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];

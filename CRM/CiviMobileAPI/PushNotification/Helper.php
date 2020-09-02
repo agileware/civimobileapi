@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_PushNotification_Helper {
 
   /**
@@ -218,7 +220,7 @@ class CRM_CiviMobileAPI_PushNotification_Helper {
       }
     }
 
-    return ts($message, $replace);
+    return E::ts($message, $replace);
   }
 
 }

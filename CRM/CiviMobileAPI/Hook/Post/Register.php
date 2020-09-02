@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Hook_Post_Register {
 
   /**
@@ -28,7 +30,7 @@ class CRM_CiviMobileAPI_Hook_Post_Register {
             return TRUE;
           }
           catch (CiviCRM_API3_Exception $e) {
-            throw new CRM_Core_Exception(ts('Failed to update participant public_key in database'));
+            throw new CRM_Core_Exception(E::ts('Failed to update participant public_key in database'));
           }
         }
       }

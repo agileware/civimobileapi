@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * This API get called when run schedule job "Notify all participants that event is going to start"
  *
@@ -27,7 +29,7 @@ function civicrm_api3_push_notification_event_reminder_send($params) {
 
     $participants = civicrm_api3('Participant', 'get', ['return' => ["contact_id", "event_id"], 'event_id' => $eventsIDs]);
     foreach ($participants['values'] as $participant) {
-      $text = ts('Event start at') . ' ' . $eventsTime[$participant['event_id']];
+      $text = E::ts('Event start at') . ' ' . $eventsTime[$participant['event_id']];
       $data = [
         'entity' => 'Event',
         'id' => $participant['event_id'],

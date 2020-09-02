@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
 
   /**
@@ -102,7 +104,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'id' => [
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('id'),
+          'title' => E::ts('id'),
           'description' => 'id',
           'required' => TRUE,
           'import' => TRUE,
@@ -117,7 +119,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'title' => [
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Title'),
+          'title' => E::ts('Title'),
           'description' => 'Title',
           'required' => TRUE,
           'import' => TRUE,
@@ -132,7 +134,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'description' => [
           'name' => 'description',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Description'),
+          'title' => E::ts('Description'),
           'description' => 'Description',
           'required' => TRUE,
           'import' => TRUE,
@@ -147,7 +149,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'start_time' => [
           'name' => 'start_time',
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('Start time'),
+          'title' => E::ts('Start time'),
           'description' => 'Start time',
           'required' => TRUE,
           'import' => TRUE,
@@ -162,7 +164,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'end_time' => [
           'name' => 'end_time',
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('End time'),
+          'title' => E::ts('End time'),
           'description' => 'End time',
           'required' => TRUE,
           'import' => TRUE,
@@ -177,7 +179,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'event_id' => [
           'name' => 'event_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Event id'),
+          'title' => E::ts('Event id'),
           'description' => 'Event id',
           'required' => TRUE,
           'import' => TRUE,
@@ -192,7 +194,7 @@ class CRM_CiviMobileAPI_DAO_EventSession extends CRM_Core_DAO {
         'venue_id' => [
           'name' => 'venue_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Venue id'),
+          'title' => E::ts('Venue id'),
           'description' => 'Venue id',
           'required' => TRUE,
           'import' => TRUE,

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets Relationship
  *
@@ -38,7 +40,7 @@ function civicrm_api3_civi_mobile_confirm_token_run($params) {
   curl_close($curl);
 
   if ($err) {
-    $result = ['error' => 1, 'message' => ts('Error. Can not connect to server.')];
+    $result = ['error' => 1, 'message' => E::ts('Error. Can not connect to server.')];
   } else {
     $json = json_decode($response, true);
     if (!empty($json) && isset($json['error']) && isset($json['message'])) {

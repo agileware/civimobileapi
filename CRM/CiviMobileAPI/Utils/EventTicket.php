@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Class provide Event Tickets helper methods
  */
@@ -46,8 +48,8 @@ class CRM_CiviMobileAPI_Utils_EventTicket {
 
     return [
       'participant_contact_display_name' => $participantContactDisplayName,
-      'participant_status_name' => !empty($participant['participant_status']) ? ts($participant['participant_status']) : '',
-      'participant_role_name' => !empty($participant['participant_role']) ? ts($participant['participant_role']) : '',
+      'participant_status_name' => !empty($participant['participant_status']) ? E::ts($participant['participant_status']) : '',
+      'participant_role_name' => !empty($participant['participant_role']) ? E::ts($participant['participant_role']) : '',
       'participant_fee_amount' => !empty($participant['participant_fee_amount']) ? $participant['participant_fee_amount'] : '0',
       'participant_fee_amount_currency' => !empty($currency) ? $currency : '',
       'event_name' => $event['event_title'],

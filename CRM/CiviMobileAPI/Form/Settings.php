@@ -1,11 +1,13 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
 
   public function preProcess() {
     parent::preProcess();
 
-    $pushNotificationMessage = ts('To use Push Notifications you must register at <a href="https://civimobile.org/partner"  target="_blank">civimobile.org</a> and generate your own Server Key');
+    $pushNotificationMessage = E::ts('To use Push Notifications you must register at <a href="https://civimobile.org/partner"  target="_blank">civimobile.org</a> and generate your own Server Key');
     $version = CRM_CiviMobileAPI_Utils_VersionController::getInstance();
     $latestCivicrmMessage = FALSE;
     $oldCivicrmMessage = FALSE;
@@ -17,22 +19,22 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     $isCorrectExtensionName = CRM_CiviMobileAPI_Utils_Extension::isCorrectExtensionName();
 
     if ($version->isCurrentVersionLowerThanRepositoryVersion()) {
-      $oldCivicrmMessage = ts('You are using CiviMobileAPI <strong>%1</strong>. The latest version is CiviMobileAPI <strong>%2</strong>', [
+      $oldCivicrmMessage = E::ts('You are using CiviMobileAPI <strong>%1</strong>. The latest version is CiviMobileAPI <strong>%2</strong>', [
         1 => 'v' . $version->getCurrentFullVersion(),
         2 => 'v' . $version->getLatestFullVersion(),
       ]);
     } else {
-      $latestCivicrmMessage = ts('Your extension version is up to date - CiviMobile <strong>%1</strong>', [1 => 'v' . $version->getCurrentFullVersion()]);
+      $latestCivicrmMessage = E::ts('Your extension version is up to date - CiviMobile <strong>%1</strong>', [1 => 'v' . $version->getCurrentFullVersion()]);
     }
 
     if (!CRM_CiviMobileAPI_Utils_Extension::directoryIsWritable()) {
-      $folderPermissionMessage = '<strong>' . ts('Access to extension directory (%1) is denied. Please provide permission to access the extension directory', [1 => CRM_Core_Config::singleton()->extensionsDir . CRM_CiviMobileAPI_ExtensionUtil::LONG_NAME ]) . '</strong> ';
+      $folderPermissionMessage = '<strong>' . E::ts('Access to extension directory with all files or for directory with extensions is denied. Please provide permission to access the extension directory and directory with extensions.') . '</strong> ';
     }
 
     if (Civi::settings()->get('civimobile_is_server_key_valid') == 1) {
-      $serverKeyValidMessage = ts('Your Server Key is valid and you can use Push Notifications.');
+      $serverKeyValidMessage = E::ts('Your Server Key is valid and you can use Push Notifications.');
     } else {
-      $serverKeyInValidMessage =  ts('Your Server Key is invalid. Please enter valid Server Key.');
+      $serverKeyInValidMessage =  E::ts('Your Server Key is invalid. Please enter valid Server Key.');
     }
 
     $enabledComponents = CRM_CiviMobileAPI_Utils_CiviCRM::getEnabledComponents();
@@ -88,7 +90,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       && $values['civimobile_is_showed_news'] == 1
       && empty($values['civimobile_news_rss_feed_url'])
     ) {
-      $errors['civimobile_news_rss_feed_url'] = ts('Field can not be empty.');
+      $errors['civimobile_news_rss_feed_url'] = E::ts('Field can not be empty.');
     }
 
     return empty($errors) ? TRUE : $errors;
@@ -106,7 +108,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     $tokenFieldName = 'civimobile_server_key';
 
     if (empty($values[$tokenFieldName]) || empty(trim($values[$tokenFieldName]))) {
-      $errors[$tokenFieldName] = ts('Fields can not be empty.');
+      $errors[$tokenFieldName] = E::ts('Fields can not be empty.');
       return empty($errors) ? TRUE : $errors;
     }
 
@@ -115,12 +117,12 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     try {
       $result = civicrm_api3('CiviMobileConfirmToken', 'run', ['civicrm_server_token' => $token]);
     } catch (CiviCRM_API3_Exception $e) {
-      $errors[$tokenFieldName] = ts('Error. Something went wrong. Please contact us.');
+      $errors[$tokenFieldName] = E::ts('Error. Something went wrong. Please contact us.');
     }
 
     if (!empty($result['values']['response']) ) {
       if ($result['values']['response']['error'] == 1) {
-        $errors[$tokenFieldName] = ts($result['values']['response']['message']);
+        $errors[$tokenFieldName] = E::ts($result['values']['response']['message']);
       } else {
         Civi::settings()->set('civimobile_is_server_key_valid', 1);
       }
@@ -141,31 +143,31 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
   public function buildQuickForm() {
     parent::buildQuickForm();
 
-    $this->addElement('text', 'civimobile_server_key', ts('Server key'));
-    $this->addElement('checkbox', 'civimobile_auto_update', ts('Automatically keep the extension up to date'));
-    $this->addElement('checkbox', 'civimobile_is_allow_public_website_url_qrcode', ts('Show a Website URL QR-code for Anonymous users'));
-    $this->addElement('radio', 'civimobile_site_name_to_use', NULL, ts('Use CMS site name'), 'cms_site_name');
-    $this->addElement('radio', 'civimobile_site_name_to_use', NULL, ts('Use custom site name'), 'custom_site_name');
-    $this->addElement('text', 'civimobile_custom_site_name', ts('Site name'));
-    $this->addElement('checkbox', 'civimobile_is_allow_public_info_api', ts('Show Public area'));
-    $this->addElement('checkbox', 'civimobile_is_showed_news', ts('Show News'));
-    $this->addElement('text', 'civimobile_news_rss_feed_url', ts('News RSS feed URL'));
-    $this->addElement('text', 'civimobile_firebase_key', ts('Firebase key'));
-    $this->addElement('checkbox', 'civimobile_is_custom_app', ts('Do you have custom application?'));
+    $this->addElement('text', 'civimobile_server_key', E::ts('Server key'));
+    $this->addElement('checkbox', 'civimobile_auto_update', E::ts('Automatically keep the extension up to date'));
+    $this->addElement('checkbox', 'civimobile_is_allow_public_website_url_qrcode', E::ts('Show a Website URL QR-code for Anonymous users'));
+    $this->addElement('radio', 'civimobile_site_name_to_use', NULL, E::ts('Use CMS site name'), 'cms_site_name');
+    $this->addElement('radio', 'civimobile_site_name_to_use', NULL, E::ts('Use custom site name'), 'custom_site_name');
+    $this->addElement('text', 'civimobile_custom_site_name', E::ts('Site name'));
+    $this->addElement('checkbox', 'civimobile_is_allow_public_info_api', E::ts('Show Public area'));
+    $this->addElement('checkbox', 'civimobile_is_showed_news', E::ts('Show News'));
+    $this->addElement('text', 'civimobile_news_rss_feed_url', E::ts('News RSS feed URL'));
+    $this->addElement('text', 'civimobile_firebase_key', E::ts('Firebase key'));
+    $this->addElement('checkbox', 'civimobile_is_custom_app', E::ts('Do you have custom application?'));
 
     $buttons = [
       [
         'type' => 'upload',
-        'name' => ts('Save settings'),
+        'name' => E::ts('Save settings'),
         'isDefault' => TRUE,
       ],
       [
         'type' => 'submit',
-        'name' => ts('Confirm server key'),
+        'name' => E::ts('Confirm server key'),
       ],
       [
         'type' => 'cancel',
-        'name' => ts('Cancel'),
+        'name' => E::ts('Cancel'),
       ]
     ];
 
@@ -173,7 +175,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       && !empty(CRM_CiviMobileAPI_Utils_Extension::directoryIsWritable())) {
       $buttons[] = [
         'type' => 'next',
-        'name' => ts('Update CiviMobile Extension'),
+        'name' => E::ts('Update CiviMobile Extension'),
       ];
     }
 
@@ -186,7 +188,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     if (!empty($params['_qf_Settings_submit'])) {
       if (empty($params['_qf_Settings_next'])) {
         Civi::settings()->set('civimobile_server_key', $params['civimobile_server_key']);
-        CRM_Core_Session::singleton()->setStatus(ts('Server key updated'), ts('CiviMobile Settings'), 'success');
+        CRM_Core_Session::singleton()->setStatus(E::ts('Server key updated'), E::ts('CiviMobile Settings'), 'success');
       }
     }
     elseif (!empty($params['_qf_Settings_next'])) {
@@ -195,7 +197,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
           $this->controller->setDestination(CRM_Utils_System::url('civicrm/civimobile/settings', http_build_query([])));
           CRM_CiviMobileAPI_Utils_Extension::update();
 
-          CRM_Core_Session::singleton()->setStatus(ts('CiviMobile updated'), ts('CiviMobile Settings'), 'success');
+          CRM_Core_Session::singleton()->setStatus(E::ts('CiviMobile updated'), E::ts('CiviMobile Settings'), 'success');
         }
       }
       catch (Exception $e) {
@@ -234,7 +236,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('civimobile_is_allow_public_info_api', $params['civimobile_is_allow_public_info_api']);
       Civi::settings()->set('civimobile_is_showed_news', $params['civimobile_is_showed_news']);
       Civi::settings()->set('civimobile_news_rss_feed_url', $params['civimobile_news_rss_feed_url']);
-      CRM_Core_Session::singleton()->setStatus(ts('CiviMobile settings updated'), ts('CiviMobile Settings'), 'success');
+      CRM_Core_Session::singleton()->setStatus(E::ts('CiviMobile settings updated'), E::ts('CiviMobile Settings'), 'success');
     }
   }
 

@@ -248,6 +248,7 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
   $permissions['civi_mobile_agenda_config']['create'] = ['access CiviCRM', 'view my contact', 'access CiviEvent', 'view Agenda'];
   $permissions['civi_mobile_agenda_config']['get'] = ['view Agenda'];
   $permissions['civi_mobile_speaker']['get'] = ['view Agenda'];
+  $permissions['civi_mobile_participant']['get'] = ['view Agenda'];
   $permissions['civi_mobile_venue']['get'] = ['view Agenda'];
   $permissions['civi_mobile_event_session']['get'] = ['view Agenda'];
   $permissions['civi_mobile_venue_attach_file']['delete'] = ['access CiviCRM', 'view my contact', 'access CiviEvent', 'view Agenda'];
@@ -475,7 +476,7 @@ function civimobileapi_civicrm_tabset($tabsetName, &$tabs, $context) {
       $tabs[] = [
         'id' => 'civimobile',
         'url' => CRM_Utils_System::url('civicrm/civimobile/dashboard', 'reset=1&cid=' . $context['contact_id']),
-        'title' => ts('CiviMobile'),
+        'title' => E::ts('CiviMobile'),
         'weight' => 99,
       ];
     }
@@ -483,7 +484,7 @@ function civimobileapi_civicrm_tabset($tabsetName, &$tabs, $context) {
   if ($tabsetName == 'civicrm/event/manage') {
     $isActiveAgenda = !empty($context['event_id']) ? CRM_CiviMobileAPI_Utils_Agenda_AgendaConfig::isAgendaActiveForEvent($context['event_id']) : false;
     $tabs['agenda'] = [
-      'title' => ts('Agenda'),
+      'title' => E::ts('Agenda'),
       'url' => 'civicrm/civimobile/event/agenda',
       'link' => CRM_Utils_System::url('civicrm/civimobile/event/agenda', (isset($context['event_id']) ? 'id=' . $context['event_id'] : NULL)),
       'valid' => $isActiveAgenda,
@@ -526,12 +527,12 @@ function civimobileapi_civicrm_permission(&$permissionList) {
 
   $permissionList[CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT] = [
     $permissionsPrefix . CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT,
-    ts("It means User can only update Participant status to 'Registered' or 'Attended'. Uses by QR Code."),
+    E::ts("It means User can only update Participant status to 'Registered' or 'Attended'. Uses by QR Code."),
   ];
 
   $permissionList['view Agenda'] = [
     $permissionsPrefix . 'view Agenda',
-    ts("View Agenda."),
+    E::ts("View Agenda."),
   ];
 }
 
@@ -577,7 +578,7 @@ if (!function_exists('is_writable_r')) {
  */
 function civimobileapi_civicrm_navigationMenu(&$menu) {
   $civiMobile = [
-    'name' => ts('CiviMobile'),
+    'name' => E::ts('CiviMobile'),
     'permission' => 'administer CiviCRM',
     'operator' => NULL,
     'separator' => NULL,
@@ -585,7 +586,7 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/', $civiMobile);
 
   $civiMobileSettings = [
-    'name' => ts('CiviMobile Settings'),
+    'name' => E::ts('CiviMobile Settings'),
     'url' => 'civicrm/civimobile/settings',
     'permission' => 'administer CiviCRM',
     'operator' => NULL,
@@ -594,7 +595,7 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileSettings);
 
   $civiMobileCalendarSettings = [
-    'name' => ts('CiviMobile Calendar Settings'),
+    'name' => E::ts('CiviMobile Calendar Settings'),
     'url' => 'civicrm/civimobile/calendar/settings',
     'permission' => 'administer CiviCRM',
     'operator' => NULL,
@@ -603,7 +604,7 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileCalendarSettings);
 
   $civiMobileEventLocations = [
-    'name' => ts('CiviMobile Event Locations'),
+    'name' => E::ts('CiviMobile Event Locations'),
     'url' => 'civicrm/civimobile/event-locations',
     'permission' => 'administer CiviCRM',
     'operator' => NULL,
@@ -618,11 +619,10 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_buildForm/
  */
 function civimobileapi_civicrm_buildForm($formName, &$form) {
-  civimobile_add_qr_popup();
   if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && $form->getAction() == CRM_Core_Action::ADD) {
     $templatePath = realpath(dirname(__FILE__)."/templates");
 
-    $form->add('checkbox', 'default_qrcode_checkin_event', ts('When generating QR Code tokens, use this Event'));
+    $form->add('checkbox', 'default_qrcode_checkin_event', E::ts('When generating QR Code tokens, use this Event'));
     CRM_Core_Region::instance('page-body')->add([
       'template' => "{$templatePath}/qrcode-checkin-event-options.tpl"
     ]);
@@ -641,6 +641,8 @@ function civimobileapi_civicrm_buildForm($formName, &$form) {
   }
 
   (new CRM_CiviMobileAPI_Hook_BuildForm_Register)->run($formName, $form);
+  (new CRM_CiviMobileAPI_Hook_BuildForm_ContributionPayment)->run($formName, $form);
+  civimobile_add_qr_popup();
 }
 
 /**

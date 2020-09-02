@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Install_Entity_UpdateMessageTemplate implements CRM_CiviMobileAPI_Install_Entity_InstallInterface {
 
   public function install() {
@@ -17,13 +19,13 @@ class CRM_CiviMobileAPI_Install_Entity_UpdateMessageTemplate implements CRM_Civi
     $messageTemplateOnline = CRM_CiviMobileAPI_Utils_MessageTemplate::getByWorkflowId($workflowIdOnline);
 
     if (empty($messageTemplateOnline)) {
-      throw new \API_Exception(ts("Can not find template with these parameters: valueName 'event_online_receipt' and groupName 'msg_tpl_workflow_event'"));
+      throw new \API_Exception(E::ts("Can not find template with these parameters: valueName 'event_online_receipt' and groupName 'msg_tpl_workflow_event'"));
     }
 
     $newHtmlOnline = '
                <center>
                  {if $file_name}
-                    <table width="700" border="1" cellpadding="0" cellspacing="0" id="crm-event_receipt" 
+                    <table width="700" border="1" cellpadding="0" cellspacing="0" id="crm-event_receipt"
                           style="font-family: Arial, Verdana, sans-serif; text-align: center;">
                      <tr>
                        <td colspan="2">
@@ -45,7 +47,7 @@ class CRM_CiviMobileAPI_Install_Entity_UpdateMessageTemplate implements CRM_Civi
           'msg_html' => $newHtmlTemplateOnline,
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(ts("Something wrong with updating message template " . $messageTemplateOnline['msg_title'] . ": " . $e->getMessage()));
+        throw new \API_Exception(E::ts("Something wrong with updating message template " . $messageTemplateOnline['msg_title'] . ": " . $e->getMessage()));
       }
     }
 
@@ -61,13 +63,13 @@ class CRM_CiviMobileAPI_Install_Entity_UpdateMessageTemplate implements CRM_Civi
     $messageTemplateOffline = CRM_CiviMobileAPI_Utils_MessageTemplate::getByWorkflowId($workflowIdOffline);
 
     if (empty($messageTemplateOffline)) {
-      throw new \API_Exception(ts("Can not find template with these parameters: valueName 'event_offline_receipt' and groupName 'msg_tpl_workflow_event'"));
+      throw new \API_Exception(E::ts("Can not find template with these parameters: valueName 'event_offline_receipt' and groupName 'msg_tpl_workflow_event'"));
     }
 
     $newHtmlOffline = '
                <center>
                  {if $file_name}
-                    <table width="620" border="1" cellpadding="0" cellspacing="0" id="crm-event_receipt" 
+                    <table width="620" border="1" cellpadding="0" cellspacing="0" id="crm-event_receipt"
                           style="font-family: Arial, Verdana, sans-serif; text-align: center;">
                      <tr>
                        <td colspan="2">
@@ -89,7 +91,7 @@ class CRM_CiviMobileAPI_Install_Entity_UpdateMessageTemplate implements CRM_Civi
           'msg_html' => $newHtmlTemplateOffline,
         ]);
       } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(ts("Something wrong with updating message template " . $messageTemplateOffline['msg_title'] . ": " . $e->getMessage()));
+        throw new \API_Exception(E::ts("Something wrong with updating message template " . $messageTemplateOffline['msg_title'] . ": " . $e->getMessage()));
       }
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviMobileAPI_Api_CiviMobileBase {
 
   /**
@@ -45,7 +47,7 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
     $event->is_public = 1;
     $eventExistence = $event->find(TRUE);
     if (empty($eventExistence)) {
-      throw new api_Exception(ts('Event(id=' . $params['event_id'] . ') does not exist or is not public.'), 'public_event_does_not_exist');
+      throw new api_Exception(E::ts('Event(id=' . $params['event_id'] . ') does not exist or is not public.'), 'public_event_does_not_exist');
     }
 
     $contactId = $this->getContactId($params);
@@ -97,7 +99,7 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
         'last_name' => $params["last_name"],
       ]);
     } catch (CiviCRM_API3_Exception $e) {
-      throw new api_Exception(ts('Can not create Contact. Error: ') . $e->getMessage(), 'can_not_create_contact');
+      throw new api_Exception(E::ts('Can not create Contact. Error: ') . $e->getMessage(), 'can_not_create_contact');
     }
 
     try {
@@ -107,7 +109,7 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
         'is_primary' => 1,
       ]);
     } catch (CiviCRM_API3_Exception $e) {
-      throw new api_Exception(ts('Can not create Email to Contact. Error: ') . $e->getMessage(), 'can_not_create_email_to_contact');
+      throw new api_Exception(E::ts('Can not create Email to Contact. Error: ') . $e->getMessage(), 'can_not_create_email_to_contact');
     }
 
     return (int) $contact["id"];
@@ -127,7 +129,7 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
         'last_name' => $params["last_name"],
       ]);
     } catch (CiviCRM_API3_Exception $e) {
-      throw new api_Exception(ts('Can not update Contact. Error: ') . $e->getMessage(), 'can_not_update_contact');
+      throw new api_Exception(E::ts('Can not update Contact. Error: ') . $e->getMessage(), 'can_not_update_contact');
     }
   }
 

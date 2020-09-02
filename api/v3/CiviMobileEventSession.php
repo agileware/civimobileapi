@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * @param $params
  * @return array
@@ -30,49 +32,49 @@ function civicrm_api3_civi_mobile_event_session_get($params) {
 function _civicrm_api3_civi_mobile_event_session_create_spec(&$params) {
   $params['id'] = [
     'title' => 'Id',
-    'description' => ts('EventSession id'),
+    'description' => E::ts('EventSession id'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['title'] = [
     'title' => 'Title',
-    'description' => ts('Title'),
+    'description' => E::ts('Title'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['speakers'] = [
     'title' => 'Speakers',
-    'description' => ts('Speakers'),
+    'description' => E::ts('Speakers'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['venue_id'] = [
     'title' => 'Venue',
-    'description' => ts('Venue'),
+    'description' => E::ts('Venue'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['description'] = [
     'title' => 'Description',
-    'description' => ts('Description'),
+    'description' => E::ts('Description'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['start_time'] = [
     'title' => 'Start time',
-    'description' => ts('Start time'),
+    'description' => E::ts('Start time'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME
   ];
   $params['end_time'] = [
     'title' => 'End time',
-    'description' => ts('End time'),
+    'description' => E::ts('End time'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME
   ];
@@ -87,55 +89,55 @@ function _civicrm_api3_civi_mobile_event_session_create_spec(&$params) {
 function _civicrm_api3_civi_mobile_event_session_get_spec(&$params) {
   $params['id'] = [
     'title' => 'Id',
-    'description' => ts('EventSession id'),
+    'description' => E::ts('EventSession id'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['event_id'] = [
     'title' => 'Event id',
-    'description' => ts('Event id'),
+    'description' => E::ts('Event id'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['title'] = [
     'title' => 'Title',
-    'description' => ts('Title'),
+    'description' => E::ts('Title'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['speaker'] = [
     'title' => 'Speaker',
-    'description' => ts('Speaker'),
+    'description' => E::ts('Speaker'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['venue_id'] = [
     'title' => 'Venue',
-    'description' => ts('Venue'),
+    'description' => E::ts('Venue'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT
   ];
   $params['description'] = [
     'title' => 'Description',
-    'description' => ts('Description'),
+    'description' => E::ts('Description'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_STRING
   ];
   $params['start_time'] = [
     'title' => 'Start time',
-    'description' => ts('Start time'),
+    'description' => E::ts('Start time'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_TIMESTAMP
   ];
   $params['end_time'] = [
     'title' => 'End time',
-    'description' => ts('End time'),
+    'description' => E::ts('End time'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME
   ];
   $params['is_display'] = [
     'title' => 'Is display?',
-    'description' => ts('Is display?'),
+    'description' => E::ts('Is display?'),
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_BOOLEAN
   ];
@@ -171,7 +173,7 @@ function civicrm_api3_civi_mobile_event_session_delete($params) {
 function _civicrm_api3_civi_mobile_event_session_delete_spec(&$params) {
   $params['id'] = [
     'title' => 'Id',
-    'description' => ts('EventSession id'),
+    'description' => E::ts('EventSession id'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT
   ];

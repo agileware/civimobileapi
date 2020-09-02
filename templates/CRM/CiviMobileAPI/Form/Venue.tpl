@@ -2,12 +2,59 @@
 {literal}
   <style>
     .ui-dialog-content.ui-widget-content.modal-dialog {
-      height: auto!important;
+      height: auto !important;
+      max-height: 80vh !important;
     }
     .venue-attached-file {
       width: 100px;
       height: 100px;
       object-fit: cover;
+    }
+    .venue-color-picker {
+      width: 100px;
+      height: 20px;
+      border-radius: 3px;
+      border: 2px solid white;
+      position: relative;
+    }
+    .venue-color-picker .venue-color-list {
+      display: none;
+      list-style-type: none;
+      padding: 15px;
+      margin: 0;
+      width: 300px;
+      position: absolute;
+      background: white;
+      z-index: 20000;
+      top: -3px;
+      left: -3px;
+      flex-wrap: wrap;
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+      cursor: auto;
+      height: 150px;
+      overflow-y: auto;
+    }
+    .venue-color-picker .venue-color-list li{
+      display: block;
+      width: calc(50% - 24px);
+      margin: 10px;
+      height: 30px;
+      box-sizing: border-box;
+      border: 2px solid white;
+    }
+    .venue-color-picker .venue-color-list li i{
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      box-sizing: border-box;
+      border: 2px solid white;
+    }
+    .venue-color-picker .venue-color-list li.selected{
+      border: 2px solid black;
+    }
+    .clickable {
+      cursor: pointer;
     }
   </style>
 {/literal}
@@ -16,10 +63,10 @@
     <div class="crm-submit-buttons">
       {if $action eq 4}
         {if $can_edit_venue}
-          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=update&id='}{$venue.id}{"&location_id="}{$location_id}" class="edit button" title="{ts}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts}Edit{/ts}</span></a>
+          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=update&id='}{$venue.id}{"&location_id="}{$location_id}" class="edit button" title="{ts domain=com.agiliway.civimobileapi}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts domain=com.agiliway.civimobileapi}Edit{/ts}</span></a>
         {/if}
         {if $can_delete_venue}
-          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=delete&id='}{$venue.id}{"&location_id="}{$location_id}" class="delete button" title="{ts}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts}Delete{/ts}</span></a>
+          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=delete&id='}{$venue.id}{"&location_id="}{$location_id}" class="delete button" title="{ts domain=com.agiliway.civimobileapi}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts domain=com.agiliway.civimobileapi}Delete{/ts}</span></a>
         {/if}
       {/if}
       {include file="CRM/common/formButtons.tpl" location="top"  multiple="multiple"}
@@ -44,9 +91,23 @@
           <td class="view-value">{$form.weight.html}
           </td>
         </tr>
+        <tr role="row">
+          <td class="label"><label>{ts domain=com.agiliway.civimobileapi}Color{/ts}</label></td>
+          <td class="view-value">{$form.color.html}
+            <div class="venue-color-picker clickable" onclick="CRM.$('.venue-color-list').css('display', 'flex')">
+              <ul class="venue-color-list">
+                {foreach from=$colors item=color}
+                  <li {if $color eq $selectedColor}class="selected"{/if}>
+                    <i style="background-color: {$color.background};border-color: {$color.border}" data-color='{$color|@json_encode}' onclick="selectColor(this)"></i>
+                  </li>
+                {/foreach}
+              </ul>
+            </div>
+          </td>
+        </tr>
       </table>
       <fieldset id="location_g" class="crm-collapsible">
-        <legend class="collapsible-title">{ts}Location{/ts}</legend>
+        <legend class="collapsible-title">{ts domain=com.agiliway.civimobileapi}Location{/ts}</legend>
         <div id="location_screen">
           <table class="form-layout-compressed">
             <tr role="row">
@@ -58,29 +119,10 @@
               <td class="view-value">{$form.address_description.html}
               </td>
             </tr>
-            <tr role="row">
-              <td class="label">{$form.attached_file.label} {help id="scheme-help"}</td>
-              <td class="view-value">
-                {$form.attached_file.html}
-                {if $venue.attached_files[0].url}
-                  <div>
-                    {if $venue.attached_files[0].type eq 'image/jpeg' or $venue.attached_files[0].type eq 'image/png'}
-                      <a href="{$venue.attached_files[0].url}" class="crm-image-popup">
-                        <img class="venue-attached-file" src="{$venue.attached_files[0].url}">
-                      </a>
-                    {else}
-                      <a href="{$venue.attached_files[0].url}" target="_blank" class="attached-file-link"><i
-                                class="crm-i fa-file"></i> View attached file</a>
-                    {/if}
-                  </div>
-                  <a class="delete-venue-attached-file" style="color:red" href="javascript:deleteVenueImage();"><i
-                            class="crm-i fa-trash"></i> Delete venue file</a>
-                {/if}
-              </td>
-            </tr>
           </table>
         </div>
       </fieldset>
+      {include file="CRM/Form/attachment.tpl"}
     {/if}
 
     {if $action eq 4 } {*view*}
@@ -97,9 +139,15 @@
           <td class="label">{$form.is_active.label}</td>
           <td>{if $venue.is_active eq 1}Yes{else}No{/if}</td>
         </tr>
+        <tr class="odd" role="row">
+          <td class="label"><label>Color</label></td>
+          <td>
+            <div class="venue-color-picker" style="background:{$venue.background_color};border-color:{$venue.border_color}"></div>
+          </td>
+        </tr>
       </table>
       <fieldset id="location" class="crm-collapsible">
-        <legend class="collapsible-title">{ts}Location{/ts}</legend>
+        <legend class="collapsible-title">{ts domain=com.agiliway.civimobileapi}Location{/ts}</legend>
         <div id="location_screen">
           <table class="crm-info-panel">
             <tr class="odd" role="row">
@@ -110,23 +158,12 @@
               <td class="label">{$form.address_description.label}</td>
               <td>{$venue.address_description}</td>
             </tr>
-            <tr class="odd" role="row">
-              <td class="label">{$form.attached_file.label}</td>
-              <td>
-                {if $venue.attached_files[0].url}
-                  {if $venue.attached_files[0].type eq 'image/jpeg' or $venue.attached_files[0].type eq 'image/png'}
-                    <a href="{$venue.attached_files[0].url}" class="crm-image-popup">
-                        <img class="venue-attached-file" src="{$venue.attached_files[0].url}">
-                    </a>
-                  {else}
-                    <a href="{$venue.attached_files[0].url}" target="_blank"><i class="crm-i fa-file"></i> View attached file</a>
-                  {/if}
-                {/if}
-              </td>
-            </tr>
           </table>
         </div>
       </fieldset>
+      <table class="crm-info-panel">
+        {include file="CRM/Form/attachment.tpl"}
+      </table>
     {/if}
 
     {if $action eq 8 } {*delete*}
@@ -135,10 +172,10 @@
     <div class="crm-submit-buttons">
       {if $action eq 4}
         {if $can_edit_venue}
-          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=update&id='}{$venue.id}{"&location_id="}{$location_id}" class="edit button" title="{ts}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts}Edit{/ts}</span></a>
+          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=update&id='}{$venue.id}{"&location_id="}{$location_id}" class="edit button" title="{ts domain=com.agiliway.civimobileapi}Edit{/ts}"><span><i class="crm-i fa-pencil"></i> {ts domain=com.agiliway.civimobileapi}Edit{/ts}</span></a>
         {/if}
         {if $can_delete_venue}
-          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=delete&id='}{$venue.id}{"&location_id="}{$location_id}" class="delete button" title="{ts}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts}Delete{/ts}</span></a>
+          <a href="{crmURL p='civicrm/civimobile/venue' q='reset=1&action=delete&id='}{$venue.id}{"&location_id="}{$location_id}" class="delete button" title="{ts domain=com.agiliway.civimobileapi}Delete{/ts}"><span><i class="crm-i fa-trash"></i> {ts domain=com.agiliway.civimobileapi}Delete{/ts}</span></a>
         {/if}
       {/if}
       {include file="CRM/common/formButtons.tpl" location="bottom"  multiple="multiple"}
@@ -146,33 +183,35 @@
   </div>
 </div>
 
-{if $venue.attached_files[0].url}
+{if $action eq 1 or $action eq 2}
 {literal}
   <script>
-    function deleteVenueImage() {
-      var confirmPopup = confirm("Are you sure you want to delete this image ?");
-      if (confirmPopup == true) {
-        CRM.api3('CiviMobileVenueAttachFile', 'delete', {
-          "id": {/literal}{$venue.id}{literal}
-        }).then(function (result) {
-          if (result.is_error == 0) {
-            if (CRM.$('.ui-dialog').length) {
-              CRM.alert(ts('File deleted'), ts('Success'), 'success');
-            }
-            CRM.$('.venue-attached-file').remove();
-            CRM.$('.delete-venue-attached-file').remove();
-            CRM.$('.attached-file-link').remove();
+    CRM.$(function($) {
+      renewColor();
+    });
 
-          } else if (result.error_code == 'venue_attached_file_not_deleted') {
-            CRM.alert(ts('Something went wrong. Try to reload page.'), ts('Error'), 'Error');
-          } else {
-            CRM.alert(ts('Something went wrong. Try to reload page. Error message: ') + result.error_message, ts('Error'), 'Error');
-          }
-        }, function (error) {
-          CRM.alert(ts('Something went wrong. Try to reload page.'), ts('Error'), 'Error');
-        });
-      }
+    function renewColor() {
+      const selectedColor = JSON.parse(CRM.$('.CRM_CiviMobileAPI_Form_Venue input[name="color"]').val());
+      CRM.$('.venue-color-picker').css({
+        borderColor: selectedColor.border,
+        background: selectedColor.background
+      });
     }
+
+    function selectColor(el) {
+      CRM.$('.venue-color-picker li.selected').removeClass('selected');
+      CRM.$(el).parent('li').addClass('selected');
+      CRM.$('.CRM_CiviMobileAPI_Form_Venue input[name="color"]').val(JSON.stringify(CRM.$(el).data('color')));
+      renewColor();
+    }
+
+    CRM.$(document).mouseup(function(e) {
+      var container = CRM.$(".venue-color-list");
+
+      if (!container.is(e.target) && container.has(e.target).length === 0) {
+        container.hide();
+      }
+    });
   </script>
 {/literal}
 {/if}

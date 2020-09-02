@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets venues
  *
@@ -11,11 +13,24 @@ function civicrm_api3_civi_mobile_venue_get($params) {
   if (!CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForGetEventVenues()) {
     throw new api_Exception('You don`t have enough permissions.', 'do_not_have_enough_permissions');
   }
+  $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
   $preparedVenues = [];
-
   $venues = CRM_CiviMobileAPI_BAO_LocationVenue::getAll($params);
 
   foreach ($venues as $venue) {
+    $venueFiles = CRM_Core_BAO_File::getEntityFile('civicrm_civimobile_location_venue', $venue['id']);
+    $preparedFiles = [];
+    foreach ($venueFiles as $file) {
+      $url = CRM_Utils_System::url('civicrm/file', ['filename' => $file['fileName'], 'mime-type' => $file['mime_type']], TRUE);
+      if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
+        $url = preg_replace('/administrator\//', 'index.php', $url);
+      }
+      $preparedFiles[] = [
+        'url' => $url,
+        'type' => $file['mime_type']
+      ];
+    }
+
     $preparedVenue = [
       'id' => $venue['id'],
       'name' => $venue['name'],
@@ -29,12 +44,7 @@ function civicrm_api3_civi_mobile_venue_get($params) {
       'background_color' => $venue['background_color'],
       'border_color' => $venue['border_color'],
       'weight' => $venue['weight'],
-      'attached_files' => !empty($venue['attached_file_url']) ? [
-        [
-          'url' => $venue['attached_file_url'],
-          'type' => $venue['attached_file_type'],
-        ]
-      ] : []
+      'attached_files' => $preparedFiles
     ];
 
     if (!empty($params['sequential'])) {
@@ -56,42 +66,37 @@ function civicrm_api3_civi_mobile_venue_get($params) {
 function _civicrm_api3_civi_mobile_venue_get_spec(&$params) {
   $params['location_id'] = [
     'title' => 'Location Id',
-    'description' => ts('Location Id'),
+    'description' => E::ts('Location Id'),
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['name'] = [
     'title' => 'Name',
-    'description' => ts('Name'),
+    'description' => E::ts('Name'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['id'] = [
     'title' => 'Venue Id',
-    'description' => ts('Venue Id'),
+    'description' => E::ts('Venue Id'),
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['is_active'] = [
     'title' => 'Is active',
-    'description' => ts('Is active'),
+    'description' => E::ts('Is active'),
     'type' => CRM_Utils_Type::T_BOOLEAN,
   ];
   $params['description'] = [
     'title' => 'Description',
-    'description' => ts('Description'),
-    'type' => CRM_Utils_Type::T_STRING,
-  ];
-  $params['attached_file_url'] = [
-    'title' => 'Attached file',
-    'description' => ts('Attached file'),
+    'description' => E::ts('Description'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['address'] = [
     'title' => 'Address',
-    'description' => ts('Address'),
+    'description' => E::ts('Address'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['address_description'] = [
     'title' => 'Address_description',
-    'description' => ts('Address_description'),
+    'description' => E::ts('Address_description'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
 }
@@ -118,62 +123,52 @@ function civicrm_api3_civi_mobile_venue_create($params) {
 function _civicrm_api3_civi_mobile_venue_create_spec(&$params) {
   $params['location_id'] = [
     'title' => 'Location Id',
-    'description' => ts('Location Id'),
+    'description' => E::ts('Location Id'),
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['name'] = [
     'title' => 'Name',
-    'description' => ts('Name'),
+    'description' => E::ts('Name'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['id'] = [
     'title' => 'Venue Id',
-    'description' => ts('Venue Id'),
+    'description' => E::ts('Venue Id'),
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['is_active'] = [
     'title' => 'Is active',
-    'description' => ts('Is active'),
+    'description' => E::ts('Is active'),
     'type' => CRM_Utils_Type::T_BOOLEAN,
   ];
   $params['description'] = [
     'title' => 'Description',
-    'description' => ts('Description'),
-    'type' => CRM_Utils_Type::T_STRING,
-  ];
-  $params['attached_file_url'] = [
-    'title' => 'Attached file',
-    'description' => ts('Attached file'),
-    'type' => CRM_Utils_Type::T_STRING,
-  ];
-  $params['attached_file_type'] = [
-    'title' => 'Attached file type',
-    'description' => ts('Attached file type'),
+    'description' => E::ts('Description'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['address'] = [
     'title' => 'Address',
-    'description' => ts('Address'),
+    'description' => E::ts('Address'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['address_description'] = [
     'title' => 'Address description',
-    'description' => ts('Address description'),
+    'description' => E::ts('Address description'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['background_color'] = [
     'title' => 'Background color',
-    'description' => ts('Background color'),
+    'description' => E::ts('Background color'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['border_color'] = [
     'title' => 'Border color',
-    'description' => ts('Border color'),
+    'description' => E::ts('Border color'),
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['weight'] = [
     'title' => 'Weight',
-    'description' => ts('Weight'),
+    'description' => E::ts('Weight'),
     'type' => CRM_Utils_Type::T_INT,
   ];
 }
@@ -211,7 +206,7 @@ function civicrm_api3_civi_mobile_venue_delete($params) {
 function _civicrm_api3_civi_mobile_venue_delete_spec(&$params) {
   $params['id'] = [
     'title' => 'Venue Id',
-    'description' => ts('Venue Id'),
+    'description' => E::ts('Venue Id'),
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 1
   ];

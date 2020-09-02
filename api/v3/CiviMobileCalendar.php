@@ -1,5 +1,7 @@
 <?php
 
+use CRM_CiviMobileAPI_ExtensionUtil as E;
+
 /**
  * Gets events, cases and activities for calendar
  *
@@ -23,25 +25,25 @@ function civicrm_api3_civi_mobile_calendar_get($params) {
 function _civicrm_api3_civi_mobile_calendar_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
-    'description' => ts('Contact ID'),
+    'description' => E::ts('Contact ID'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_INT,
   ];
   $params['start'] = [
     'title' => 'Start date',
-    'description' => ts('Start date for searching (Y-m-d H:i:s)'),
+    'description' => E::ts('Start date for searching (Y-m-d H:i:s)'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['end'] = [
     'title' => 'End  date',
-    'description' => ts('End date for searching (Y-m-d H:i:s)'),
+    'description' => E::ts('End date for searching (Y-m-d H:i:s)'),
     'api.required' => 1,
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['type'] = [
     'title' => 'Type',
-    'description' => ts('Event type'),
+    'description' => E::ts('Event type'),
     'api.default' => ['all'],
     'type' => CRM_Utils_Type::T_STRING,
     'options' => [

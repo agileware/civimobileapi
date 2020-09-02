@@ -1,6 +1,7 @@
 <?php
 
 use CRM_CiviMobileAPI_Utils_JsonResponse as JsonResponse;
+use CRM_CiviMobileAPI_ExtensionUtil as E;
 
 class CRM_CiviMobileAPI_Page_PublicApi_Middleware {
 
@@ -50,7 +51,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Middleware {
    */
   public static function validateOptionGroupName($params) {
     if (empty($params['option_group_id'])) {
-      JsonResponse::sendErrorResponse(ts("'option_group_id' is required field."), 'option_group_id', 'required_field');
+      JsonResponse::sendErrorResponse(E::ts("'option_group_id' is required field."), 'option_group_id', 'required_field');
     }
 
     $availableOptionGroupId = [
@@ -59,7 +60,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Middleware {
     ];
 
     if (!in_array($params['option_group_id'], $availableOptionGroupId)) {
-      JsonResponse::sendErrorResponse(ts("Not allow value field for 'option_group_id' field."), 'option_group_id', 'not_allow_value');
+      JsonResponse::sendErrorResponse(E::ts("Not allow value field for 'option_group_id' field."), 'option_group_id', 'not_allow_value');
     }
 
     return $params;
@@ -101,7 +102,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Middleware {
    */
   public static function isPublicEvent($params) {
     if (empty($params['event_id'])) {
-      JsonResponse::sendErrorResponse(ts("'event_id' is required field."), 'event_id', 'required_field');
+      JsonResponse::sendErrorResponse(E::ts("'event_id' is required field."), 'event_id', 'required_field');
     }
 
     $event = new CRM_Event_BAO_Event();
@@ -109,7 +110,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Middleware {
     $event->is_public = 1;
     $eventExistence = $event->find(TRUE);
     if (empty($eventExistence)) {
-      JsonResponse::sendErrorResponse(ts('Event(id = %1) does not exist or is not public.', [1 => $params['event_id']]), 'event_id', 'public_event_does_not_exist');
+      JsonResponse::sendErrorResponse(E::ts('Event(id = %1) does not exist or is not public.', [1 => $params['event_id']]), 'event_id', 'public_event_does_not_exist');
     }
 
     return $params;

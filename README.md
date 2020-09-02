@@ -1,6 +1,6 @@
 # CiviMobileAPI
 
-The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM component that allows to use a mobile application [CiviMobile](https://civimobile.org).
+The **CiviMobileAPI** extension is a CiviCRM component that allows to use a mobile application [CiviMobile](https://civimobile.org).
 
 [CiviMobile](https://civimobile.org) is a native mobile application granting CiviCRM users immediate, secure and high-speed connection to CiviCRM, so that they leverage the combined benefits of the software and their smartphones.
 
@@ -9,7 +9,7 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 [CiviMobile](https://civimobile.org) Features:
 
 - **Graphical Calendar** - displays all the schedule information in a graphical calendar on the dashboard.
-- **Contacts** - users can view the list of all contacts in the system, add new contacts and edit contact information. A variety of contact information options is available including several phone numbers, websites, social media profiles, etc. The app supports custom fields that are configured in CiviCRM.
+- **Contacts** - ability to view the list of contacts in the system, add new and sync them to contact book on user device. Contact information is editable and includes a variety of options, like several phone numbers, websites, social media profiles, etc. The app supports custom fields that are configured in CiviCRM.
 - **Groups and Tags** - ability to organize the contacts by adding tags and creating contact groups.
 - **Membership** - users can access and renew their membership.
 - **Contributions** - access to the history of all contributions, aggregated total and average payments.
@@ -17,7 +17,7 @@ The **CiviMobileAPI** extension (`com.agiliway.civimobileapi`) is a CiviCRM comp
 - **Events &amp; Registration** - ability to filter all the available events by type, date or title, check the event description, register yourself or others for the chosen event, view past and future events, share the information about events, and view events&#39; locations on the map.
 - **Event Agenda** - supports multitrack event schedule with multiple sessions, speakers and venues. There is ability to view session and speaker details as well as mark favorite sessions.
 - **Participants Management &amp; Check-In** - ability to view and manage event participants and their statuses. Additionally, a user can use Check-In functionality to mark participants who have attended an event while an built-in QR scanner will make this process fast and reliable.
-- **Payment** - ability to register for paid events directly through the app.
+- **Payment** - ability to register for paid events and renew membership directly through the app.
 - **Navigation** - users can switch to map navigation to easily find a direction to the location (e.g. a branch office or an event location).
 - **Cases** - immediate access to cases details; ability to change the status of the case.
 - **Activities** - access user&#39;s activities details; ability to add, edit and assign activities.
