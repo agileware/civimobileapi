@@ -18,6 +18,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minPasswordLength() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $minPasswordLength = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minPasswordLength();
@@ -40,6 +41,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function maxPasswordLength() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $maxPasswordLength = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::maxPasswordLength();
@@ -62,6 +64,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minUsernameLength() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $minUsernameLength = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minUsernameLength();
@@ -84,6 +87,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function maxUsernameLength() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $maxUsernameLength = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::maxUsernameLength();
@@ -106,6 +110,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minPasswordIntegers() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $minPasswordIntegers = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minPasswordIntegers();
@@ -128,6 +133,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minPasswordSymbols() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
       $minPasswordSymbols = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minPasswordSymbols();
@@ -150,6 +156,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minPasswordUpperCase() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
         $minPasswordUpperCase = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minPasswordUpperCase();
@@ -172,6 +179,7 @@ class CRM_CiviMobileAPI_Utils_Cms_Registration {
    */
   public static function minPasswordLowerCase() {
     switch (CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem()) {
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7:
       case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6:
       $minPasswordLowerCase = CRM_CiviMobileAPI_Utils_Cms_Registration_Drupal::minPasswordLowerCase();

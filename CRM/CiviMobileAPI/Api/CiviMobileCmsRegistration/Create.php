@@ -25,13 +25,14 @@ class CRM_CiviMobileAPI_Api_CiviMobileCmsRegistration_Create extends CRM_CiviMob
         'api.Email.create' => ['email' => $this->validParams["email"]],
         'first_name' => $this->validParams["first_name"],
         'last_name' => $this->validParams["last_name"],
+        'sequential' => 1
       ]);
     } catch (CiviCRM_API3_Exception $e) {
       $transaction->rollback();
       throw new api_Exception("CiviCRM creating Contact error: " . $e->getMessage(), 'creating_contact_error');
     }
 
-    $this->validParams['contactID'] = $contact['id'];
+    $this->validParams['contactID'] = $contact['values'][0]['id'];
 
     if (!CRM_Core_BAO_CMSUser::create($this->validParams, 'email')) {
       $transaction->rollback();
@@ -43,9 +44,14 @@ class CRM_CiviMobileAPI_Api_CiviMobileCmsRegistration_Create extends CRM_CiviMob
     $message = 'User was registered.';
     $successCode = 'registration_success';
 
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7) {
-      $isEmailVerification = variable_get('user_email_verification', TRUE);
-      $isAdministratorApproval = variable_get('user_register', TRUE) == 2;
+    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
+      if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7) {
+        $isEmailVerification = variable_get('user_email_verification', TRUE);
+        $isAdministratorApproval = variable_get('user_register', TRUE) == 2;
+      } elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
+        $isEmailVerification = \Drupal::config('user.settings')->get('verify_mail');
+        $isAdministratorApproval = \Drupal::config('user.settings')->get('register') == 'visitors_admin_approval';
+      }
 
       if ($isEmailVerification && $isAdministratorApproval) {
         $message = 'User was registered. You must to check your email to verify your account. Administrator will check your account and confirm user registration request.';

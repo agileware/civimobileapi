@@ -109,6 +109,9 @@ class CRM_CiviMobileAPI_Page_Auth extends CRM_Core_Page {
           $isBlocked = TRUE;
         }
         break;
+      case CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8:
+        $isBlocked = $user->isBlocked();
+        break;
     }
 
     return $isBlocked;

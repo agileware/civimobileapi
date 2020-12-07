@@ -15,3 +15,7 @@
 .crm-container table.form-layout-compressed {
   width: 100%;
 }
+
+.crm-container table.form-layout-compressed td.label {
+  display: table-cell;
+}
