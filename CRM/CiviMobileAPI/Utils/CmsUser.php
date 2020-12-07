@@ -6,6 +6,11 @@
 class CRM_CiviMobileAPI_Utils_CmsUser {
 
   /**
+   * Drupal 8 CMS
+   */
+  const CMS_DRUPAL8 = 'Drupal8';
+
+  /**
    * Drupal 7 CMS
    */
   const CMS_DRUPAL7 = 'Drupal';
@@ -138,6 +143,7 @@ class CRM_CiviMobileAPI_Utils_CmsUser {
    */
   public function validateCMS() {
     return in_array($this->system, [
+      self::CMS_DRUPAL8,
       self::CMS_DRUPAL7,
       self::CMS_WORDPRESS,
       self::CMS_JOOMLA,
@@ -155,6 +161,15 @@ class CRM_CiviMobileAPI_Utils_CmsUser {
   public function validateAccount($email, $password) {
     $uid = FALSE;
     switch ($this->system) {
+      case self::CMS_DRUPAL8:
+        $account = $this->getDrupalAccount($email);
+        if($account) {
+          $password_hasher = \Drupal::service('password');
+          if ($password_hasher->check($password, $account->getPassword())) {
+            $uid = $account->uid->value;
+          }
+        }
+        break;
       case self::CMS_DRUPAL7:
         $account = $this->getDrupalAccount($email);
         require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
@@ -201,6 +216,7 @@ class CRM_CiviMobileAPI_Utils_CmsUser {
   public function searchAccount($identificator) {
     $account = FALSE;
     switch ($this->system) {
+      case self::CMS_DRUPAL8:
       case self::CMS_DRUPAL7:
         $account = $this->getDrupalAccount($identificator);
         break;

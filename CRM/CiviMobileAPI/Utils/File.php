@@ -71,36 +71,20 @@ class CRM_CiviMobileAPI_Utils_File {
   public static function getFileUrl($entityId, $entityTable, $filename) {
     $url = '';
     $files = CRM_Core_BAO_File::getEntityFile($entityTable, $entityId);
-    $config = CRM_Core_Config::singleton();
+    $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
 
     foreach ($files as $file) {
       if ((!empty($file['fileName']) && $file['fileName'] == $filename)
         || (!empty($file['cleanName']) && $file['cleanName'] == $filename)) {
-        $url = $file['url'];
+        $url = CRM_Utils_System::url('civicrm/file', ['filename' => $filename, 'mime-type' => $file['mime_type']], TRUE);
       }
     }
 
-    if (substr($url, 0, 1) == '/') {
-      $url = substr($url, 1);
-    }
-    //CiviCRM sometimes generate url with domain
-    $url = str_replace($config->userFrameworkBaseURL, "", $url);
-
-    $url = urldecode($url);
-
-    $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_WORDPRESS ) {
+    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
+      $url = preg_replace('/administrator\//', 'index.php', $url);
+    } elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_WORDPRESS ) {
       $url = str_replace("wp-admin/admin.php", "index.php", $url);
     }
-
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA ) {
-      $url = str_replace("administrator/", "", $config->userFrameworkBaseURL) . $url;
-      $url = str_replace("administrator/", "index.php", $url);
-    } else {
-      $url = $config->userFrameworkBaseURL . $url;
-    }
-
-    $url = htmlspecialchars_decode($url);
 
     return $url;
   }

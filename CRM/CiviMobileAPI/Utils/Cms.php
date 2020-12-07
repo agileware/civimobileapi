@@ -22,6 +22,9 @@ class CRM_CiviMobileAPI_Utils_Cms {
     elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7) {
       return variable_get('site_name', '');
     }
+    elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
+      return \Drupal::config('system.site')->get("name");
+    }
 
     return null;
   }
@@ -41,7 +44,7 @@ class CRM_CiviMobileAPI_Utils_Cms {
     elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA ) {
       return str_replace("/administrator/", "/", $config->userFrameworkBaseURL) . "?format=feed&type=rss";
     }
-    elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7) {
+    elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL6 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL7 || $currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
       return $config->userFrameworkBaseURL . "rss.xml";
     }
 

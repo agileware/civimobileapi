@@ -42,9 +42,14 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
     );
 
     $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
+    $config = CRM_Core_Config::singleton();
     $url = CRM_Utils_System::url('civicrm/event/register', 'id=' . $this->validParams['event_id'] . '&reset=1&cmbHash=' . $cmbHash);
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA ) {
+
+    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
       $url = str_replace("administrator/", "", $url);
+    } elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
+      $absoluteUrl = CRM_Utils_System::url('civicrm/event/register', 'id=' . $this->validParams['event_id'] . '&reset=1&cmbHash=' . $cmbHash, TRUE, NULL, FALSE);
+      $url = '/' . str_replace($config->userFrameworkBaseURL, "", $absoluteUrl);
     }
 
     $result['link'] = html_entity_decode($url);
