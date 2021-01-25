@@ -29,6 +29,7 @@ class CRM_CiviMobileAPI_Page_PublicSettings extends CRM_Core_Page {
         'is_wp_rest_plugin_active' => (int) (new CRM_CiviMobileAPI_Utils_RestPath())->isWpRestPluginActive(),
         'cms' => CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem(),
         'crm_version' => CRM_Utils_System::version(),
+        'time_zone_utc_offset' => CRM_CiviMobileAPI_Utils_Cms::getTimeZoneUTCOffset(),
         'civicrm_enable_components' => CRM_CiviMobileAPI_Utils_CiviCRM::getEnabledComponents(),
         'ext_version' => CRM_CiviMobileAPI_Utils_VersionController::getInstance()->getCurrentFullVersion(),
         'is_civimobile_ext_has_right_folder_name' => (int) CRM_CiviMobileAPI_Utils_Extension::hasExtensionRightFolderName(),

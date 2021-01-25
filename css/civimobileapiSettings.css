@@ -12,6 +12,11 @@
   padding: 0.25em 0.5em;
 }
 
+#itemsToShowMessage .crm-marker {
+  padding: 0;
+  margin: 0;
+}
+
 .crm-container table.form-layout-compressed {
   width: 100%;
 }

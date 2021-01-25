@@ -22,6 +22,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
   const QR_IMAGE = 'civi_mobile_qr_image';
   const PUBLIC_KEY = 'public_key';
   const AGENDA_PARTICIPANT_BIO = 'civi_mobile_agenda_participant_bio';
+  const SURVEY_GOTV_STATUS = 'civi_mobile_survey_gotv_status';
 
   /**
    * Params for checking Entity existence
@@ -85,6 +86,15 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
         'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::AGENDA_PARTICIPANT,
         'html_type' => 'TextArea',
         'data_type' => 'Memo',
+      ],
+      [
+        'name' => self::SURVEY_GOTV_STATUS,
+        'label' => E::ts('Is GOTV?'),
+        'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY,
+        'html_type' => 'Radio',
+        'data_type' => 'Boolean',
+        'is_view' => 1,
+        'default_value' => 0
       ],
     ];
   }

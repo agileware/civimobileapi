@@ -68,7 +68,8 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             'loc_block_id.address_id.postal_code',
             'loc_block_id.address_id.geo_code_1',
             'loc_block_id.address_id.geo_code_2',
-            'url'
+            'url',
+            'registered_participants_count'
           ],
           'middleware' => [
             [
@@ -380,10 +381,6 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
             ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
-            ],
           ],
           'transforms' => []
         ]
@@ -425,10 +422,6 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
             ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
-            ],
           ],
           'transforms' => []
         ]
@@ -452,10 +445,6 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             [
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
-            ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
             ],
           ],
           'transforms' => []
@@ -489,15 +478,75 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
             ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
-            ],
           ],
           'transforms' => []
         ]
       ]
-    ]
+    ],
+    [
+      'entityName' => 'CiviMobileSurvey',
+      'availableActions' => [
+        [
+          'actionName' => 'get_structure',
+          'actionPermissions' => ['sign CiviCRM Petition'],
+          'availableParams' => [
+            'id'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'title',
+            'is_active',
+            'is_petition',
+            'activity_type_id',
+            'profiles',
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+          ],
+          'transforms' => []
+        ],
+        [
+          'actionName' => 'sign',
+          'actionPermissions' => ['sign CiviCRM Petition'],
+          'availableParams' => [
+            'survey_id',
+            'values',
+          ],
+          'availableReturnFields' => [
+            'message',
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+          ],
+          'transforms' => []
+        ],
+        [
+          'actionName' => 'get_contact_surveys',
+          'actionPermissions' => ['sign CiviCRM Petition'],
+          'availableParams' => [
+            'survey_id'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'title',
+            'is_active'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ],
+    ],
   ];
 
 }

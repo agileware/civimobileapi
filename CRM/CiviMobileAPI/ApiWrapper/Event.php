@@ -54,6 +54,12 @@ class CRM_CiviMobileAPI_ApiWrapper_Event implements API_Wrapper {
 
     if ($apiRequest['action'] == 'get' && !empty($result['values'])) {
       foreach ($result['values'] as $key => $event) {
+        $result['values'][$key]['registered_participants_count'] = civicrm_api3('Participant', 'get', [
+          'sequential' => 1,
+          'return' => ["id"],
+          'event_id' => $event['id'],
+        ])['count'];
+
         if (isset($event['currency'])) {
           if (!empty($event['currency'])) {
             $result['values'][$key]['currency_symbol'] = CRM_CiviMobileAPI_Utils_Currency::getSymbolByName($event['currency']);

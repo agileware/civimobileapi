@@ -31,7 +31,7 @@
 }
 
 .checklist-table-cell.full-cell {
-  width: 50%;
+  width: calc(100% - 20px);
 }
 
 .checklist-table-cell.status-icon {
@@ -49,4 +49,17 @@
 
 .checklist-table-cell.status-icon .fa-exclamation-triangle {
   color: orange;
+}
+
+.checklist-info-table {
+  margin-top: 10px;
+}
+
+.checklist-preloader {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.checklist-preloader img {
+  width: 60px;
 }

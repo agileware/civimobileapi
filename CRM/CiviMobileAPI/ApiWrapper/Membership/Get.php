@@ -66,8 +66,25 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   private function getAdditionalInfo($membership, $apiRequest) {
+    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
+      return [];
+    }
+
     $config = CRM_Core_Config::singleton();
     $additionalInfo = [];
+
+    if (!empty($apiRequest['params']['membership_contact_id'])) {
+      try {
+        $lastPayment = civicrm_api3('MembershipPayment', 'getsingle', [
+          'return' => ["contribution_id.receive_date", "membership_id.contact_id"],
+          'membership_id' => $membership['id'],
+          'membership_id.contact_id' => $apiRequest['params']['membership_contact_id'],
+          'options' => ['sort' => "contribution_id.receive_date desc", 'limit' => 1],
+        ]);
+
+        $additionalInfo['last_payment_receive_date'] = $lastPayment['contribution_id.receive_date'];
+      } catch (Exception $e) {}
+    }
 
     if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'renewal_amount') !== false) {
       $membershipTypeId = !empty($membership['membership_type_id']) ? $membership['membership_type_id'] : CRM_Core_DAO::getFieldValue('CRM_Member_DAO_Membership', $membership['id'], 'membership_type_id');
@@ -93,6 +110,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   private function fillRelatedCount($apiRequest, $result) {
+    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
+      return $result;
+    }
+
     if (!(empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'related_count') !== false)) {
       return $result;
     }
@@ -147,6 +168,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return mixed
    */
   private function fillByRelationship($apiRequest, $result) {
+    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
+      return $result;
+    }
+
     if (!(empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'by_relationship_contact_id') !== false)) {
       return $result;
     }
@@ -189,9 +214,9 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
               WHEN  contact_id_b = %1 AND contact_id_a = %2 THEN 'a_b'
             END AS 'direction'
           FROM civicrm_relationship
-          WHERE relationship_type_id IN ($ownerRelationshipTypes) 
+          WHERE relationship_type_id IN ($ownerRelationshipTypes)
             AND (
-              (contact_id_a = %1 AND contact_id_b = %2 ) 
+              (contact_id_a = %1 AND contact_id_b = %2 )
               OR (contact_id_b = %1 AND contact_id_a = %2 )
             )
         ";

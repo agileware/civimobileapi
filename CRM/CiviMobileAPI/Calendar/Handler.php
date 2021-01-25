@@ -112,8 +112,8 @@ class CRM_CiviMobileAPI_Calendar_Handler {
         civicrm_event.title,
         event_type_value.label AS event_type_label,
         civicrm_event.event_type_id AS event_type_id,
-        CONVERT_TZ(civicrm_event.start_date, @@session.time_zone, "+00:00") AS start,
-        CONVERT_TZ(civicrm_event.end_date, @@session.time_zone, "+00:00") AS end
+        civicrm_event.start_date AS start,
+        civicrm_event.end_date AS end
       FROM civicrm_event
       LEFT JOIN civicrm_participant ON civicrm_participant.event_id = civicrm_event.id
       LEFT JOIN `civicrm_option_group` AS event_type_group ON event_type_group.name = \'event_type\'

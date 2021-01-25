@@ -189,7 +189,8 @@ function civicrm_api3_civi_mobile_venue_delete($params) {
   } catch (Exception $e) {
     throw new api_Exception('Venue does not exists.', 'venue_does not exists.');
   }
-  CRM_CiviMobileAPI_Utils_Agenda_Venue::removeVenueAttach($params['id']);
+
+  CRM_Core_BAO_File::deleteEntityFile('civicrm_civimobile_location_venue', $params['id']);
   $venue->del($params['id']);
 
   return civicrm_api3_create_success([

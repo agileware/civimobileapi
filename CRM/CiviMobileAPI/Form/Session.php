@@ -281,7 +281,9 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
    * AddRules hook
    */
   public function addRules() {
-    $this->addFormRule([CRM_CiviMobileAPI_Form_Session::class, 'validateForm']);
+    if ($this->getAction() == CRM_Core_Action::ADD || $this->getAction() == CRM_Core_Action::UPDATE) {
+      $this->addFormRule([self::class, 'validateForm']);
+    }
   }
 
   /**
@@ -293,57 +295,55 @@ class CRM_CiviMobileAPI_Form_Session extends CRM_Core_Form {
    */
   public static function validateForm($values) {
     $errors = [];
-    if ($values["_qf_Session_submit"] != 'Delete') {
-      if (!empty($values['speakers'])) {
-        $values['speakers'] = explode(',', $values['speakers']);
+    if (!empty($values['speakers'])) {
+      $values['speakers'] = explode(',', $values['speakers']);
+    }
+    $sessionId = isset($values['session_id']) ? $values['session_id'] : NULL;
+    $startTime = $values["date"] . ' ' . $values["start_time"];
+    $endTime = $values["date"] . ' ' . $values["end_time"];
+    try {
+      $event = CRM_Event_BAO_Event::findById($values["event_id"]);
+    } catch (Exception $e) {
+      $errors["event_id"] = E::ts('Invalid eventId parameter.');
+      return $errors;
+    }
+    if (empty($values["title"])) {
+      $errors["title"] = E::ts('Title can`t be empty!');
+    }
+    if (strlen($values["title"]) > 255) {
+      $errors["title"] = E::ts('Title length must be less than 255 characters.');
+    }
+    if (strtotime($startTime) >= strtotime($endTime)) {
+      $errors["start_time"] = E::ts('Start time can`t be later than End time.');
+    } elseif (strtotime($startTime) + 15*60 > strtotime($endTime)) {
+      $errors["start_time"] = E::ts('Event Session duration can`t be less than 15 min.');
+    }
+    $startEventDate = strtotime(date('Y-m-d',strtotime($event->start_date)));
+    if (strtotime($values["date"]) < $startEventDate) {
+      $errors["date"] = E::ts('Session start date can`t be early than start time on the Event. (Start time on Event: ' . $event->start_date . ')');
+    } elseif (strtotime($startTime) < strtotime($event->start_date)) {
+      $errors["start_time"] = E::ts('Start date can`t be early than start time on Event. (Start time on Event: ' . $event->start_date . ')');
+    }
+    if (!empty($event->end_date) && (strtotime($values["date"]) > strtotime($event->end_date))) {
+      $errors["date"] = E::ts('End date can`t be later than end date on Event. (End time on Event: ' . $event->end_date . ')');
+    } elseif (!empty($event->end_date) && (strtotime($endTime) > strtotime($event->end_date))) {
+      $errors["end_time"] = E::ts('End time can`t be later than end time on Event. (End time on Event: ' . $event->end_date . ')');
+    }
+    if (!empty($values['speakers']) && !CRM_CiviMobileAPI_Utils_Agenda_Speakers::issetSpeakers($values['speakers'], $values["event_id"])) {
+      $errors["speakers"] = E::ts('Some speakers does not exists.');
+    }
+    if (isset($values["speakers"]) && CRM_CiviMobileAPI_BAO_EventSession::isSpeakersBusy($values["speakers"], $sessionId, $startTime, $endTime)) {
+      $errors["speakers"] = E::ts('Some speakers are busy on other Event Session at this time.');
+    }
+    if (!empty($values["venue_id"])) {
+      if (!CRM_CiviMobileAPI_Utils_Agenda_Venue::issetVenue($values['venue_id'], $values["event_id"])) {
+        $errors["venue_id"] = E::ts('Venue does not exists.');
       }
-      $sessionId = isset($values['session_id']) ? $values['session_id'] : NULL;
-      $startTime = $values["date"] . ' ' . $values["start_time"];
-      $endTime = $values["date"] . ' ' . $values["end_time"];
-      try {
-        $event = CRM_Event_BAO_Event::findById($values["event_id"]);
-      } catch (Exception $e) {
-        $errors["event_id"] = E::ts('Invalid eventId parameter.');
-        return $errors;
+      if (CRM_CiviMobileAPI_BAO_EventSession::isVenueBusy($values["venue_id"], $sessionId, $startTime, $endTime)) {
+        $errors["venue_id"] = E::ts('Venue is booked on other Event Session at this time.');
       }
-      if (empty($values["title"])) {
-        $errors["title"] = E::ts('Title can`t be empty!');
-      }
-      if (strlen($values["title"]) > 255) {
-        $errors["title"] = E::ts('Title length must be less than 255 characters.');
-      }
-      if (strtotime($startTime) >= strtotime($endTime)) {
-        $errors["start_time"] = E::ts('Start time can`t be later than End time.');
-      } elseif (strtotime($startTime) + 15*60 > strtotime($endTime)) {
-        $errors["start_time"] = E::ts('Event Session duration can`t be less than 15 min.');
-      }
-      $startEventDate = strtotime(date('Y-m-d',strtotime($event->start_date)));
-      if (strtotime($values["date"]) < $startEventDate) {
-        $errors["date"] = E::ts('Session start date can`t be early than start time on the Event. (Start time on Event: ' . $event->start_date . ')');
-      } elseif (strtotime($startTime) < strtotime($event->start_date)) {
-        $errors["start_time"] = E::ts('Start date can`t be early than start time on Event. (Start time on Event: ' . $event->start_date . ')');
-      }
-      if (!empty($event->end_date) && (strtotime($values["date"]) > strtotime($event->end_date))) {
-        $errors["date"] = E::ts('End date can`t be later than end date on Event. (End time on Event: ' . $event->end_date . ')');
-      } elseif (!empty($event->end_date) && (strtotime($endTime) > strtotime($event->end_date))) {
-        $errors["end_time"] = E::ts('End time can`t be later than end time on Event. (End time on Event: ' . $event->end_date . ')');
-      }
-      if (!empty($values['speakers']) && !CRM_CiviMobileAPI_Utils_Agenda_Speakers::issetSpeakers($values['speakers'], $values["event_id"])) {
-        $errors["speakers"] = E::ts('Some speakers does not exists.');
-      }
-      if (isset($values["speakers"]) && CRM_CiviMobileAPI_BAO_EventSession::isSpeakersBusy($values["speakers"], $sessionId, $startTime, $endTime)) {
-        $errors["speakers"] = E::ts('Some speakers are busy on other Event Session at this time.');
-      }
-      if (!empty($values["venue_id"])) {
-        if (!CRM_CiviMobileAPI_Utils_Agenda_Venue::issetVenue($values['venue_id'], $values["event_id"])) {
-          $errors["venue_id"] = E::ts('Venue does not exists.');
-        }
-        if (CRM_CiviMobileAPI_BAO_EventSession::isVenueBusy($values["venue_id"], $sessionId, $startTime, $endTime)) {
-          $errors["venue_id"] = E::ts('Venue is booked on other Event Session at this time.');
-        }
-      } else {
-        $errors["venue_id"] = E::ts('Venue is required.');
-      }
+    } else {
+      $errors["venue_id"] = E::ts('Venue is required.');
     }
 
     return empty($errors) ? TRUE : $errors;

@@ -3,7 +3,7 @@
     {foreach from=$checklist_params item=param}
       <div class="checklist-table-row {if $param.status eq 'success'} success-row {elseif $param.status eq 'warning'} warning-row {elseif $param.status eq 'error'} error-row {/if}">
         <div class="checklist-table-cell status-icon">
-          <i class="crm-i {if $param.status eq 'success'} fa-check {elseif $param.status eq 'warning'} fa-exclamation-triangle {elseif $param.status eq 'error'} fa-times {/if}"></i>
+          <i class="crm-i {if $param.status eq 'success'} fa-check {elseif $param.status eq 'warning'} fa-exclamation-triangle {elseif $param.status eq 'error'} fa-times {elseif $param.status eq 'error'} fa-info {/if}"></i>
         </div>
         <div class="checklist-table-cell">
           {$param.title}
@@ -15,15 +15,32 @@
     {/foreach}
   </div>
 
+  <div class="checklist-preloader">
+    <img class="crm-i fa-spin" src="{crmResURL ext='civicrm.root'}/i/logo_lg.png" alt="preloader">
+  </div>
+
+  <div class="checklist-table checklist-info-table">
+  {foreach from=$info item=infoItem}
+    <div class="checklist-table-row">
+      <div class="checklist-table-cell status-icon">
+        <i class="crm-i fa-info"></i>
+      </div>
+      <div class="checklist-table-cell full-cell">
+        {$infoItem}
+      </div>
+    </div>
+  {/foreach}
+  </div>
+
   <h2>System Info</h2>
 
   <div class="checklist-table">
     {foreach from=$system_info item=param}
       <div class="checklist-table-row">
-        <div class="checklist-table-cell full-cell">
+        <div class="checklist-table-cell">
           {$param.title}
         </div>
-        <div class="checklist-table-cell full-cell">
+        <div class="checklist-table-cell">
           {$param.message}
         </div>
       </div>
@@ -54,7 +71,7 @@
     }).then(function(result) {
       $.get(restUrl, function(data) {
         if (JSON.stringify(result) === JSON.stringify(data)) {
-          $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is not correct.', 'success'));
+          $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is correct.', 'success'));
         } else {
           $("#checklist-items-block").append(generateCheckBlock('Is rest url correct?', 'Rest url is not correct.', 'error'));
         }
@@ -64,12 +81,14 @@
 
       $.get(restPathUrl, function(data) {
         if (JSON.stringify(result) === JSON.stringify(data)) {
-          $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'success'));
+          $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is correct.', 'success'));
         } else {
           $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'error'));
         }
+        $('.checklist-preloader').remove();
       }).fail(function() {
         $("#checklist-items-block").append(generateCheckBlock('Is rest path correct?', 'Rest path is not correct.', 'error'));
+        $('.checklist-preloader').remove();
       });
 
     });

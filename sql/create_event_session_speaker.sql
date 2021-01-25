@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS `civicrm_civimobile_event_session_speaker` (
     FOREIGN KEY (`event_session_id`)
     REFERENCES `civicrm_civimobile_event_session` (`id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION);
+    ON UPDATE NO ACTION) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
