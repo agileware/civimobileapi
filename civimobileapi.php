@@ -197,6 +197,10 @@ function civimobileapi_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     if ($apiRequest['action'] == 'get') {
       $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_EntityTag_Get();
     }
+  } elseif ($apiRequest['entity'] == 'Survey') {
+    if ($apiRequest['action'] == 'getsingle') {
+      $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Survey_Getsingle();
+    }
   }
 }
 
@@ -238,7 +242,17 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       ($entity == 'state_province' and $action == 'get') ||
       ($entity == 'civi_mobile_available_contact_group' and $action == 'get') ||
       ($entity == 'civi_mobile_tag_structure' and $action == 'get') ||
-      ($entity == 'civi_mobile_custom_fields' and $action == 'get')
+      ($entity == 'civi_mobile_custom_fields' and $action == 'get') ||
+
+      ($entity == 'civi_mobile_survey_respondent' and $action == 'reserve') ||
+      ($entity == 'civi_mobile_survey_respondent' and $action == 'get') ||
+      ($entity == 'civi_mobile_survey_respondent' and $action == 'release') ||
+      ($entity == 'civi_mobile_survey_respondent' and $action == 'gotv') ||
+      ($entity == 'civi_mobile_survey_respondent' and $action == 'get_to_reserve') ||
+      ($entity == 'civi_mobile_survey' and $action == 'get_contact_surveys') ||
+      ($entity == 'civi_mobile_survey' and $action == 'get_structure') ||
+      ($entity == 'civi_mobile_survey' and $action == 'sign') ||
+      ($entity == 'civi_mobile_survey' and $action == 'get_signed_values')
     ) {
       $params['check_permissions'] = FALSE;
     }
@@ -611,6 +625,15 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
     'separator' => NULL,
   ];
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviEvent/', $civiMobileEventLocations);
+
+  $civiMobileSettings = [
+    'name' => E::ts('CiviMobile Checklist'),
+    'url' => 'civicrm/civimobile/checklist',
+    'permission' => 'administer CiviCRM',
+    'operator' => NULL,
+    'separator' => NULL,
+  ];
+  _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileSettings);
 }
 
 /**
@@ -679,5 +702,17 @@ function civimobileapi_civicrm_alterContent(&$content, $context, $tplName, &$obj
         $content = "<div class='status'>If you change the date, some event sessions may stop displaying.</div>" . $content;
       }
     }
+  }
+}
+
+function civimobileapi_civicrm_postSave_civicrm_activity($dao) {
+  if (isset($_POST['hasVoted']) && !is_null($dao->status_id)) {
+    $hasVoted = CRM_Utils_String::strtoboolstr(CRM_Utils_Type::escape($_POST['hasVoted'], 'String'));
+    $gotvCustomFieldName = 'custom_' . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY,CRM_CiviMobileAPI_Install_Entity_CustomField::SURVEY_GOTV_STATUS);
+
+    civicrm_api3('Activity', 'create', [
+      $gotvCustomFieldName => $hasVoted,
+      'id' => $dao->id
+    ]);
   }
 }

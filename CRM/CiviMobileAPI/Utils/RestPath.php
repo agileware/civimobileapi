@@ -58,16 +58,11 @@ class CRM_CiviMobileAPI_Utils_RestPath {
       return false;
     }
 
+    include_once(ABSPATH.'wp-admin/includes/plugin.php');
+
     if (function_exists('is_plugin_active')) {
       $pathPlugin = 'civicrm-wp-rest/civicrm-wp-rest.php';
       if (is_plugin_active($pathPlugin)) {
-        return true;
-      }
-    }
-
-    if (class_exists('CiviCRM_WP_REST\Controller\Rest')) {
-      $restController = new CiviCRM_WP_REST\Controller\Rest();
-      if (method_exists($restController, 'get_endpoint')) {
         return true;
       }
     }

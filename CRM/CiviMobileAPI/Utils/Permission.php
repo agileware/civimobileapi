@@ -155,6 +155,9 @@ class CRM_CiviMobileAPI_Utils_Permission {
       $profileCreate = CRM_Core_Permission::check('profile create');
       $accessUploadedFiles = CRM_Core_Permission::check('access uploaded files');
       $viewAgenda = CRM_Core_Permission::check('view Agenda');
+      $signPetition = CRM_Core_Permission::check('sign CiviCRM Petition');
+      $profileView = CRM_Core_Permission::check('profile view');
+      $accessAllCustomData = CRM_Core_Permission::check('access all custom data');
     } catch (Exception $e) {
       return [];
     }
@@ -165,7 +168,9 @@ class CRM_CiviMobileAPI_Utils_Permission {
       'view_public_participant' => $viewAllEvent && $viewEventParticipants ? 1 : 0,
       'edit_public_participant' => $viewEventParticipants && $viewAllEvent && $editEventParticipants ? 1 : 0,
       'access_uploaded_files' => $accessUploadedFiles ? 1 : 0,
-      'view_agenda' => $viewAgenda ? 1 : 0
+      'view_agenda' => $viewAgenda ? 1 : 0,
+      'view_petition' => $signPetition && $profileView && $accessAllCustomData ? 1 : 0,
+      'sign_petition' => $signPetition && $profileCreate && $accessAllCustomData ? 1 : 0,
     ];
   }
 
@@ -327,4 +332,200 @@ class CRM_CiviMobileAPI_Utils_Permission {
     return FALSE;
   }
 
+  /**
+   * Is enough permission to get surveys list
+   */
+  public static function isEnoughPermissionToGetSurveysList() {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('administer CiviCampaign')
+      || CRM_Core_Permission::check('manage campaign')
+      || CRM_Core_Permission::check('reserve campaign contacts')
+      || CRM_Core_Permission::check('release campaign contacts')
+      || CRM_Core_Permission::check('interview campaign contacts')
+      || CRM_Core_Permission::check('gotv campaign contacts')
+      || CRM_Core_Permission::check('sign CiviCRM Petition')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to change Interviewer
+   */
+  public static function isEnoughPermissionToChangeInterviewer() {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('administer CiviCampaign')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to get respondents
+   */
+  public static function isEnoughPermissionToGetRespondents() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('manage campaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('interview campaign contacts')
+      || CRM_Core_Permission::check('gotv campaign contacts')
+      || CRM_Core_Permission::check('release campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to reserve respondents
+   */
+  public static function isEnoughPermissionToReserveRespondents() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('manage campaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('reserve campaign contacts')
+      && CRM_Core_Permission::check('interview campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to view respondent details
+   */
+  public static function isEnoughPermissionToViewRespondentDetails() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('administer CiviCampaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('profile view')
+      && CRM_Core_Permission::check('interview campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to edit respondent details
+   */
+  public static function isEnoughPermissionToEditRespondentDetails() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('administer CiviCampaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('profile create')
+      && CRM_Core_Permission::check('interview campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to release respondents
+   */
+  public static function isEnoughPermissionToReleaseRespondents() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('administer CiviCampaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('release campaign contacts')
+      && CRM_Core_Permission::check('interview campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to GOTV respondents
+   */
+  public static function isEnoughPermissionToGotvRespondents() {
+    if (CRM_Core_Permission::check('administer CiviCRM')
+      || CRM_Core_Permission::check('administer CiviCampaign')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('gotv campaign contacts')
+      && CRM_Core_Permission::check('interview campaign contacts')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to view petition answers
+   */
+  public static function isEnoughPermissionToViewPetitionAnswers() {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('profile view')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to sign petition
+   */
+  public static function isEnoughPermissionToSignPetition() {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('profile create')
+      && CRM_Core_Permission::check('access all custom data')
+      && CRM_Core_Permission::check('sign CiviCRM Petition')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is enough permission to view petition
+   */
+  public static function isEnoughPermissionToViewPetition() {
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return true;
+    }
+
+    if (CRM_Core_Permission::check('profile view')
+      && CRM_Core_Permission::check('access all custom data')
+      && CRM_Core_Permission::check('sign CiviCRM Petition')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
 }

@@ -142,6 +142,17 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     }
   }
 
+  public function upgrade_0018() {
+    try {
+      (new CRM_CiviMobileAPI_Install_Entity_CustomGroup())->install();
+      (new CRM_CiviMobileAPI_Install_Entity_CustomField())->install();
+    } catch (Exception $e) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
   /**
    * Installs scheduled job
    *

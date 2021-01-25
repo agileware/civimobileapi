@@ -25,7 +25,8 @@ class CRM_CiviMobileAPI_Page_Checklist extends CRM_Core_Page {
       'restPathUrl' => $restPathUrl,
       'restUrl' => $restUrl,
       'checklist_params' => $checklist->getCheckedItemsResult(),
-      'system_info' => $checklist->getSystemInfoReport()
+      'system_info' => $checklist->getSystemInfoReport(),
+      'info' => $checklist->getInfoItems()
     ]);
 
     CRM_Core_Resources::singleton()->addStyleFile('com.agiliway.civimobileapi', 'css/civimobileapiChecklist.css', 200, 'html-header');

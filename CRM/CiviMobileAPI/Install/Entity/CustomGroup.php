@@ -14,6 +14,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
   const CONTACT_SETTINGS = 'contact_settings';
   const PUBLIC_INFO = 'civi_mobile_public_info';
   const AGENDA_PARTICIPANT = 'civi_mobile_agenda_participant';
+  const SURVEY = 'civi_mobile_survey';
 
   /**
    * Entity name
@@ -59,6 +60,13 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
         'name' => self::PUBLIC_INFO,
         'title' => E::ts('Public Info'),
         'extends' => 'Participant',
+        'is_public' => 0,
+        'is_reserved' => 1
+      ],
+      [
+        'name' => self::SURVEY,
+        'title' => E::ts('Survey`s additional info'),
+        'extends' => 'Activity',
         'is_public' => 0,
         'is_reserved' => 1
       ],

@@ -38,6 +38,9 @@ abstract class CRM_CiviMobileAPI_Page_PublicApi_ApiBase extends CRM_Core_Page {
       JsonResponse::sendErrorResponse(E::ts('Not valid request'));
     }
 
+    $session = CRM_Core_Session::singleton();
+    $session->set('userID', '');
+
     $this->requestJsonData = $this->findRequestJsonData();
     $this->requestEntity = $this->findRequestEntityName();
     $this->requestAction = $this->findRequestActionName();

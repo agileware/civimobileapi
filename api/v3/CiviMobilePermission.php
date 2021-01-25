@@ -275,6 +275,22 @@ function civicrm_api3_civi_mobile_permission_get() {
       'view' => $viewAgenda ? 1 : 0
     ];
 
+    $permissions['surveys'] = [
+      'administer_civi_campaign' => CRM_Core_Permission::check('administer CiviCampaign') ? 1 : 0,
+      'manage_campaign' => CRM_Core_Permission::check('manage campaign') ? 1 : 0,
+      'reserve_campaign_contacts' => CRM_Core_Permission::check('reserve campaign contacts') ? 1 : 0,
+      'release_campaign_contacts' => CRM_Core_Permission::check('release campaign contacts') ? 1 : 0,
+      'interview_campaign_contacts' => CRM_Core_Permission::check('interview campaign contacts') ? 1 : 0,
+      'gotv_campaign_contacts' => CRM_Core_Permission::check('gotv campaign contacts') ? 1 : 0,
+      'sign_civicrm_petition' => CRM_Core_Permission::check('sign CiviCRM Petition') ? 1 : 0,
+    ];
+
+    $permissions['profile'] = [
+      'view' => CRM_Core_Permission::check('profile view'),
+      'create' => CRM_Core_Permission::check('profile create'),
+      'edit' => CRM_Core_Permission::check('profile edit'),
+    ];
+
     $nullObject = CRM_Utils_Hook::$_nullObject;
     CRM_Utils_Hook::singleton()
       ->commonInvoke(1, $permissions, $nullObject, $nullObject, $nullObject, $nullObject, $nullObject, 'civimobile_permission', '');

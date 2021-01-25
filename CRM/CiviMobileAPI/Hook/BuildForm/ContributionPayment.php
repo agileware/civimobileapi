@@ -23,12 +23,7 @@ class CRM_CiviMobileAPI_Hook_BuildForm_ContributionPayment {
     }
 
     if ($session->get('contribution_is_civimobile') && in_array($formName, $customizeForms)) {
-      $contactId = CRM_CiviMobileAPI_Authentication_AuthenticationHelper::authenticateContact();
-      if ($contactId) {
-        $defaults = [];
-        CRM_Core_BAO_UFGroup::setProfileDefaults($contactId, $form->_fields, $defaults);
-        $form->setDefaults($defaults);
-      }
+      CRM_CiviMobileAPI_Authentication_AuthenticationHelper::authenticateContact();
 
       $this->customizeContributionPayment();
     }
