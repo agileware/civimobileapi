@@ -252,7 +252,8 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       ($entity == 'civi_mobile_survey' and $action == 'get_contact_surveys') ||
       ($entity == 'civi_mobile_survey' and $action == 'get_structure') ||
       ($entity == 'civi_mobile_survey' and $action == 'sign') ||
-      ($entity == 'civi_mobile_survey' and $action == 'get_signed_values')
+      ($entity == 'civi_mobile_survey' and $action == 'get_signed_values') ||
+      ($entity == 'civi_mobile_survey_interviewer' and $action == 'get')
     ) {
       $params['check_permissions'] = FALSE;
     }
