@@ -46,6 +46,12 @@ function _civicrm_api3_civi_mobile_survey_get_contact_surveys_spec(&$params) {
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+  $params['is_active'] = [
+    'title' => 'Is active?',
+    'description' => ts('Is active?'),
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
 }
 
 /**

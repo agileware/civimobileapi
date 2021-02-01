@@ -530,7 +530,8 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
           'actionName' => 'get_contact_surveys',
           'actionPermissions' => ['sign CiviCRM Petition'],
           'availableParams' => [
-            'survey_id'
+            'survey_id',
+            'is_active'
           ],
           'availableReturnFields' => [
             'id',

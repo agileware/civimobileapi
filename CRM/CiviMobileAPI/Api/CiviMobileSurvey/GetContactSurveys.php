@@ -12,7 +12,8 @@ class CRM_CiviMobileAPI_Api_CiviMobileSurvey_GetContactSurveys extends CRM_CiviM
     $preparedSurveys = [];
     $paramsToApi = [
       'options' => ['limit' => 0],
-      'activity_type_id' => $this->validParams['activity_type_id']
+      'activity_type_id' => $this->validParams['activity_type_id'],
+      'is_active' => $this->validParams['is_active']
     ];
 
     if (!empty($this->validParams['survey_id'])) {
@@ -93,6 +94,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileSurvey_GetContactSurveys extends CRM_CiviM
       'contact_id' => isset($params['contact_id']) ? $params['contact_id'] : NULL,
       'activity_type_id' => $params['activity_type_id'],
       'title' => isset($params['title']) ? $params['title'] : NULL,
+      'is_active' => isset($params['is_active']) ? $params['is_active'] : NULL,
     ];
   }
 
