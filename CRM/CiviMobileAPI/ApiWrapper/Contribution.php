@@ -13,6 +13,12 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
    * @return array
    */
   public function fromApiInput($apiRequest) {
+    if (!empty($apiRequest['params']['return'])) {
+      if (is_string($apiRequest['params']['return'])) {
+        $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+      }
+      $apiRequest['params']['return'] = array_unique(array_merge($apiRequest['params']['return'], ['currency', 'financial_type_id']));
+    }
     return $apiRequest;
   }
 
@@ -25,6 +31,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
    * @return array
    */
   public function toApiOutput($apiRequest, $result) {
+    if (is_string($apiRequest['params']['return'])) {
+      $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+    }
+
     $result = $this->fillFinancialTypeName($apiRequest, $result);
     $result = $this->fillFormatTotalAmount($apiRequest, $result);
 
@@ -39,7 +49,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
    * @return Boolean - TRUE if the api result is from version 3.
    */
   private static function isApiVersion3($result) {
-    if (is_array($result) && $result['version'] == 3) {
+    if (is_array($result) && isset($result['version']) && $result['version'] == 3) {
       return TRUE;
     }
     return FALSE;
@@ -56,14 +66,12 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
       return $result;
     }
 
-    if (empty($apiRequest['params']['return']) || (!is_array($apiRequest['params']['return']) && stristr($apiRequest['params']['return'], 'financial_type_name') !== FALSE || in_array('financial_type_name', $apiRequest['params']['return']))) {
-      if ($apiRequest['action'] == 'getsingle') {
-        $result['financial_type_name'] = $this->getFinancialTypeName($result);
-      }
-      else if ($apiRequest['action'] == 'get') {
-        foreach ($result['values'] as &$contribution) {
-          $contribution['financial_type_name'] = $this->getFinancialTypeName($contribution);
-        }
+    if (!empty($apiRequest['params']['return'])
+      && in_array('financial_type_name', $apiRequest['params']['return'])
+      && $apiRequest['action'] == 'get'
+    ) {
+      foreach ($result['values'] as &$contribution) {
+        $contribution['financial_type_name'] = $this->getFinancialTypeName($contribution);
       }
     }
 
@@ -81,14 +89,12 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
       return $result;
     }
 
-    if (empty($apiRequest['params']['return']) || (!is_array($apiRequest['params']['return']) && stristr($apiRequest['params']['return'], 'total_amount') !== FALSE || in_array('total_amount', $apiRequest['params']['return']))) {
-      if ($apiRequest['action'] == 'getsingle') {
-        $result['format_total_amount'] = CRM_Utils_Money::format($result['total_amount'], $result['currency']);
-      }
-      else if ($apiRequest['action'] == 'get') {
-        foreach ($result['values'] as &$contribution) {
-          $contribution['format_total_amount'] = CRM_Utils_Money::format($contribution['total_amount'], $contribution['currency']);
-        }
+    if (!empty($apiRequest['params']['return'])
+      && in_array('total_amount', $apiRequest['params']['return'])
+      && $apiRequest['action'] == 'get'
+    ) {
+      foreach ($result['values'] as &$contribution) {
+        $contribution['format_total_amount'] = CRM_Utils_Money::format($contribution['total_amount'], $contribution['currency']);
       }
     }
 
@@ -103,8 +109,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
   private function getFinancialTypeName($contribution) {
     if (!empty($contribution['financial_type_id'])) {
       return CRM_Core_DAO::getFieldValue('CRM_Financial_DAO_FinancialType', $contribution['financial_type_id'], 'name');
-    }
-    else {
+    } else {
       $financialTypeId = CRM_Core_DAO::getFieldValue('CRM_Contribute_DAO_Contribution', $contribution['id'], 'financial_type_id');
 
       return CRM_Core_DAO::getFieldValue('CRM_Financial_DAO_FinancialType', $financialTypeId, 'name');

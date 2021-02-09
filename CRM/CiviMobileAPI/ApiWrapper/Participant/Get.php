@@ -33,27 +33,41 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
     }
 
     $activeParam = !empty($apiRequest['params']['status_active']) ? $apiRequest['params']['status_active'] : null;
+    $customQrCode = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(
+      CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_CODES,
+      CRM_CiviMobileAPI_Install_Entity_CustomField::QR_CODE);
+
+    $contactIds = [];
+    $participantStatusTypesIds = [];
+    foreach ($result['values'] as $key => $value) {
+      $contactIds[] = $value['contact_id'];
+      $participantStatusTypesIds[] = $value['participant_status_id'];
+    }
+
+    if (!empty($contactIds)) {
+      $contacts = civicrm_api3('Contact', 'get', [
+        'return' => ["image_URL"],
+        'id' => ['IN' => $contactIds],
+        'options' => ['limit' => 0],
+      ])['values'];
+    } else {
+      $contacts = [];
+    }
+
+    if ($activeParam == 1 && !empty($participantStatusTypesIds)) {
+      $participantStatusTypes = civicrm_api3('ParticipantStatusType', 'get', [
+        'id' => ['IN' => array_unique($participantStatusTypesIds)],
+        'options' => ['limit' => 0],
+      ])['values'];
+    } else {
+      $participantStatusTypes = [];
+    }
 
     foreach ($result['values'] as $key => &$value) {
-      try {
-        $imageUrl = civicrm_api3('Contact', 'getvalue', [
-          'return' => "image_URL",
-          'id' => $value['contact_id'],
-        ]);
-      } catch (CiviCRM_API3_Exception $e) {
-        throw new \API_Exception(E::ts("Something wrong with getting img url of contact: " . $e->getMessage()));
-      }
+      $imageUrl = !empty($contacts[$value['contact_id']]) ? $contacts[$value['contact_id']]['image_URL'] : '';
 
       if ($activeParam == 1) {
-        try {
-          $statusInfo = civicrm_api3('ParticipantStatusType', 'getsingle', [
-            'sequential' => 1,
-            'return' => ["is_active"],
-            'id' => $value['participant_status_id']
-          ]);
-        } catch (CiviCRM_API3_Exception $e) {
-          $statusInfo = [];
-        }
+        $statusInfo = !empty($participantStatusTypes[$value['participant_status_id']]) ? $participantStatusTypes[$value['participant_status_id']] : [];
 
         if (!empty($statusInfo) && $statusInfo['is_active'] != 1) {
           unset($result['values'][$key]);
@@ -61,10 +75,8 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
         }
       }
 
-      $customQrCode = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_CODES, CRM_CiviMobileAPI_Install_Entity_CustomField::QR_CODE);
       $value['qr_token'] = !empty($value[$customQrCode]) ? $value[$customQrCode] : '';
-      $value['image_URL'] = !empty($imageUrl) ? $imageUrl : '';
-
+      $value['image_URL'] = $imageUrl;
     }
 
     $result['values'] = array_values($result['values']);
