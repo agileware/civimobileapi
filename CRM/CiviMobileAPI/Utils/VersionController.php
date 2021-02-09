@@ -11,34 +11,14 @@ class CRM_CiviMobileAPI_Utils_VersionController {
   private static $instance;
 
   /**
-   * Major version of current extension
+   * Version of current extension
    */
-  private $currentMajorVersion = 0;
+  private $currentVersion = '0.0.0';
 
   /**
-   * Minor version of current extension
+   * Version of extension in remote repository
    */
-  private $currentMinorVersion = 0;
-
-  /**
-   * Patch version of current extension
-   */
-  private $currentPatchVersion = 0;
-
-  /**
-   * Latest major version of extension in remote repository
-   */
-  private $latestMajorVersion = 0;
-
-  /**
-   * Latest minor version of extension in remote repository
-   */
-  private $latestMinorVersion = 0;
-
-  /**
-   * Latest patch version of extension in remote repository
-   */
-  private $latestPatchVersion = 0;
+  private $latestVersion = '0.0.0';
 
   /**
    * Is sets version from repository
@@ -56,10 +36,7 @@ class CRM_CiviMobileAPI_Utils_VersionController {
    * Sets version from current extension
    */
   public function setVersionFromExtension() {
-    $currentVersion = $this->parseVersion($this->getCurrentVersion());
-    $this->currentMajorVersion = $currentVersion['major'];
-    $this->currentMinorVersion = $currentVersion['minor'];
-    $this->currentPatchVersion = $currentVersion['patch'];
+    $this->currentVersion = $this->getCurrentVersion();
   }
 
   /**
@@ -70,48 +47,8 @@ class CRM_CiviMobileAPI_Utils_VersionController {
       return;
     }
 
-    $latestVersion = $this->parseVersion($this->getLatestVersion());
-    $this->latestMajorVersion = $latestVersion['major'];
-    $this->latestMinorVersion = $latestVersion['minor'];
-    $this->latestPatchVersion = $latestVersion['patch'];
+    $this->latestVersion = $this->getLatestVersion();
     $this->isSetVersionFromRepository = true;
-  }
-
-  /**
-   * Parse version
-   *
-   * @param $versionString
-   *
-   * @return array
-   */
-  private function parseVersion($versionString) {
-    $version = [
-      'major' => 0,
-      'minor' => 0,
-      'patch' => 0,
-    ];
-
-    $versionString = trim(trim((string) $versionString, 'v'));
-
-    if (empty($versionString)) {
-      return $version;
-    }
-
-    $splitVersion = explode('.', $versionString);
-
-    if (isset($splitVersion[0])) {
-      $version['major'] = (int) $splitVersion[0];
-    }
-
-    if (isset($splitVersion[1])) {
-      $version['minor'] = (int) $splitVersion[1];
-    }
-
-    if (isset($splitVersion[2])) {
-      $version['patch'] = (int) $splitVersion[2];
-    }
-
-    return $version;
   }
 
   /**
@@ -163,22 +100,7 @@ class CRM_CiviMobileAPI_Utils_VersionController {
   public function isCurrentVersionLowerThanRepositoryVersion() {
     $this->setVersionFromRepository();
 
-    if ($this->getCurrentMajorVersion() < $this->getLatestMajorVersion()) {
-      return true;
-    }
-
-    if (($this->getCurrentMajorVersion() == $this->getLatestMajorVersion())
-      && ($this->getCurrentMinorVersion() < $this->getLatestMinorVersion())) {
-      return true;
-    }
-
-    if (($this->getCurrentMajorVersion() == $this->getLatestMajorVersion())
-      && ($this->getCurrentMinorVersion() == $this->getLatestMinorVersion())
-    && ($this->getCurrentPatchVersion() < $this->getLatestPatchVersion())) {
-      return true;
-    }
-
-    return false;
+    return version_compare($this->currentVersion, $this->latestVersion, '<');
   }
 
   /**
@@ -200,7 +122,7 @@ class CRM_CiviMobileAPI_Utils_VersionController {
    */
   public function getLatestFullVersion() {
     $this->setVersionFromRepository();
-    return $this->getLatestMajorVersion() . '.' . $this->getLatestMinorVersion() . '.' . $this->getLatestPatchVersion();
+    return $this->latestVersion;
   }
 
   /**
@@ -209,52 +131,7 @@ class CRM_CiviMobileAPI_Utils_VersionController {
    * @return string
    */
   public function getCurrentFullVersion() {
-    return $this->getCurrentMajorVersion() . '.' . $this->getCurrentMinorVersion() . '.' . $this->getCurrentPatchVersion();
-  }
-
-  /**
-   * @return int
-   */
-  public function getCurrentMajorVersion() {
-    return $this->currentMajorVersion;
-  }
-
-  /**
-   * @return int
-   */
-  public function getCurrentMinorVersion() {
-    return $this->currentMinorVersion;
-  }
-
-  /**
-   * @return int
-   */
-  public function getCurrentPatchVersion() {
-    return $this->currentPatchVersion;
-  }
-
-  /**
-   * @return int
-   */
-  public function getLatestMajorVersion() {
-    $this->setVersionFromRepository();
-    return $this->latestMajorVersion;
-  }
-
-  /**
-   * @return int
-   */
-  public function getLatestMinorVersion() {
-    $this->setVersionFromRepository();
-    return $this->latestMinorVersion;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getLatestPatchVersion() {
-    $this->setVersionFromRepository();
-    return $this->latestPatchVersion;
+    return $this->currentVersion;
   }
 
   private function __clone() {}

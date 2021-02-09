@@ -160,7 +160,7 @@ function civimobileapi_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   elseif ($apiRequest['entity'] == 'Note' && $apiRequest['action'] == 'get') {
     $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Note();
   }
-  elseif ($apiRequest['entity'] == 'Contribution' && ($apiRequest['action'] == 'getsingle' || $apiRequest['action'] == 'get')) {
+  elseif ($apiRequest['entity'] == 'Contribution' && $apiRequest['action'] == 'get') {
     $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Contribution();
   }
   elseif ($apiRequest['entity'] == 'Membership') {
@@ -715,5 +715,18 @@ function civimobileapi_civicrm_postSave_civicrm_activity($dao) {
       $gotvCustomFieldName => $hasVoted,
       'id' => $dao->id
     ]);
+  }
+}
+
+function civimobileapi_civicrm_preProcess($formName, &$form) {
+  if ($formName == 'CRM_Activity_Form_Activity' || $formName == 'CRM_Custom_Form_CustomDataByType') {
+    $groupTree = $form->getVar('_groupTree');
+
+    foreach ($groupTree as $key => $customGroup) {
+      if ($customGroup['name'] == CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY) {
+        unset($groupTree[$key]);
+      }
+    }
+    $form->setVar('_groupTree', $groupTree);
   }
 }

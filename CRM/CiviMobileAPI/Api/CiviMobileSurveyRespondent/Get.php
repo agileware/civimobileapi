@@ -147,6 +147,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileSurveyRespondent_Get extends CRM_CiviMobil
           'sequential' => 1,
           'profile_id' => $contactProfile['uf_group_id'],
           'contact_id' => $contact['id'],
+          'activity_id' => $activity['id']
         ])['values'];
 
         foreach (array_keys($fields) as $field) {
