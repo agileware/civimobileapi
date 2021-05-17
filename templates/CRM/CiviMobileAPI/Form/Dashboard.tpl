@@ -1,43 +1,50 @@
-{*--------------------------------------------------------------------+
-| CiviCRM version 4.7                                                |
-+--------------------------------------------------------------------+
-| Copyright CiviCRM LLC (c) 2004-2017                                |
-+--------------------------------------------------------------------+
-| This file is a part of CiviCRM.                                    |
-|                                                                    |
-| CiviCRM is free software; you can copy, modify, and distribute it  |
-| under the terms of the GNU Affero General Public License           |
-| Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
-|                                                                    |
-| CiviCRM is distributed in the hope that it will be useful, but     |
-| WITHOUT ANY WARRANTY; without even the implied warranty of         |
-| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
-| See the GNU Affero General Public License for more details.        |
-|                                                                    |
-| You should have received a copy of the GNU Affero General Public   |
-| License and the CiviCRM Licensing Exception along                  |
-| with this program; if not, contact CiviCRM LLC                     |
-| at info[AT]civicrm[DOT]org. If you have questions about the        |
-| GNU Affero General Public License or the licensing of CiviCRM,     |
-| see the CiviCRM license FAQ at http://civicrm.org/licensing        |
-+-------------------------------------------------------------------*}
-
 <div class="crm-block crm-form-block">
-    <table class="form-layout-compressed">
-        <tbody>
-        {foreach from=$elementNames item=elementName}
-            <tr>
-                <td>
-                    <label for="{$elementName}">{$form.$elementName.label} {help id=$elementName title=$form.$elementName.label}</label>
-                    {$form.$elementName.html}
-                </td>
-            </tr>
-        {/foreach}
-        </tbody>
-    </table>
-
-    {* FOOTER *}
-    <div class="crm-submit-buttons">
-        {include file="CRM/common/formButtons.tpl" location="bottom"}
-    </div>
+  {if $form.buttons}
+  <div class="crm-submit-buttons">
+    {include file="CRM/common/formButtons.tpl" location="top"}
+  </div>
+  {/if}
+  {if $isLoggedInContactForm}
+  <table class="form-layout-compressed">
+    <tbody>
+    <tr class="crm-group-form-block-isReserved">
+      <td class="label">{$form.civimobile_show_qr_popup.label}</td>
+      <td>
+        <div>
+          {$form.civimobile_show_qr_popup.html}
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  {/if}
 </div>
+
+{literal}
+<script type="text/javascript">
+
+  function setCookie(cname, cvalue, exdays) {
+    var date = new Date();
+    date.setTime(date.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + date.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  CRM.$(document).ready(function($) {
+
+    $('.civi-mobile-popup-close').click(function() {
+      $("input[name='civimobile_show_qr_popup']").attr("checked", false);
+    });
+
+    $("input[name='civimobile_show_qr_popup']").change(function () {
+      if ($("input[name='civimobile_show_qr_popup']:checked").length == 1) {
+        setCookie("civimobile_popup_close", 0, 30);
+        $('.civi-mobile-popup-wrap').show();
+      } else {
+        setCookie("civimobile_popup_close", 1, 30);
+        $('.civi-mobile-popup-wrap').hide();
+      }
+    });
+  });
+</script>
+{/literal}

@@ -23,8 +23,6 @@ class CRM_CiviMobileAPI_Hook_BuildForm_ContributionPayment {
     }
 
     if ($session->get('contribution_is_civimobile') && in_array($formName, $customizeForms)) {
-      CRM_CiviMobileAPI_Authentication_AuthenticationHelper::authenticateContact();
-
       $this->customizeContributionPayment();
     }
 

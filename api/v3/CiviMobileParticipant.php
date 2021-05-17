@@ -14,6 +14,26 @@ function civicrm_api3_civi_mobile_participant_get($params) {
     throw new api_Exception('You don`t have enough permissions.', 'do_not_have_enough_permissions');
   }
 
+  if (!empty($params['name'])) {
+    $newParams = $params;
+    $newParams['options']['limit'] = 0;
+
+    $allParticipants = civicrm_api3('Participant', 'get', $newParams)['values'];
+
+    $contactsId = [];
+    foreach ($allParticipants as $participant) {
+      if (preg_match('/' . $params['name'] . '/i', $participant['display_name'])) {
+        $contactsId[] = $participant['contact_id'];
+      }
+    }
+
+    if (empty($contactsId)) {
+      return civicrm_api3_create_success([]);
+    }
+
+    $params['contact_id'] = ['IN' => $contactsId];
+  }
+
   return civicrm_api3_create_success(civicrm_api3('Participant', 'get', $params)['values']);
 }
 
@@ -27,7 +47,7 @@ function _civicrm_api3_civi_mobile_participant_get_spec(&$params) {
     'title' => 'Event id',
     'description' => E::ts('Event id'),
     'type' => CRM_Utils_Type::T_INT,
-    'api.required' => 1,
+    'api.required' => 0,
   ];
   $params['contact_id'] = [
     'title' => 'Contact id',
@@ -141,6 +161,7 @@ function _civicrm_api3_civi_mobile_participant_create_spec(&$params) {
 function _civicrm_api3_civi_mobile_participant_getlist_params(&$request) {
   unset($request['params']['options']);
   $request['params']['options']['limit'] = 0;
+  $request['params']['name'] = $request['input'];
 }
 
 /**
@@ -158,10 +179,6 @@ function _civicrm_api3_civi_mobile_participant_getlist_params(&$request) {
 function _civicrm_api3_civi_mobile_participant_getlist_output($result, $request, $entity, $fields) {
   $output = [];
   foreach ($result['values'] as $participant) {
-    if (!empty($request['input']) && !preg_match('/' . $request['input'] . '/i', $participant['display_name'])) {
-      continue;
-    }
-
     $output[] = [
       'id' => $participant['participant_id'],
       'label' => $participant['display_name'],

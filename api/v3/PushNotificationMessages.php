@@ -61,7 +61,11 @@ function _civicrm_api3_push_notification_messages_get_spec(&$params) {
  * @return array
  */
 function civicrm_api3_push_notification_messages_clear_old($params) {
-  $countOfDays = (isset($params['count_of_day'])) ? (int) $params['count_of_day'] : CRM_CiviMobileAPI_BAO_PushNotificationMessages::LIFE_TIME_IN_DAYS;
+  $defaultCountOfDay = !empty(Civi::settings()->get("civimobile_push_notification_lifetime"))
+    ? (int) Civi::settings()->get("civimobile_push_notification_lifetime")
+    : CRM_CiviMobileAPI_BAO_PushNotificationMessages::LIFE_TIME_IN_DAYS;
+
+  $countOfDays = (isset($params['count_of_day'])) ? (int) $params['count_of_day'] : $defaultCountOfDay;
 
   CRM_CiviMobileAPI_BAO_PushNotificationMessages::deleteOlderThan($countOfDays);
 

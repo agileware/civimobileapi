@@ -50,6 +50,8 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
     } elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_DRUPAL8) {
       $absoluteUrl = CRM_Utils_System::url('civicrm/event/register', 'id=' . $this->validParams['event_id'] . '&reset=1&cmbHash=' . $cmbHash, TRUE, NULL, FALSE);
       $url = '/' . str_replace($config->userFrameworkBaseURL, "", $absoluteUrl);
+    } elseif ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_WORDPRESS) {
+      $url = wp_make_link_relative($url);
     }
 
     $result['link'] = html_entity_decode($url);
@@ -64,11 +66,6 @@ class CRM_CiviMobileAPI_Api_CiviMobileParticipantPaymentLink_Get extends CRM_Civ
    * @throws api_Exception
    */
   protected function getValidParams($params) {
-    $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
-    if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
-      throw new api_Exception(E::ts('Joomla does not support that functionality'), 'joomla_does_not_support_that_functionality');
-    }
-
     $eventId = (int) $params['event_id'];
     $contactId = (int) $params['contact_id'];
     $selPriceSet = ((is_array($params['price_set'])) ? $params['price_set'] : json_decode($params['price_set'],true));

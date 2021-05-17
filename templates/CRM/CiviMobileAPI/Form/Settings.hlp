@@ -69,3 +69,10 @@
     <p>Events are displayed in Public Area if all required permissions for Anonymous user are distributed and if CiviEvent component is enabled. Note that if you want a specific event to be made available in the Public Area-please enable 'Public Event' checkbox in Event Info and Settings section.</p>
     <p>News may also be present in the Public Area if Show News checkbox is enabled.{/ts}</p>
 {/htxt}
+
+{htxt id="push-notifications-messages-help-title"}
+    {ts}Push notification Lifetime{/ts}
+{/htxt}
+{htxt id="push-notifications-messages-help"}
+    <p>{ts}The value specifies the storage time of push notification messages. If the value is equal to 0, messages are not saved.{/ts}</p>
+{/htxt}

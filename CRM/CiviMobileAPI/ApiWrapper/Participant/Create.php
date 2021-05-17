@@ -26,7 +26,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Create implements API_Wrapper {
     $participant->event_id = $apiRequest['params']['event_id'];
     $participantExist = $participant->find(TRUE);
 
-    if (!empty($participantExist)) {
+    if (!empty($participantExist) && empty($apiRequest['params']['id'])) {
       throw new api_Exception(E::ts('This contact has already been assigned to this event.'), 'contact_already_registered');
     }
 

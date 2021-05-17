@@ -16,7 +16,7 @@ class CRM_CiviMobileAPI_Utils_HookInvoker {
     if (version_compare(CRM_Utils_System::version(), '4.5', '<')) {
       return CRM_Utils_Hook::singleton()->invoke(1, $params, $null, $null, $null, $null, 'civimobileapi_qrCodeBlockParams');
     } else{
-      return CRM_Utils_Hook::singleton()->invoke(1, $params, $null, $null, $null, $null, $null, 'civimobileapi_qrCodeBlockParams');
+      return CRM_Utils_Hook::singleton()->invoke([1], $params, $null, $null, $null, $null, $null, 'civimobileapi_qrCodeBlockParams');
     }
   }
 
