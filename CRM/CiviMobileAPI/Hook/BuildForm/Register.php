@@ -39,6 +39,8 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
         if ($tmpData = CRM_CiviMobileAPI_BAO_CivimobileEventPaymentInfo::getByHash($cmbHash)) {
           $priceSet = json_decode($tmpData['price_set'], true);
           $personalFields = $this->findPersonalFields($tmpData);
+          $billingFields = $this->findBillingFields($tmpData);
+          $billingLocationID = CRM_Core_BAO_LocationType::getBilling();
 
           if ($form->elementExists('first_name')) {
             $element = $form->getElement('first_name');
@@ -55,6 +57,48 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
             $element->setValue('');
             if (!empty($personalFields['email'])) {
               $element->setValue($personalFields['email']);
+            }
+          }
+
+          if (!empty($billingFields)) {
+            if ($form->elementExists('billing_first_name')) {
+              $element = $form->getElement('billing_first_name');
+              $element->setValue($personalFields['first_name']);
+            }
+
+            if ($form->elementExists('billing_middle_name')) {
+              $element = $form->getElement('billing_middle_name');
+              $element->setValue($personalFields['middle_name']);
+            }
+
+            if ($form->elementExists('billing_last_name')) {
+              $element = $form->getElement('billing_last_name');
+              $element->setValue($personalFields['last_name']);
+            }
+
+            if ($form->elementExists("billing_street_address-{$billingLocationID}")) {
+              $element = $form->getElement("billing_street_address-{$billingLocationID}");
+              $element->setValue($billingFields['street_address']);
+            }
+
+            if ($form->elementExists("billing_city-{$billingLocationID}")) {
+              $element = $form->getElement("billing_city-{$billingLocationID}");
+              $element->setValue($billingFields['city']);
+            }
+
+            if ($form->elementExists("billing_country_id-{$billingLocationID}")) {
+              $element = $form->getElement("billing_country_id-{$billingLocationID}");
+              $element->setValue($billingFields['country_id']);
+            }
+
+            if ($form->elementExists("billing_state_province_id-{$billingLocationID}")) {
+              $element = $form->getElement("billing_state_province_id-{$billingLocationID}");
+              $element->setValue($billingFields['state_province_id']);
+            }
+
+            if ($form->elementExists("billing_postal_code-{$billingLocationID}")) {
+              $element = $form->getElement("billing_postal_code-{$billingLocationID}");
+              $element->setValue($billingFields['state_province_id']);
             }
           }
 
@@ -156,7 +200,7 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
     if ($contactId) {
       try {
         $contact = civicrm_api3('Contact', 'getsingle', [
-          'return' => ["first_name", "last_name"],
+          'return' => ["first_name", "last_name", "middle_name"],
           'sequential' => 1,
           'id' => $contactId
         ]);
@@ -177,20 +221,57 @@ class CRM_CiviMobileAPI_Hook_BuildForm_Register {
 
       $firstName = $contact['first_name'];
       $lastName = $contact['last_name'];
+      $middleName = $contact['middle_name'];
       if (isset($contactsEmail['email'])) {
         $email = $contactsEmail['email'];
       }
     } else {
       $firstName = $tmpData['first_name'];
       $lastName = $tmpData['last_name'];
+      $middleName = '';
       $email = $tmpData['email'];
     }
 
     return [
       'first_name' => $firstName,
       'last_name' => $lastName,
+      'middle_name' => $middleName,
       'email' => $email,
     ];
+  }
+
+  /**
+   * @param $tmpData
+   * @return array
+   */
+  private function findBillingFields($tmpData) {
+    $contactId = $tmpData['contact_id'];
+
+    if ($contactId) {
+      try {
+        $contactsAddress = civicrm_api3('Address', 'getsingle', [
+          'sequential' => 1,
+          'contact_id' => $contactId,
+          'is_billing' => 1,
+        ]);
+      } catch (CiviCRM_API3_Exception $e) {
+        return [];
+      }
+
+      $streetAddress = isset($contactsAddress['street_address']) ? $contactsAddress['street_address'] : '';
+      $city = isset($contactsAddress['city']) ? $contactsAddress['city'] : '';
+      $countryId = isset($contactsAddress['country_id']) ? $contactsAddress['country_id'] : NULL;
+      $stateProvinceId = isset($contactsAddress['state_province_id']) ? $contactsAddress['state_province_id'] : NULL;
+      $postalCode = isset($contactsAddress['postal_code']) ? $contactsAddress['postal_code'] : NULL;
+
+      return [
+        'street_address' => $streetAddress,
+        'city' => $city,
+        'country_id' => $countryId,
+        'state_province_id' => $stateProvinceId,
+        'postal_code' => $postalCode,
+      ];
+    }
   }
 
 }

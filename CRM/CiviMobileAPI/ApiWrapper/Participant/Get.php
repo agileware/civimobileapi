@@ -41,7 +41,9 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
     $participantStatusTypesIds = [];
     foreach ($result['values'] as $key => $value) {
       $contactIds[] = $value['contact_id'];
-      $participantStatusTypesIds[] = $value['participant_status_id'];
+      if (!empty($value['participant_status_id'])) {
+        $participantStatusTypesIds[] = $value['participant_status_id'];
+      }
     }
 
     if (!empty($contactIds)) {
@@ -63,6 +65,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
       $participantStatusTypes = [];
     }
 
+    $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();
     foreach ($result['values'] as $key => &$value) {
       $imageUrl = !empty($contacts[$value['contact_id']]) ? $contacts[$value['contact_id']]['image_URL'] : '';
 
@@ -75,8 +78,19 @@ class CRM_CiviMobileAPI_ApiWrapper_Participant_Get implements API_Wrapper {
         }
       }
 
+      $displayImageUrl = '';
+      if (!empty($value[$customQrCode])) {
+        $photoName = 'participantId_' . $value['participant_id'] . '.png';
+        $displayImageUrl = CRM_Utils_System::url('civicrm/civimobile/file', ['photo' => $photoName], TRUE, NULL, FALSE);
+
+        if ($currentCMS == CRM_CiviMobileAPI_Utils_CmsUser::CMS_JOOMLA) {
+          $displayImageUrl = preg_replace('/administrator\//', 'index.php', $displayImageUrl);
+        }
+      }
+
       $value['qr_token'] = !empty($value[$customQrCode]) ? $value[$customQrCode] : '';
       $value['image_URL'] = $imageUrl;
+      $value['display_image_URL'] = $displayImageUrl;
     }
 
     $result['values'] = array_values($result['values']);

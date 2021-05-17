@@ -77,6 +77,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       $this->addFormRule([CRM_CiviMobileAPI_Form_Settings::class, 'validateToken']);
     } elseif (!empty($params['_qf_Settings_upload'])) {
       $this->addFormRule([CRM_CiviMobileAPI_Form_Settings::class, 'validateNewsSettings']);
+      $this->addFormRule([CRM_CiviMobileAPI_Form_Settings::class, 'validatePushNotificationSettings']);
     }
   }
 
@@ -96,6 +97,19 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       $errors['civimobile_news_rss_feed_url'] = E::ts('Field can not be empty.');
     }
 
+    return empty($errors) ? TRUE : $errors;
+  }
+
+  public static function validatePushNotificationSettings($values) {
+    if (!is_numeric($values["civimobile_push_notification_lifetime"])) {
+      $errors["civimobile_push_notification_lifetime"] = E::ts('Value must be integer!');
+    }
+    if ($values["civimobile_push_notification_lifetime"] < 0) {
+      $errors["civimobile_push_notification_lifetime"] = E::ts('Value cannot be negative!');
+    }
+    if ($values["civimobile_push_notification_lifetime"] > 90) {
+      $errors["civimobile_push_notification_lifetime"] = E::ts('Value cannot be greater than 90!');
+    }
     return empty($errors) ? TRUE : $errors;
   }
 
@@ -157,6 +171,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     $this->addElement('text', 'civimobile_news_rss_feed_url', E::ts('News RSS feed URL'));
     $this->addElement('text', 'civimobile_firebase_key', E::ts('Firebase key'));
     $this->addElement('checkbox', 'civimobile_is_custom_app', E::ts('Do you have custom application?'));
+    $this->addElement('text', 'civimobile_push_notification_lifetime', E::ts('Life time for push notification messages'));
 
     $buttons = [
       [
@@ -230,6 +245,9 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       if (!isset($params['civimobile_is_allow_public_info_api'])) {
         $params['civimobile_is_allow_public_info_api'] = 0;
       }
+      if (!isset($params['civimobile_push_notification_lifetime'])) {
+        $params['civimobile_push_notification_lifetime'] = CRM_CiviMobileAPI_BAO_PushNotificationMessages::LIFE_TIME_IN_DAYS;
+      }
 
       Civi::settings()->set('civimobile_is_custom_app', $params['civimobile_is_custom_app']);
       Civi::settings()->set('civimobile_firebase_key', $params['civimobile_firebase_key']);
@@ -239,6 +257,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
       Civi::settings()->set('civimobile_is_allow_public_info_api', $params['civimobile_is_allow_public_info_api']);
       Civi::settings()->set('civimobile_is_showed_news', $params['civimobile_is_showed_news']);
       Civi::settings()->set('civimobile_news_rss_feed_url', $params['civimobile_news_rss_feed_url']);
+      Civi::settings()->set("civimobile_push_notification_lifetime", $params['civimobile_push_notification_lifetime']);
       CRM_Core_Session::singleton()->setStatus(E::ts('CiviMobile settings updated'), E::ts('CiviMobile Settings'), 'success');
     }
   }
@@ -248,6 +267,7 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
    */
   public function setDefaultValues() {
     $defaults = [];
+    $pushNotificationLifetime = Civi::settings()->get('civimobile_push_notification_lifetime');
 
     $defaults['civimobile_auto_update'] = Civi::settings()->get('civimobile_auto_update');
     $defaults['civimobile_server_key'] = Civi::settings()->get('civimobile_server_key');
@@ -259,6 +279,8 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     $defaults['civimobile_news_rss_feed_url'] = CRM_CiviMobileAPI_Utils_Extension::newsRssFeedUrl();
     $defaults['civimobile_firebase_key'] = Civi::settings()->get('civimobile_firebase_key');
     $defaults['civimobile_is_custom_app'] = CRM_CiviMobileAPI_Utils_Extension::isCustomApp();
+    $defaults['civimobile_push_notification_lifetime'] = isset($pushNotificationLifetime)
+      ? (int) $pushNotificationLifetime : CRM_CiviMobileAPI_BAO_PushNotificationMessages::LIFE_TIME_IN_DAYS;
 
     return $defaults;
   }

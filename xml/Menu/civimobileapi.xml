@@ -106,4 +106,10 @@
     <page_callback>CRM_CiviMobileAPI_Form_Speaker</page_callback>
     <access_arguments>view Agenda</access_arguments>
   </item>
+  <item>
+    <path>civicrm/civimobile/file</path>
+    <title>Get Image File</title>
+    <page_callback>CRM_CiviMobileAPI_Page_File</page_callback>
+    <access_callback>1</access_callback>
+  </item>
 </menu>

@@ -250,10 +250,6 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
             ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
-            ],
           ],
           'transforms' => []
         ],
@@ -333,10 +329,6 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             [
               'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
               'method' => 'isAllowPublicInfoApi',
-            ],
-            [
-              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
-              'method' => 'forbiddenForJoomla',
             ],
           ],
           'transforms' => []

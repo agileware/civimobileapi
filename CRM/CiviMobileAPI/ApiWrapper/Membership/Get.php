@@ -25,6 +25,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   public function toApiOutput($apiRequest, $result) {
+    if (is_string($apiRequest['params']['return'])) {
+      $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+    }
+
     $result = $this->fillAdditionalInfo($apiRequest, $result);
     $result = $this->fillRelatedCount($apiRequest, $result);
     $result = $this->fillByRelationship($apiRequest, $result);
@@ -42,7 +46,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    */
   private function fillAdditionalInfo($apiRequest, $result) {
     if ($apiRequest['action'] == 'getsingle') {
-      if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'renewal_amount') !== false) {
+      if (empty($apiRequest['params']['return'])
+        || in_array('renewal_amount', $apiRequest['params']['return'])
+        || in_array('format_renewal_amount', $apiRequest['params']['return'])
+      ) {
         $result += $this->getAdditionalInfo($result, $apiRequest);
       }
     }
@@ -66,10 +73,6 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   private function getAdditionalInfo($membership, $apiRequest) {
-    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
-      return [];
-    }
-
     $config = CRM_Core_Config::singleton();
     $additionalInfo = [];
 
@@ -86,14 +89,17 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
       } catch (Exception $e) {}
     }
 
-    if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'renewal_amount') !== false) {
+    if (empty($apiRequest['params']['return'])
+      || in_array('renewal_amount', $apiRequest['params']['return'])
+      || in_array('format_renewal_amount', $apiRequest['params']['return'])
+    ) {
       $membershipTypeId = !empty($membership['membership_type_id']) ? $membership['membership_type_id'] : CRM_Core_DAO::getFieldValue('CRM_Member_DAO_Membership', $membership['id'], 'membership_type_id');
 
       $additionalInfo['renewal_amount'] = CRM_Core_DAO::getFieldValue('CRM_Member_DAO_MembershipType', $membershipTypeId, 'minimum_fee') ?: 0;
       $additionalInfo['format_renewal_amount'] = CRM_Utils_Money::format($additionalInfo['renewal_amount'], $config->defaultCurrency);
     }
 
-    if (empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'can_renewal') !== false) {
+    if (empty($apiRequest['params']['return']) || in_array('can_renewal', $apiRequest['params']['return'])) {
       $additionalInfo['can_renewal'] = !CRM_Core_DAO::getFieldValue('CRM_Member_DAO_Membership', $membership['id'], 'owner_membership_id') ? 1 : 0;
     }
 
@@ -110,11 +116,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   private function fillRelatedCount($apiRequest, $result) {
-    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
-      return $result;
-    }
-
-    if (!(empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'related_count') !== false)) {
+    if (!(empty($apiRequest['params']['return']) || in_array('related_count', $apiRequest['params']['return']))) {
       return $result;
     }
 
@@ -168,11 +170,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return mixed
    */
   private function fillByRelationship($apiRequest, $result) {
-    if (!empty($apiRequest['params']['return']) && is_array($apiRequest['params']['return'])) {
-      return $result;
-    }
-
-    if (!(empty($apiRequest['params']['return']) || stristr($apiRequest['params']['return'], 'by_relationship_contact_id') !== false)) {
+    if (!(empty($apiRequest['params']['return']) || in_array('by_relationship_contact_id', $apiRequest['params']['return']))) {
       return $result;
     }
 

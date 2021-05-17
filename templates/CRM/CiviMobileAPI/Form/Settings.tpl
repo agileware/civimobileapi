@@ -196,6 +196,17 @@
       <tbody>
 
       <tr class="crm-group-form-block-isReserved">
+        <td class="label">{$form.civimobile_push_notification_lifetime.label} {help id="push-notifications-messages-help"}</td>
+        <td>
+
+          <div>
+            {$form.civimobile_push_notification_lifetime.html}
+          </div>
+
+        </td>
+      </tr>
+
+      <tr class="crm-group-form-block-isReserved">
         <td class="label">{$form.civimobile_is_custom_app.label} {help id="is-custom-app-help"}</td>
         <td>
 

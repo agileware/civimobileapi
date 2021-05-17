@@ -56,7 +56,7 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    display: block;
+    display: none;
     z-index: 1050;
     box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.13);
   }
@@ -185,6 +185,8 @@
 </style>
 
 <script type="text/javascript">
+  var isShowedPopup = {/literal}{$is_showed_popup}{literal};
+
   function setCookie(cname, cvalue, exdays) {
     var date = new Date();
     date.setTime(date.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -193,6 +195,10 @@
   }
 
   CRM.$(document).ready(function($) {
+    if (isShowedPopup) {
+      $('.civi-mobile-popup-wrap').show();
+    }
+
     $('.civi-mobile-popup-close').click(function() {
       setCookie("civimobile_popup_close", true, 30);
       $('.civi-mobile-popup-wrap').hide();

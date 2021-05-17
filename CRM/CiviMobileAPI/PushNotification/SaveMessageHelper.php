@@ -15,6 +15,11 @@ class CRM_CiviMobileAPI_PushNotification_SaveMessageHelper {
    * @return bool
    */
   public static function saveMessages($listOfContactsID, $objID, $objType, $title = NULL, $text = NULL, $data = NULL) {
+    $pushNotificationLifetime = Civi::settings()->get("civimobile_push_notification_lifetime");
+    if (isset($pushNotificationLifetime) && $pushNotificationLifetime == 0) {
+      return FALSE;
+    }
+
     foreach ($listOfContactsID as $contactId) {
       $paramsForInsert = [
         'contact_id' => $contactId,
