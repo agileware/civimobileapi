@@ -22,6 +22,10 @@ class CRM_CiviMobileAPI_Hook_AlterMailParams_EventOnlineReceipt {
         $eventId = (int)$params['tplParams']['eventIdApi'];
       }
 
+      if (empty($contactId) && isset($params['contactId'])) {
+        $contactId = $params['contactId'];
+      }
+
       try {
         $participantId = civicrm_api3('Participant', 'getvalue', [
           'sequential' => 1,
