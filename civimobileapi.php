@@ -720,12 +720,14 @@ function civimobileapi_civicrm_preProcess($formName, &$form) {
   if ($formName == 'CRM_Activity_Form_Activity' || $formName == 'CRM_Custom_Form_CustomDataByType') {
     $groupTree = $form->getVar('_groupTree');
 
-    foreach ($groupTree as $key => $customGroup) {
-      if ($customGroup['name'] == CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY) {
-        unset($groupTree[$key]);
+    if (!empty($groupTree)) {
+      foreach ($groupTree as $key => $customGroup) {
+        if ($customGroup['name'] == CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY) {
+          unset($groupTree[$key]);
+        }
       }
+      $form->setVar('_groupTree', $groupTree);
     }
-    $form->setVar('_groupTree', $groupTree);
   }
   if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
     (new CRM_CiviMobileAPI_Hook_Pre_ContributionPayment)->run();
