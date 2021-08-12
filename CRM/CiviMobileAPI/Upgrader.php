@@ -153,6 +153,31 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_0019() {
+    try {
+      (new CRM_CiviMobileAPI_Install_Entity_OptionGroup())->install();
+      (new CRM_CiviMobileAPI_Install_Entity_OptionValue())->install();
+    } catch (Exception $e) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  public function upgrade_0020() {
+    try {
+      (new CRM_CiviMobileAPI_Install_Entity_CustomGroup())->install();
+      (new CRM_CiviMobileAPI_Install_Entity_CustomField())->install();
+      (new CRM_CiviMobileAPI_Install_Entity_CustomGroup())->enableAll();
+
+      self::setDefaultMobileEventRegistration();
+    } catch (Exception $e) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
   /**
    * Installs scheduled job
    *
@@ -171,6 +196,8 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
       CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarEnable()
       && CRM_CiviMobileAPI_Utils_Calendar::isCiviCalendarCompatible()
     );
+
+    self::setDefaultMobileEventRegistration();
 
     Civi::settings()->set('civimobile_auto_update', 1);
   }
@@ -236,6 +263,21 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     if (!empty($navInfo['id'])) {
       CRM_Core_BAO_Navigation::processDelete($navInfo['id']);
       CRM_Core_BAO_Navigation::resetNavigation();
+    }
+  }
+
+  private static function setDefaultMobileEventRegistration() {
+    $isAllowMobileRegistrationField = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION, CRM_CiviMobileAPI_Install_Entity_CustomField::IS_MOBILE_EVENT_REGISTRATION);
+    $events = civicrm_api3('Event', 'get', [
+      'sequential' => 1,
+      'options' => ['limit' => 0]
+    ]);
+
+    foreach ($events['values'] as $event) {
+      civicrm_api3('CustomValue', 'create', [
+        'entity_id' => $event['id'],
+        $isAllowMobileRegistrationField => 1
+      ]);
     }
   }
 

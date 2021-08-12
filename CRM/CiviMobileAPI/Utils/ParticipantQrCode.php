@@ -55,7 +55,7 @@ class CRM_CiviMobileAPI_Utils_ParticipantQrCode {
 
     if (!empty($participant)) {
       return [
-        'qr_code_image' => $participant[$customQrImage],
+        'qr_code_image' => urldecode(html_entity_decode($participant[$customQrImage])),
         'qr_code_hash'  => $participant[$customQrCode],
         'qr_event_id'   => $participant[$customEventId]
       ];

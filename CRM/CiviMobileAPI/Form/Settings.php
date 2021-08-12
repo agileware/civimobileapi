@@ -49,6 +49,9 @@ class CRM_CiviMobileAPI_Form_Settings extends CRM_Core_Form {
     if (in_array('CiviCampaign', $enabledComponents)) {
       $possibleItemsToDisplayInPublicArea[] = 'Petitions';
     }
+    if (in_array('CiviContribute', $enabledComponents)) {
+      $possibleItemsToDisplayInPublicArea[] = 'Donations';
+    }
 
     $this->assign('isWritable', CRM_CiviMobileAPI_Utils_Extension::directoryIsWritable());
     $this->assign('serverKeyValidMessage', $serverKeyValidMessage);

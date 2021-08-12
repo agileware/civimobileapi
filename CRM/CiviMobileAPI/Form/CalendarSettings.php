@@ -172,7 +172,7 @@ class CRM_CiviMobileAPI_Form_CalendarSettings extends CRM_Core_Form {
     $prefixedSettings = [];
 
     foreach ($settings as $name => $value) {
-      $prefixedSettings[CRM_CiviMobileAPI_Settings_Calendar_CiviMobile::getName($name, TRUE)] = $value;
+      $prefixedSettings[CRM_CiviMobileAPI_Settings_Calendar_CiviMobile::getName($name, TRUE)] = !empty($value) ? $value : NULL;
     }
 
     if (!empty($prefixedSettings)) {

@@ -13,6 +13,14 @@ class CRM_CiviMobileAPI_ApiWrapper_Event implements API_Wrapper {
    * @return array
    */
   public function fromApiInput($apiRequest) {
+    if (!empty($apiRequest['params']['return'])) {
+      $isAllowMobileRegistration = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION, CRM_CiviMobileAPI_Install_Entity_CustomField::IS_MOBILE_EVENT_REGISTRATION);
+      if (is_string($apiRequest['params']['return'])) {
+        $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+      }
+      $apiRequest['params']['return'] = array_unique(array_merge($apiRequest['params']['return'], [$isAllowMobileRegistration]));
+    }
+
     if (is_mobile_request()) {
       $apiRequest['params']['check_permissions'] = 0;
     }
@@ -30,11 +38,13 @@ class CRM_CiviMobileAPI_ApiWrapper_Event implements API_Wrapper {
    */
   public function toApiOutput($apiRequest, $result) {
     $isQrUsedFieldName = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_USES, CRM_CiviMobileAPI_Install_Entity_CustomField::IS_QR_USED);
+    $isAllowMobileRegistration = "custom_" . CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION, CRM_CiviMobileAPI_Install_Entity_CustomField::IS_MOBILE_EVENT_REGISTRATION);
     $isQrUsedAlias = 'is_event_use_qr_code';
 
     if ($apiRequest['action'] == 'getsingle') {
       $result['url'] = CRM_Utils_System::url('civicrm/event/info', 'id=' . $result['id'], true);
       $result['registered_participants_count'] = CRM_Event_BAO_Event::getParticipantCount($result['id'], FALSE, FALSE, FALSE, FALSE);
+      $result['is_allow_mobile_registration'] = isset($result[$isAllowMobileRegistration]) ? $result[$isAllowMobileRegistration] : 0;
     }
 
     if ($apiRequest['action'] == 'get' && !empty($result['values'])) {
@@ -44,6 +54,8 @@ class CRM_CiviMobileAPI_ApiWrapper_Event implements API_Wrapper {
           'return' => ["id"],
           'event_id' => $event['id'],
         ])['count'];
+
+        $result['values'][$key]['is_allow_mobile_registration'] = isset($result['values'][$key][$isAllowMobileRegistration]) ? $result['values'][$key][$isAllowMobileRegistration] : 0;
 
         if (isset($event['currency'])) {
           if (!empty($event['currency'])) {

@@ -43,6 +43,7 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             'end_date',
             'event_end_date',
             'is_online_registration',
+            'is_allow_mobile_registration',
             'event_full_text',
             'is_monetary',
             'is_show_location',
@@ -464,6 +465,39 @@ class CRM_CiviMobileAPI_Page_PublicApi_Api extends CRM_CiviMobileAPI_Page_Public
             'current_employer_id',
             'first_name',
             'last_name'
+          ],
+          'middleware' => [
+            [
+              'class' => 'CRM_CiviMobileAPI_Page_PublicApi_Middleware',
+              'method' => 'isAllowPublicInfoApi',
+            ],
+          ],
+          'transforms' => []
+        ]
+      ]
+    ],
+    [
+      'entityName' => 'ContributionPage',
+      'availableActions' => [
+        [
+          'actionName' => 'get',
+          'actionPermissions' => ['access CiviContribute', 'make online contributions', 'access CiviCRM'],
+          'availableParams' => [
+            'id',
+            'financial_type_id',
+            'options',
+            'start_date'
+          ],
+          'availableReturnFields' => [
+            'id',
+            'financial_type_id',
+            'title',
+            'payment_processor',
+            'is_active',
+            'start_date',
+            'end_date',
+            'contribution_type_id',
+            'page_URL',
           ],
           'middleware' => [
             [

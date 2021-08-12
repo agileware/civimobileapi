@@ -202,6 +202,11 @@ function civimobileapi_civicrm_apiWrappers(&$wrappers, $apiRequest) {
       $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Survey_Getsingle();
     }
   }
+  elseif ($apiRequest['entity'] == 'ContributionPage') {
+    if ($apiRequest['action'] == 'get') {
+      $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_ContributionPage();
+    }
+  }
 }
 
 /**
@@ -254,7 +259,9 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       ($entity == 'civi_mobile_survey' and $action == 'sign') ||
       ($entity == 'civi_mobile_survey' and $action == 'get_signed_values') ||
       ($entity == 'civi_mobile_survey_interviewer' and $action == 'get') ||
-      ($entity == 'civi_mobile_contact_group' and $action == 'delete')
+      ($entity == 'civi_mobile_contact_group' and $action == 'delete') ||
+      ($entity == 'contribution_page' and $action == 'get') ||
+      ($entity == 'financial_type' and $action == 'get')
     ) {
       $params['check_permissions'] = FALSE;
     }
@@ -390,6 +397,8 @@ function civimobileapi_civicrm_post($op, $objectName, $objectId, &$objectRef) {
     $qrcodeCheckinEvent = CRM_Utils_Request::retrieve('default_qrcode_checkin_event', 'String');
     $eventId = $objectId;
 
+    CRM_CiviMobileAPI_Utils_IsAllowMobileEventRegistrationField::setValue($eventId, 1);
+
     if ($qrcodeCheckinEvent) {
       CRM_CiviMobileAPI_Utils_EventQrCode::setQrCodeToEvent($eventId);
     }
@@ -422,6 +431,14 @@ function civimobileapi_civicrm_post($op, $objectName, $objectId, &$objectRef) {
 }
 
 function civimobileapi_civicrm_postProcess($formName, &$form) {
+  if ($formName == 'CRM_Event_Form_ManageEvent_Registration' && ($form->getAction() == CRM_Core_Action::UPDATE || $form->getAction() == CRM_Core_Action::ADD)) {
+    $values = $form->exportValues();
+
+    $newValue = isset($values['civi_mobile_is_event_mobile_registration']) ? 1 : 0;
+    $eventId = $form->_id;
+    CRM_CiviMobileAPI_Utils_IsAllowMobileEventRegistrationField::setValue($eventId, $newValue);
+  }
+
   //TODO: think about how to remove all venues on hook_pre
   /**
    * Removes all venues in EventSession if loc_block_id was changed.
@@ -547,6 +564,17 @@ function civimobileapi_civicrm_permission(&$permissionList) {
     $permissionsPrefix . 'view Agenda',
     E::ts("View Agenda."),
   ];
+
+  $permissionList['see tags'] = [
+    $permissionsPrefix . 'see tags',
+    E::ts("It means the User can see the tags he belongs to."),
+  ];
+
+  $permissionList['see groups'] = [
+    $permissionsPrefix . 'see groups',
+    E::ts("It means the User can see the groups he belongs to"),
+  ];
+
 }
 
 if (!function_exists('is_writable_r')) {
@@ -633,6 +661,15 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
     'separator' => NULL,
   ];
   _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileSettings);
+
+  $civiMobileTabs = [
+    'name' => E::ts('CiviMobile Tabs'),
+    'url' => 'civicrm/admin/options/civi_mobile_tabs',
+    'permission' => 'administer CiviCRM',
+    'operator' => NULL,
+    'separator' => NULL,
+  ];
+  _civimobileapi_civix_insert_navigation_menu($menu, 'Administer/CiviMobile/', $civiMobileTabs);
 }
 
 /**
@@ -641,16 +678,41 @@ function civimobileapi_civicrm_navigationMenu(&$menu) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_buildForm/
  */
 function civimobileapi_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && $form->getAction() == CRM_Core_Action::ADD) {
-    $templatePath = realpath(dirname(__FILE__)."/templates");
+  if ($formName == 'CRM_Event_Form_ManageEvent_Registration' && $form->getAction() == CRM_Core_Action::UPDATE) {
+    $form->addElement('checkbox',
+        'civi_mobile_is_event_mobile_registration',
+        ts('Is allow mobile registration?')
+    );
 
-    $form->add('checkbox', 'default_qrcode_checkin_event', E::ts('When generating QR Code tokens, use this Event'));
-    CRM_Core_Region::instance('page-body')->add([
-      'template' => "{$templatePath}/qrcode-checkin-event-options.tpl"
+    if ($form->getAction() == CRM_Core_Action::UPDATE) {
+      $eventId = $form->_id;
+      $elementValue = CRM_CiviMobileAPI_Utils_IsAllowMobileEventRegistrationField::getValue($eventId);
+      $form->setDefaults([
+        'civi_mobile_is_event_mobile_registration' => $elementValue,
+      ]);
+    }
+
+    CRM_Core_Region::instance('page-header')->add([
+        'template' => CRM_CiviMobileAPI_ExtensionUtil::path() . '/templates/CRM/CiviMobileAPI/Block/IsAllowMobileRegistration.tpl'
     ]);
+  }
+
+  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo') {
+    if ($form->getAction() == CRM_Core_Action::ADD){
+      $templatePath = realpath(dirname(__FILE__)."/templates");
+
+      $form->add('checkbox', 'default_qrcode_checkin_event', E::ts('When generating QR Code tokens, use this Event'));
+      CRM_Core_Region::instance('page-body')->add([
+        'template' => "{$templatePath}/qrcode-checkin-event-options.tpl"
+      ]);
+
+      CRM_Core_Region::instance('page-body')->add([
+        'style' => '.custom-group-' . CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_USES . ' { display:none;}'
+      ]);
+    }
 
     CRM_Core_Region::instance('page-body')->add([
-      'style' => '.custom-group-' . CRM_CiviMobileAPI_Install_Entity_CustomGroup::QR_USES . ' { display:none;}'
+      'style' => '.custom-group-' . CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION . ' { display:none;}'
     ]);
   }
 
