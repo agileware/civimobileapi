@@ -30,8 +30,10 @@ class CRM_CiviMobileAPI_Utils_CiviCRM {
   /**
    * @return string
    */
-  public static function getRenewalMembershipContributionPageUrl() {
-    $pageId = Civi::settings()->get('default_renewal_contribution_page');
+  public static function getContributionPageUrl($pageId = NULL) {
+    if (empty($pageId)) {
+      $pageId = Civi::settings()->get('default_renewal_contribution_page');
+    }
 
     if (!empty($pageId)) {
       $currentCMS = CRM_CiviMobileAPI_Utils_CmsUser::getInstance()->getSystem();

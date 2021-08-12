@@ -31,7 +31,9 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
       $result["values"][$key]['participant_public_key'] = $publicKey;
     }
 
-    return $result["values"];
+    $this->sendEmail($result['id']);
+
+    return $result['values'];
   }
 
   /**
@@ -56,7 +58,8 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
     $result = [
       'event_id' => $params["event_id"],
       'contact_id' => $contactId,
-      'default_role_id' => $event->default_role_id
+      'default_role_id' => $event->default_role_id,
+      'contact_email' => $params['contact_email']
     ];
 
     return $result;
@@ -131,6 +134,52 @@ class CRM_CiviMobileAPI_Api_CiviMobilePublicParticipant_Create extends CRM_CiviM
     } catch (CiviCRM_API3_Exception $e) {
       throw new api_Exception(E::ts('Can not update Contact. Error: ') . $e->getMessage(), 'can_not_update_contact');
     }
+  }
+
+  /**
+   * Send email for participant
+   *
+   * @param $participantId
+   */
+  private function sendEmail($participantId) {
+    try {
+      $event = civicrm_api3('Event', 'getsingle', [
+        'id' => $this->validParams["event_id"]
+      ]);
+    } catch (Exception $e) {
+      return;
+    }
+
+    try {
+      $participant = civicrm_api3('Participant', 'getsingle', [
+        'id' => $participantId
+      ]);
+    } catch (Exception $e) {
+      return;
+    }
+
+    $emailParams = [
+      'participant' => $participant,
+      'event' => $event,
+      'params' => [
+        $participantId => [
+          'first_name' => $participant['first_name'],
+          'last_name' => $participant['last_name'],
+          'email-Primary' => $this->validParams['contact_email'],
+          'is_primary' => 1,
+          'is_pay_later' => $event['is_pay_later'],
+          'contact_id' => $participant['contact_id'],
+          'defaultRole' => $event['default_role_id'],
+          'participant_role_id' => $participant['participant_role_id'],
+          'description' => E::ts('Event Registration') . ' ' . $event['title'],
+        ]
+      ]
+    ];
+
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('event', $event);
+
+    CRM_Event_BAO_Event::sendMail($participant["contact_id"], $emailParams, $participant['participant_id']);
   }
 
 }

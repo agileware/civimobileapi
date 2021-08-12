@@ -41,6 +41,9 @@ function civicrm_api3_civi_mobile_permission_get() {
     $profileCreate = CRM_Core_Permission::check('profile create');
     $canCheckInOnEvent = CRM_Core_Permission::check(CRM_CiviMobileAPI_Utils_Permission::CAN_CHECK_IN_ON_EVENT);
     $viewAgenda = CRM_Core_Permission::check('view Agenda');
+    $makeOnlineContributions = CRM_Core_Permission::check('make online contributions');
+    $civimobileSeeGroups = CRM_Core_Permission::check('see groups');
+    $civimobileSeeTags = CRM_Core_Permission::check('see tags');
 
     $permissions['access'] = [
       'accessCiviCRM' => $accessToCiviCrm && $viewMyContact ? 1 : 0,
@@ -197,6 +200,8 @@ function civicrm_api3_civi_mobile_permission_get() {
         'all' => $accessToCiviCrm && $viewMyContact && $accessCiviContribute && $deleteInCiviContribute && ($viewAllContacts || $editAllContacts) ? 1 : 0,
         'my' =>  $accessToCiviCrm && $viewMyContact && $accessCiviContribute && $deleteInCiviContribute ? 1 : 0,
       ],
+      'make_contributions' => $accessToCiviCrm && $accessCiviContribute && $makeOnlineContributions ? 1 : 0,
+      'contribution_dashboard' => CRM_Core_Permission::check('administer CiviCRM') ? 1 : 0,
     ];
 
     $permissions['note'] = [
@@ -235,8 +240,8 @@ function civicrm_api3_civi_mobile_permission_get() {
 
     $permissions['group'] = [
       'view' => [
-        'all' => $accessToCiviCrm && $viewMyContact && ($viewAllContacts || $editAllContacts) ? 1 : 0,
-        'my' => $accessToCiviCrm && $viewMyContact ? 1 : 0,
+        'all' => $accessToCiviCrm && $viewMyContact && ($viewAllContacts || $editAllContacts) && $civimobileSeeGroups ? 1 : 0,
+        'my' => $accessToCiviCrm && $viewMyContact && $civimobileSeeGroups ? 1 : 0,
       ],
       'remove' => [
         'all' => $accessToCiviCrm && $viewMyContact && $editAllContacts ? 1 : 0,
@@ -258,8 +263,8 @@ function civicrm_api3_civi_mobile_permission_get() {
 
     $permissions['tags'] = [
       'view' => [
-        'all' => $accessToCiviCrm && $viewMyContact && ($viewAllContacts || $editAllContacts) ? 1 : 0,
-        'my' => $accessToCiviCrm && $viewMyContact ? 1 : 0,
+        'all' => $accessToCiviCrm && $viewMyContact && ($viewAllContacts || $editAllContacts) && $civimobileSeeTags ? 1 : 0,
+        'my' => $accessToCiviCrm && $viewMyContact && $civimobileSeeTags ? 1 : 0,
       ],
       'add' => [
         'all' => $accessToCiviCrm && $viewMyContact && $editAllContacts ? 1 : 0,

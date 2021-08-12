@@ -10,8 +10,6 @@
  * @throws \Civi\API\Exception\UnauthorizedException
  */
 function civicrm_api3_my_event_get($params) {
-  _civicrm_api3_my_event_check_permission($params);
-
   $params = _civicrm_api3_my_event_prepare_params($params);
 
   $dao = _civicrm_api3_my_event_get_find($params);
@@ -52,22 +50,6 @@ function _civicrm_api3_my_event_prepare_params($params) {
   $newParams['end_date'] = CRM_Utils_Array::value('end_date', $params);
 
   return $newParams;
-}
-
-/**
- * Checks permissions
- *
- * @param $params
- *
- * @throws \Civi\API\Exception\UnauthorizedException
- */
-function _civicrm_api3_my_event_check_permission($params) {
-  $contactID = CRM_Utils_Array::value('contact_id', $params);
-  if (!CRM_Core_Permission::check('administer CiviCRM')) {
-    if (CRM_Core_Session::singleton()->get('userID') != $contactID) {
-      throw new \Civi\API\Exception\UnauthorizedException('Permission denied to see contact\'s events');
-    }
-  }
 }
 
 /**

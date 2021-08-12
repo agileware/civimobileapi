@@ -15,6 +15,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
   const PUBLIC_INFO = 'civi_mobile_public_info';
   const AGENDA_PARTICIPANT = 'civi_mobile_agenda_participant';
   const SURVEY = 'civi_mobile_survey';
+  const ALLOW_MOBILE_REGISTRATION = 'civi_mobile_allow_registration';
 
   /**
    * Entity name
@@ -68,6 +69,15 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
         'title' => E::ts('Survey`s additional info'),
         'extends' => 'Activity',
         'is_public' => 0,
+        'is_reserved' => 1
+      ],
+      [
+        'name' => self::ALLOW_MOBILE_REGISTRATION,
+        'title' => E::ts('Allow Online registration in CiviMobile'),
+        'extends' => 'Event',
+        'is_public' => 1,
+        'style' => 'Inline',
+        'collapse_display' => 1,
         'is_reserved' => 1
       ],
     ];

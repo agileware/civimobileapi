@@ -252,4 +252,31 @@ class CRM_CiviMobileAPI_Utils_Extension {
     $_COOKIE["civimobile_popup_close"] = true;
   }
 
+  /**
+   * Returns active tabs for CiviMobile applications
+   *
+   * @return array
+   */
+  public static function getActiveCiviMobileTabs() {
+    $tabs = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => CRM_CiviMobileAPI_Install_Entity_OptionGroup::TABS,
+      'is_active' => 1,
+      'options' => ['limit' => 0, 'sort' => "weight ASC"],
+    ])['values'];
+
+    $preparedTabs = [];
+
+    foreach ($tabs as $tab) {
+      $preparedTabs[] = [
+        'label' => $tab['label'],
+        'name' => $tab['name'],
+        'is_active' => $tab['is_active'],
+        'weight' => $tab['weight'],
+      ];
+    }
+
+    return $preparedTabs;
+  }
+
 }

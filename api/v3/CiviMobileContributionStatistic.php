@@ -9,26 +9,23 @@ use CRM_CiviMobileAPI_ExtensionUtil as E;
  * @return array
  */
 function civicrm_api3_civi_mobile_contribution_statistic_get($params) {
-  $queryParams = ['contact_id' => $params['contact_id']];
-  $currentYearQueryParams = [
-    'contact_id' => $params['contact_id'],
-    'receive_date' => [
-      'BETWEEN' => [
-        CRM_Utils_Date::getToday(['month'=> 1, 'day' => 1, 'year' => date("Y")], 'Y-m-d H:i:s'),
-        CRM_Utils_Date::getToday(['month'=> 1, 'day' => 1, 'year' => (date("Y") + 1)], 'Y-m-d H:i:s'),
-      ]
-    ],
-  ];
+  $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->getListOfContributionContactsId();
 
-  $selector = new CRM_Contribute_Selector_Search(CRM_Contact_BAO_Query::convertFormValues($queryParams));
-  $currentYearSelector = new CRM_Contribute_Selector_Search(CRM_Contact_BAO_Query::convertFormValues($currentYearQueryParams));
+  if (!empty($params['contact_id'])) {
+    $statistic = (new CRM_CiviMobileAPI_Utils_ContactsContributionStatistic)->getSingleContactContributionStatistic($params);
+  } else {
+    if ($params['contact_display_name'] || $params['contact_type'] || $params['contact_tags'] || $params['contact_groups']) {
+      $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->filterContributionContacts($params);
+    }
 
-  $statistic = [
-    'all_time' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($selector->getSummary()),
-    'current_year' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($currentYearSelector->getSummary())
-  ];
+    $statistic = (new CRM_CiviMobileAPI_Utils_ContactsContributionStatistic)->getSelectedContactsContributionStatistic($params, $listOfContactId);
+  }
 
-  return civicrm_api3_create_success([$params['contact_id'] => $statistic], $params);
+  if (!empty($params['contact_id'])) {
+    return civicrm_api3_create_success([$params['contact_id'] => $statistic], $params);
+  } else {
+    return civicrm_api3_create_success([$statistic], $params);
+  }
 }
 
 /**
@@ -41,7 +38,7 @@ function _civicrm_api3_civi_mobile_contribution_statistic_get_spec(&$params) {
   $params['contact_id'] = [
     'title' => 'Contact ID',
     'description' => E::ts('Contact ID'),
-    'api.required' => 1,
+    'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT,
   ];
 }

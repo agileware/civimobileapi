@@ -49,6 +49,7 @@ class CRM_CiviMobileAPI_Page_PublicSettings extends CRM_Core_Page {
           'max_first_name_length' => CMSRegistration::maxFirstNameLength(),
           'max_last_name_length' => CMSRegistration::maxLastNameLength(),
         ],
+        'tabs' => CRM_CiviMobileAPI_Utils_Extension::getActiveCiviMobileTabs(),
         'permissions' => CRM_CiviMobileAPI_Utils_Permission::getAnonymous(),
       ];
 

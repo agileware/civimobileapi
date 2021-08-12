@@ -19,6 +19,22 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
       }
       $apiRequest['params']['return'] = array_unique(array_merge($apiRequest['params']['return'], ['currency', 'financial_type_id']));
     }
+    if (is_mobile_request()) {
+      if ($apiRequest['params']['contact_display_name']
+        || $apiRequest['params']['contact_type']
+        || $apiRequest['params']['contact_tags']
+        || $apiRequest['params']['contact_groups']
+      ) {
+
+        $contactsId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->filterContributionContacts($apiRequest['params']);
+
+        if (!empty($contactsId)) {
+          $apiRequest['params']['contact_id'] = ['IN' => $contactsId];
+        } else {
+          $apiRequest['params']['contact_id'] = ['IS NULL' => 1];
+        }
+      }
+    }
     return $apiRequest;
   }
 
@@ -31,14 +47,84 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
    * @return array
    */
   public function toApiOutput($apiRequest, $result) {
-    if (is_string($apiRequest['params']['return'])) {
-      $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+    if (is_mobile_request()) {
+      if (!empty($result['values'])) {
+        $contactsId = $this->getContributionContactsId($result['values']);
+
+        try {
+          $contacts = civicrm_api3('Contact', 'get', [
+            'sequential' => 1,
+            'id' => ["IN" => $contactsId],
+            'options' => ['limit' => 0],
+          ])['values'];
+        } catch (CiviCRM_API3_Exception $e) {
+          $contacts = [];
+        }
+
+        if (!empty($contacts)) {
+          foreach ($contacts as $contact) {
+            foreach ($result['values'] as &$contribution) {
+              if ($contact['id'] == $contribution['contact_id']) {
+                $contribution['contact_display_name'] = !empty($contact['display_name']) ? $contact['display_name'] : '';
+                $contribution['contact_first_name'] = !empty($contact['first_name']) ? $contact['first_name'] : '';
+                $contribution['contact_last_name'] = !empty($contact['last_name']) ? $contact['last_name'] : '';
+                $contribution['contact_type'] = !empty($contact['contact_type']) ? $contact['contact_type'] : '';
+                $contribution['contact_image_URL'] = !empty($contact['image_URL']) ? $contact['image_URL'] : '';
+              }
+            }
+          }
+        }
+      }
+
+      if (is_string($apiRequest['params']['return'])) {
+        $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+      }
+
+      $result = $this->fillFinancialTypeName($apiRequest, $result);
+      $result = $this->fillFormatTotalAmount($apiRequest, $result);
+      $result['max_total_amount'] = $this->getMaxTotalAmount();
+    }
+    return $result;
+  }
+
+  /**
+   * Get contribution contact's Id
+   *
+   * @param $contributions
+   * @return array
+   */
+  public function getContributionContactsId($contributions) {
+    $contactsId = [];
+    if (!empty($contributions)) {
+      foreach ($contributions as $contribution) {
+        $contactsId[] = $contribution['contact_id'];
+      }
     }
 
-    $result = $this->fillFinancialTypeName($apiRequest, $result);
-    $result = $this->fillFormatTotalAmount($apiRequest, $result);
+    return $contactsId;
+  }
 
-    return $result;
+  /**
+   * Get max total amount of the contributions
+   *
+   * @return int
+   */
+  public function getMaxTotalAmount() {
+    $select = 'SELECT MAX(civicrm_contribution.total_amount) as max_total_amount';
+    $from = ' FROM civicrm_contribution';
+    $sql = $select . $from;
+
+    $maxTotalAmount = 0;
+    try {
+      $dao = CRM_Core_DAO::executeQuery($sql);
+      while ($dao->fetch()) {
+        $maxTotalAmount = (int)$dao->max_total_amount;
+      }
+    } catch (Exception $e) {
+      return $maxTotalAmount;
+    }
+
+    return $maxTotalAmount;
   }
 
   /**
@@ -115,4 +201,5 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
       return CRM_Core_DAO::getFieldValue('CRM_Financial_DAO_FinancialType', $financialTypeId, 'name');
     }
   }
+
 }

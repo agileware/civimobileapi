@@ -344,6 +344,10 @@
             shownItems.push("Petitions<span class=\"crm-marker\">*</span>");
             $(".spec-event-note").show();
           }
+          if (possibleItemsToDisplayInPublicArea.indexOf('Donations') !== -1) {
+            shownItems.push("Donations<span class=\"crm-marker\">*</span>");
+            $(".spec-event-note").show();
+          }
         }
 
         if (shownItems.length === 0) {

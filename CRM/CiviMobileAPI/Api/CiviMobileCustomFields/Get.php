@@ -23,6 +23,9 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
     'Household' => [
       'find_for' => ['Contact','Household'],
     ],
+    'Activity' => [
+      'find_for' => ['Activity'],
+    ],
   ];
 
   /**
@@ -41,6 +44,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
     return [
       'find_for' => self::$entityMap[$params['entity']]['find_for'],
       'entity_id' => $params['entity_id'],
+      'extends_entity_column_value' => !empty($params['extends_entity_column_value']) ? $params['extends_entity_column_value'] : NULL
     ];
   }
 
@@ -51,32 +55,50 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
    */
   public function getResult() {
     $result = [];
+    $anyActivitiesCustomGroups = [];
 
     try {
       $customGroups = civicrm_api3('CustomGroup', 'get', [
         'sequential' => 1,
         'extends' => ['IN' => $this->validParams['find_for']],
         'is_active' => 1,
+        'extends_entity_column_value' => $this->validParams['extends_entity_column_value'],
         'options' => ['limit' => 0],
-      ]);
+      ])['values'];
     } catch (CiviCRM_API3_Exception $e) {
       return [];
     }
 
-    if (empty($customGroups['values'])) {
+    if ($this->validParams['find_for'][0] == "Activity" && !empty($this->validParams['extends_entity_column_value'])) {
+      try {
+        $anyActivitiesCustomGroups = civicrm_api3('CustomGroup', 'get', [
+          'sequential' => 1,
+          'extends' => "Activity",
+          'is_active' => 1,
+          'extends_entity_column_value' => ['IS NULL' => 1],
+          'options' => ['limit' => 0],
+        ])['values'];
+      } catch (CiviCRM_API3_Exception $e) {
+        return [];
+      }
+    }
+
+    $customGroups = array_merge($customGroups, $anyActivitiesCustomGroups);
+
+    if (empty($customGroups)) {
       return [];
     }
 
     if (!CRM_Core_Permission::check('administer CiviCRM') && !CRM_Core_Permission::check('access all custom data')) {
       $accessibleCustomGroupsToView = CRM_Core_Permission::customGroup(CRM_Core_Permission::VIEW);
 
-      foreach ($customGroups['values'] as $customGroup) {
+      foreach ($customGroups as $customGroup) {
         if (in_array($customGroup['id'], $accessibleCustomGroupsToView)) {
           $result[] = $this->prepareCustomGroup($customGroup);
         }
       }
     } else {
-      foreach ($customGroups['values'] as $customGroup) {
+      foreach ($customGroups as $customGroup) {
         $result[] = $this->prepareCustomGroup($customGroup);
       }
     }
@@ -92,6 +114,8 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
    * @return array
    */
   private function prepareCustomGroup($customGroup) {
+    $gotvCustomFieldId =  CRM_CiviMobileAPI_Utils_CustomField::getId(CRM_CiviMobileAPI_Install_Entity_CustomGroup::SURVEY,CRM_CiviMobileAPI_Install_Entity_CustomField::SURVEY_GOTV_STATUS);
+
     $customGroupData = [
       'id' => $customGroup['id'],
       'name' => $customGroup['name'],
@@ -105,6 +129,7 @@ class CRM_CiviMobileAPI_Api_CiviMobileCustomFields_Get extends CRM_CiviMobileAPI
     try {
       $customFields = civicrm_api3('CustomField', 'get', [
         'sequential' => 1,
+        'id' => ['!=' => $gotvCustomFieldId],
         'custom_group_id' => $customGroup['id'],
         'options' => ['limit' => 0],
         'is_active' => 1,

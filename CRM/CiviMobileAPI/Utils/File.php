@@ -76,7 +76,7 @@ class CRM_CiviMobileAPI_Utils_File {
     foreach ($files as $file) {
       if ((!empty($file['fileName']) && $file['fileName'] == $filename)
         || (!empty($file['cleanName']) && $file['cleanName'] == $filename)) {
-        $url = CRM_Utils_System::url('civicrm/file', ['filename' => $filename, 'mime-type' => $file['mime_type']], TRUE);
+        $url = CRM_Utils_System::url('civicrm/file', ['filename' => $filename, 'mime-type' => $file['mime_type']], TRUE, NULL, FALSE);
       }
     }
 

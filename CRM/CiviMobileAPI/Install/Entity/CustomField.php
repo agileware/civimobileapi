@@ -23,6 +23,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
   const PUBLIC_KEY = 'public_key';
   const AGENDA_PARTICIPANT_BIO = 'civi_mobile_agenda_participant_bio';
   const SURVEY_GOTV_STATUS = 'civi_mobile_survey_gotv_status';
+  const IS_MOBILE_EVENT_REGISTRATION = 'civi_mobile_is_event_mobile_registration';
 
   /**
    * Params for checking Entity existence
@@ -95,6 +96,15 @@ class CRM_CiviMobileAPI_Install_Entity_CustomField extends CRM_CiviMobileAPI_Ins
         'data_type' => 'Boolean',
         'is_view' => 1,
         'default_value' => 0
+      ],
+      [
+        'name' => self::IS_MOBILE_EVENT_REGISTRATION,
+        'label' => E::ts('Allow Online registration in CiviMobile?'),
+        'custom_group_id' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION,
+        'html_type' => 'Radio',
+        'data_type' => 'Boolean',
+        'is_view' => 1,
+        'default_value' => 1
       ],
     ];
   }

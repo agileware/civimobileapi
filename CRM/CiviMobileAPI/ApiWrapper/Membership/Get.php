@@ -79,12 +79,13 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
     if (!empty($apiRequest['params']['membership_contact_id'])) {
       try {
         $lastPayment = civicrm_api3('MembershipPayment', 'getsingle', [
-          'return' => ["contribution_id.receive_date", "membership_id.contact_id"],
+          'return' => ["contribution_id.receive_date", "membership_id.contact_id", "contribution_id.payment_instrument_id"],
           'membership_id' => $membership['id'],
           'membership_id.contact_id' => $apiRequest['params']['membership_contact_id'],
           'options' => ['sort' => "contribution_id.receive_date desc", 'limit' => 1],
         ]);
 
+        $additionalInfo['payment_instrument'] = CRM_CiviMobileAPI_Utils_Membership::getPaymentInstrumentLabel($lastPayment['contribution_id.payment_instrument_id']);
         $additionalInfo['last_payment_receive_date'] = $lastPayment['contribution_id.receive_date'];
       } catch (Exception $e) {}
     }
