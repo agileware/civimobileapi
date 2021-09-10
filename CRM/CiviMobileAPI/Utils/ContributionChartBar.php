@@ -3,32 +3,73 @@
 class CRM_CiviMobileAPI_Utils_ContributionChartBar {
 
   /**
+   * Separator for currency formatting
+   */
+  private static $currencySeparator = '___';
+
+  /**
+   * Add amounts with extra currencies to statistics
+   *
+   * @param $statistics
+   * @return mixed
+   */
+  private static function addExtraAmountsToStatistics($statistics) {
+    $currencies = [];
+
+    foreach ($statistics as $stat) {
+      foreach ($stat['amounts'] as $amount) {
+        if (!in_array($amount['currency'], $currencies)) {
+          $currencies[] = $amount['currency'];
+        }
+      }
+    }
+
+    foreach ($statistics as &$stat) {
+      $availableCurrencies = [];
+      foreach ($stat['amounts'] as $amount) {
+        $availableCurrencies[] = $amount['currency'];
+      }
+
+      $additionalCurrencies = array_diff($currencies, $availableCurrencies);
+      foreach ($additionalCurrencies as $currency) {
+        $stat['amounts'][] = [
+          'amount' => 0,
+          'currency' => $currency,
+          'formattedAmount' => CRM_Utils_Money::format(0, $currency),
+        ];
+      }
+    }
+
+    return $statistics;
+  }
+
+  /**
    * Get statistic by period
    *
    * @param $listOfContactId
-   * @param $startDateParam
-   * @param $endDateParam
+   * @param $params
    * @return array
    */
   public function periodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
     $period = $this->findPeriod($preparedReceiveDate['start_date'], $preparedReceiveDate['end_date']);
 
+    $statistics = [];
+
     if ($period == 'days') {
-      return $this->dayPeriodDivide($listOfContactId, $params);
+      $statistics = $this->dayPeriodDivide($listOfContactId, $params);
     }
     elseif ($period == 'weeks') {
-      return $this->weekPeriodDivide($listOfContactId, $params);
+      $statistics = $this->weekPeriodDivide($listOfContactId, $params);
     }
     elseif ($period == 'months') {
-      return $this->monthPeriodDivide($listOfContactId, $params);
+      $statistics = $this->monthPeriodDivide($listOfContactId, $params);
     }
     elseif ($period == 'years') {
-      return $this->yearPeriodDivide($listOfContactId, $params);
+      $statistics = $this->yearPeriodDivide($listOfContactId, $params);
     }
-    else {
-      return [];
-    }
+
+    return self::addExtraAmountsToStatistics($statistics);
   }
 
   /**
@@ -42,6 +83,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $startDate = date_create($startDate);
     $endDate = date_create($endDate);
     $interval = date_diff($startDate, $endDate);
+    $isNextYear = $interval->y > 0 && !($interval->y == 1 && $endDate->format('m-d') == '01-01');
 
     if ($interval->days <= 14) {
       return 'days';
@@ -49,14 +91,37 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     elseif ($interval->days > 14 && $interval->days <= 60) {
       return 'weeks';
     }
-    elseif ($interval->days > 60 && $interval->y == 0 ) {
+    elseif ($interval->days > 60 && !$isNextYear) {
       return 'months';
     }
-    elseif ($interval->y != 0) {
+    elseif ($isNextYear) {
       return 'years';
     }
     else
       return FALSE;
+  }
+
+  /**
+   * Get Summary with Selector
+   *
+   * @param $selector
+   * @return mixed
+   */
+  private static function getSummary($selector) {
+    $config = CRM_Core_Config::singleton();
+    $configMoneyFormat = $config->moneyformat;
+    $monetaryThousandSeparator = $config->monetaryThousandSeparator;
+    $monetaryDecimalPoint = $config->monetaryDecimalPoint;
+    $config->moneyformat = '%C' . self::$currencySeparator . '%a';
+    $config->monetaryThousandSeparator = '';
+    $config->monetaryDecimalPoint = '.';
+
+    $summary = $selector->getSummary();
+    $config->moneyformat = $configMoneyFormat;
+    $config->monetaryThousandSeparator = $monetaryThousandSeparator;
+    $config->monetaryDecimalPoint = $monetaryDecimalPoint;
+
+    return $summary;
   }
 
   /**
@@ -69,31 +134,24 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
   public function dayPeriodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
 
-    $startDate = date_create($preparedReceiveDate['start_date']);
     $endDate = date_create($preparedReceiveDate['end_date']);
-    $interval = date_diff($endDate,$startDate);
-
-    $count = $interval->days;
-
     $firstDate = date_create($preparedReceiveDate['start_date']);
-    $secondDate = date_add($startDate, date_interval_create_from_date_string('1 days'));
+    $secondDate = clone $firstDate;
     $statistic = [];
 
-    for ($i = 0; $i < $count; $i++) {
-      $firstDate = $firstDate->format('Y-m-d');
-      $secondDate = $secondDate->format('Y-m-d');
+    while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
+      $secondDate = date_add($secondDate, date_interval_create_from_date_string("1 days"));
 
-      $selector = $this->getContributeSelector($listOfContactId, $params,  $firstDate, $secondDate);
-
-      if ($i == ($count - 1)) {
-        $secondDate = $endDate->format('Y-m-d');
+      if ($secondDate->getTimestamp() > $endDate->getTimestamp()) {
+        $secondDate = clone $endDate;
       }
 
-      $statistic[] = $this->transformStatistic($selector->getSummary(), $firstDate, $secondDate);
+      $formattedFirstDate = $firstDate->format('Y-m-d');
+      $formattedSecondDate = $secondDate->format('Y-m-d');
 
-      $firstDate = date_create($secondDate);
-      $secondDate = date_create($secondDate);
-      $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 days'));
+      $selector = $this->getContributeSelector($listOfContactId, $params,  $formattedFirstDate, $formattedFirstDate . ' 23:59:59');
+      $statistic[] = $this->transformStatistic(self::getSummary($selector), $formattedFirstDate, $formattedSecondDate);
+      $firstDate = clone $secondDate;
     }
 
     return $statistic;
@@ -108,40 +166,31 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
    */
   public function weekPeriodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
-
-    $date = date_create($preparedReceiveDate['start_date']);
-    $startDate = date_create($preparedReceiveDate['start_date']);
     $endDate = date_create($preparedReceiveDate['end_date']);
-    $interval = date_diff($endDate,$startDate);
-
-    $count = $interval->days;
-    $countOfWeeks = ceil($count / 7);
 
     $firstDate = date_create($preparedReceiveDate['start_date']);
-    $secondDate = date_add($startDate, date_interval_create_from_date_string('7 days'));
-    $displayedSecondDate = date_add($date, date_interval_create_from_date_string('6 days'));
+    $secondDate = clone $firstDate;
     $statistic = [];
 
-    for ($i = 0; $i < $countOfWeeks; $i++) {
-      $firstDate = $firstDate->format('Y-m-d');
-      $secondDate = $secondDate->format('Y-m-d');
-      $displayedSecondDate = $displayedSecondDate->format('Y-m-d');
+    while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
+      $secondDate = date_add($secondDate, date_interval_create_from_date_string('7 days'));
 
-      if ($i == ($countOfWeeks - 1)) {
-        $secondDate = $endDate->format('Y-m-d');
-        $displayedSecondDate = $endDate->format('Y-m-d');
+      if ($secondDate->getTimestamp() > $endDate->getTimestamp()) {
+        $secondDate = clone $endDate;
       }
 
-      $selector = $this->getContributeSelector($listOfContactId, $params,  $firstDate, $secondDate);
+      $formattedFirstDate = $firstDate->format('Y-m-d');
+      $prevSecondDate = clone $secondDate;
+      $prevSecondDate->modify('-1 second');
+      $prevDay = clone $secondDate;
+      $prevDay->modify('-1 days');
 
-      $statistic[] = $this->transformStatistic($selector->getSummary(), $firstDate, $displayedSecondDate);
+      $selector = $this->getContributeSelector($listOfContactId, $params,  $formattedFirstDate, $prevSecondDate->format('Y-m-d H:i:s'));
+      $statistic[] = $this->transformStatistic(self::getSummary($selector), $formattedFirstDate, $prevDay->format('Y-m-d'));
 
-      $firstDate = date_create($secondDate);
-      $secondDate = date_create($secondDate);
-      $displayedSecondDate = date_create($displayedSecondDate);
-      $secondDate = date_add($secondDate, date_interval_create_from_date_string('7 days'));
-      $displayedSecondDate = date_add($displayedSecondDate, date_interval_create_from_date_string('7 days'));
+      $firstDate = clone $secondDate;
     }
+
     return $statistic;
   }
 
@@ -155,38 +204,28 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
   public function monthPeriodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
 
-    $startDate = date_create($preparedReceiveDate['start_date']);
     $endDate = date_create($preparedReceiveDate['end_date']);
-    $interval = date_diff($endDate,$startDate);
-
-    $countOfMonth = $interval->m;
-    $countOfDays = $interval->d;
-
-    if (!empty($countOfDays)) {
-      $countOfMonth++;
-    }
 
     $firstDate = date_create($preparedReceiveDate['start_date']);
-    $secondDate = date_create(date("Y-m-t", strtotime($preparedReceiveDate['start_date'])));
-    $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 days'));
+    $secondDate = date_create(date("Y-m", strtotime($preparedReceiveDate['start_date'])) . '-01');
 
     $statistic = [];
 
-    for ($i = 0; $i < $countOfMonth; $i++) {
-      $firstDate = $firstDate->format('Y-m-d');
-      $secondDate = $secondDate->format('Y-m-d');
+    while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
+      $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 months'));
 
-      if ($i == ($countOfMonth - 1)) {
-        $secondDate = $endDate->format('Y-m-d');
+      if ($secondDate->getTimestamp() > $endDate->getTimestamp()) {
+        $secondDate = clone $endDate;
       }
 
-      $selector = $this->getContributeSelector($listOfContactId, $params,  $firstDate, $secondDate);
+      $formattedFirstDate = $firstDate->format('Y-m-d');
+      $prevSecondDate = clone $secondDate;
+      $prevSecondDate->modify('-1 second');
 
-      $statistic[] = $this->transformStatistic($selector->getSummary(), $firstDate, $secondDate);
+      $selector = $this->getContributeSelector($listOfContactId, $params,  $formattedFirstDate, $prevSecondDate->format('Y-m-d H:i:s'));
+      $statistic[] = $this->transformStatistic(self::getSummary($selector), $formattedFirstDate, $secondDate->format('Y-m-d'));
 
-      $firstDate = date_create($secondDate);
-      $secondDate = date_create($secondDate);
-      $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 month'));
+      $firstDate = clone $secondDate;
     }
 
     return $statistic;
@@ -203,41 +242,27 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
 
     $date = date_create($preparedReceiveDate['start_date']);
-    $startDate = date_create($preparedReceiveDate['start_date']);
     $endDate = date_create($preparedReceiveDate['end_date']);
-    $interval = date_diff($endDate,$startDate);
-
-    $countOfYears = $interval->y;
-    $countOfMonth = $interval->m;
-    $countOfDays = $interval->d;
-
-    if (!empty($countOfMonth) || !empty($countOfDays)) {
-      $countOfYears++;
-    }
 
     $firstDate = date_create($preparedReceiveDate['start_date']);
-
-    $beginningOfNextYear = date_add($date, date_interval_create_from_date_string('1 year'));
-    $beginningOfNextYear = $beginningOfNextYear->format('Y');
-    $nextYear = date('Y-m-d', strtotime("first day of january $beginningOfNextYear "));
-    $secondDate = date_create($nextYear);
+    $secondDate = date_create(date('Y', $date->getTimestamp()) . '-01-01');
     $statistic = [];
 
-    for ($i = 0; $i < $countOfYears; $i++) {
-      $firstDate = $firstDate->format('Y-m-d');
-      $secondDate = $secondDate->format('Y-m-d');
+    while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
+      $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 year'));
 
-      if ($i == ($countOfYears - 1)) {
-        $secondDate = $endDate->format('Y-m-d');
+      if ($secondDate->getTimestamp() > $endDate->getTimestamp()) {
+        $secondDate = clone $endDate;
       }
 
-      $selector = $this->getContributeSelector($listOfContactId, $params,  $firstDate, $secondDate);
+      $formattedFirstDate = $firstDate->format('Y-m-d');
+      $prevSecondDate = clone $secondDate;
+      $prevSecondDate->modify('-1 second');
 
-      $statistic[] = $this->transformStatistic($selector->getSummary(), $firstDate, $secondDate);
+      $selector = $this->getContributeSelector($listOfContactId, $params,  $formattedFirstDate, $prevSecondDate->format('Y-m-d H:i:s'));
+      $statistic[] = $this->transformStatistic(self::getSummary($selector), $formattedFirstDate, $secondDate->format('Y-m-d'));
 
-      $firstDate = date_create($secondDate);
-      $secondDate = date_create($secondDate);
-      $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 year'));
+      $firstDate = clone $secondDate;
     }
 
     return $statistic;
@@ -285,8 +310,25 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
    * @return array
    */
   public function transformStatistic($statistic, $firstDate, $secondDate) {
+    $newAmount = [];
+
     if (!empty($statistic['total'])) {
       $statistic['total']['amount'] = static::transform($statistic['total']['amount']);
+      $clearAmounts = [];
+      foreach ($statistic['total']['amount'] as $moneyString) {
+        $amountParts = explode(self::$currencySeparator, $moneyString);
+        $currencyName = $amountParts[0];
+        $clearAmount = $amountParts[1];
+        $formattedAmount = CRM_Utils_Money::format($clearAmount, $currencyName);
+        $clearAmounts[] = $clearAmount;
+
+        $newAmount[] = [
+          'amount' => (float) $clearAmount,
+          'currency' => $currencyName,
+          'formattedAmount' => $formattedAmount,
+        ];
+      }
+      $statistic['total']['amount'] = $clearAmounts;
       $statistic['total']['first_date'] = $firstDate;
       $statistic['total']['second_date'] = $secondDate;
     }
@@ -297,6 +339,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
 
     return [
       'amount' => $statistic['total']['amount'],
+      'amounts' => $newAmount,
       'first_date' => $statistic['total']['first_date'],
       'second_date' => $statistic['total']['second_date']
     ];
@@ -309,61 +352,54 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
    * @return array
    */
   private static function transform($string) {
-    if (!empty($string)) {
-      $string = str_replace("$", "", $string);
-    }
-    $result = [];
-    $exploded = explode(',', str_replace("&nbsp;", "", $string));
-    foreach ($exploded as $item) {
-      $result[] = trim($item);
-    }
-
-    return $result;
+    return !empty($string) ? explode(",&nbsp;", $string) : [];
   }
 
   /**
-   * Get minimal contribution date
+   * Returns contribution date interval
    *
-   * @return string
+   * @return array
    */
-  public function getDefaultContributionStartDate() {
-    $select = 'SELECT MIN(civicrm_contribution.receive_date) as min_receive_date';
+  public static function getDefaultContributionDateInterval() {
+    $select = 'SELECT MIN(civicrm_contribution.receive_date) as min_receive_date, MAX(civicrm_contribution.receive_date) as max_receive_date';
     $from = ' FROM civicrm_contribution';
     $sql = $select . $from;
 
-    $receiveStartDate = '';
+    $dates = [
+      'min_receive_date' => '',
+      'max_receive_date' => ''
+    ];
+
     try {
       $dao = CRM_Core_DAO::executeQuery($sql);
-      while ($dao->fetch()) {
-        $receiveStartDate = $dao->min_receive_date;
-      }
-    } catch (Exception $e) {
-      return $receiveStartDate;
-    }
 
-    return $receiveStartDate;
+      if ($dao->fetch()) {
+        $dates['min_receive_date'] = $dao->min_receive_date;
+        $dates['max_receive_date'] = ((int)date('Y', strtotime($dao->max_receive_date)) + 1) . '-01-01';
+      }
+    } catch (Exception $e) {}
+
+    return $dates;
   }
 
   /**
-   * Get prepare receive date
+   * Returns prepared receive date
    *
    * @param $params
    * @return array
    */
   public function getPrepareReceiveDate($params) {
-    $defaultStartDate = (new CRM_CiviMobileAPI_Utils_ContributionChartBar)->getDefaultContributionStartDate();
+    $defaultIntervals = CRM_CiviMobileAPI_Utils_ContributionChartBar::getDefaultContributionDateInterval();
 
     if (!empty($params['receive_date']['BETWEEN']) || empty($params['receive_date'])) {
-      $startDate = !empty($params['receive_date']['BETWEEN'][0]) ? $params['receive_date']['BETWEEN'][0] : $defaultStartDate;
-      $endDate = !empty($params['receive_date']['BETWEEN'][1]) ? $params['receive_date']['BETWEEN'][1] : date('Y-m-d');
-    }
-    elseif (!empty($params['receive_date']['<'])) {
-      $startDate = $defaultStartDate;
+      $startDate = !empty($params['receive_date']['BETWEEN'][0]) ? $params['receive_date']['BETWEEN'][0] : $defaultIntervals['min_receive_date'];
+      $endDate = !empty($params['receive_date']['BETWEEN'][1]) ? $params['receive_date']['BETWEEN'][1] : $defaultIntervals['max_receive_date'];
+    } elseif (!empty($params['receive_date']['<'])) {
+      $startDate = $defaultIntervals['min_receive_date'];
       $endDate = $params['receive_date']['<'];
-    }
-    elseif (!empty($params['receive_date']['>'])) {
+    } elseif (!empty($params['receive_date']['>'])) {
       $startDate = $params['receive_date']['>'];
-      $endDate = date("Y-m-d", strtotime('tomorrow'));
+      $endDate = ((int)date('Y') + 1) . '-01-01';
     }
 
     return [
