@@ -41,4 +41,10 @@ function _civicrm_api3_civi_mobile_contribution_statistic_get_spec(&$params) {
     'api.required' => 0,
     'type' => CRM_Utils_Type::T_INT,
   ];
+  $params['receive_date'] = [
+    'title' => 'Receive date',
+    'description' => E::ts('Receive date'),
+    'api.required' => 0,
+    'type' => CRM_Utils_Type::T_DATE,
+  ];
 }
