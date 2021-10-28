@@ -75,7 +75,7 @@ class CRM_CiviMobileAPI_Install_Entity_CustomGroup extends CRM_CiviMobileAPI_Ins
         'name' => self::ALLOW_MOBILE_REGISTRATION,
         'title' => E::ts('Allow Online registration in CiviMobile'),
         'extends' => 'Event',
-        'is_public' => 1,
+        'is_public' => 0,
         'style' => 'Inline',
         'collapse_display' => 1,
         'is_reserved' => 1

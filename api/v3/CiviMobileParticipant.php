@@ -10,10 +10,6 @@ use CRM_CiviMobileAPI_ExtensionUtil as E;
  * @return array
  */
 function civicrm_api3_civi_mobile_participant_get($params) {
-  if (!CRM_CiviMobileAPI_Utils_Permission::isEnoughPermissionForGetParticipant()) {
-    throw new api_Exception('You don`t have enough permissions.', 'do_not_have_enough_permissions');
-  }
-
   if (!empty($params['name'])) {
     $newParams = $params;
     $newParams['options']['limit'] = 0;
@@ -187,4 +183,22 @@ function _civicrm_api3_civi_mobile_participant_getlist_output($result, $request,
   }
 
   return $output;
+}
+
+/**
+ * Used to disable checkPermissions on getList action
+ *
+ * @param $params
+ * @return mixed
+ */
+function civicrm_api3_civi_mobile_participant_getList($params) {
+  require_once Civi::paths()->getPath("[civicrm.root]/api/v3/Generic/Getlist.php");
+  $params['check_permissions'] = false;
+  $apiRequest = [
+    'version' => 3,
+    'entity' => 'CiviMobileParticipant',
+    'action' => 'getlist',
+    'params' => $params,
+  ];
+  return civicrm_api3_generic_getList($apiRequest);
 }

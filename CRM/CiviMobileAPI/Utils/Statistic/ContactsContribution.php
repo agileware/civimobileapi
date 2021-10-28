@@ -1,6 +1,6 @@
 <?php
 
-class CRM_CiviMobileAPI_Utils_ContactsContributionStatistic {
+class CRM_CiviMobileAPI_Utils_Statistic_ContactsContribution {
 
   /**
    * Get contribution statistic for one contact
@@ -12,12 +12,12 @@ class CRM_CiviMobileAPI_Utils_ContactsContributionStatistic {
     $contributionSelectors = $this->getContributionSelectors($params);
     $selector = $contributionSelectors['selector'];
     $currentYearSelector = $contributionSelectors['current_year_selector'];
-    $preparedReceiveDate = (new CRM_CiviMobileAPI_Utils_ContributionChartBar())->getPrepareReceiveDate($params);
+    $preparedReceiveDate = (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar())->getPrepareReceiveDate($params);
 
     $statistic = [
       'all_time' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($selector->getSummary()),
       'current_year' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($currentYearSelector->getSummary()),
-      'period' => (new CRM_CiviMobileAPI_Utils_ContributionChartBar())->findPeriod($preparedReceiveDate['start_date'], $preparedReceiveDate['end_date'])
+      'period' => (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar())->findPeriod($preparedReceiveDate['start_date'], $preparedReceiveDate['end_date'])
     ];
 
     return $statistic;
@@ -33,16 +33,21 @@ class CRM_CiviMobileAPI_Utils_ContactsContributionStatistic {
    * @return array
    */
   public function getSelectedContactsContributionStatistic($params, $listOfContactId) {
-    $contributionSelectors = $this->getContributionSelectors($params, $listOfContactId);
+    $allTimeParams = $params;
+
+    if (!empty($allTimeParams['receive_date']['BETWEEN'][0]) && !empty($allTimeParams['receive_date']['BETWEEN'][1])) {
+      $allTimeParams['receive_date']['BETWEEN'][1] = date('YmdHis', strtotime($allTimeParams['receive_date']['BETWEEN'][1] . " -1 seconds"));
+    }
+    $contributionSelectors = $this->getContributionSelectors($allTimeParams, $listOfContactId);
     $selector = $contributionSelectors['selector'];
     $currentYearSelector = $contributionSelectors['current_year_selector'];
-    $preparedReceiveDate = (new CRM_CiviMobileAPI_Utils_ContributionChartBar())->getPrepareReceiveDate($params);
+    $preparedReceiveDate = (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar())->getPrepareReceiveDate($params);
 
     $statistic = [
       'all_time' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($selector->getSummary()),
       'current_year' => CRM_CiviMobileAPI_Utils_Contribution::transformStatistic($currentYearSelector->getSummary()),
-      'chart_bar' => (new CRM_CiviMobileAPI_Utils_ContributionChartBar)->periodDivide($listOfContactId, $params),
-      'period' => (new CRM_CiviMobileAPI_Utils_ContributionChartBar())->findPeriod($preparedReceiveDate['start_date'], $preparedReceiveDate['end_date'])
+      'chart_bar' => (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar)->periodDivide($listOfContactId, $params),
+      'period' => (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar())->findPeriod($preparedReceiveDate['start_date'], $preparedReceiveDate['end_date'])
     ];
 
     return $statistic;
@@ -81,8 +86,8 @@ class CRM_CiviMobileAPI_Utils_ContactsContributionStatistic {
       'contact_id' => $contactId,
       'receive_date' => [
         'BETWEEN' => [
-          CRM_Utils_Date::getToday(['month'=> 1, 'day' => 1, 'year' => date("Y")], 'Y-m-d H:i:s'),
-          CRM_Utils_Date::getToday(['month'=> 1, 'day' => 1, 'year' => (date("Y") + 1)], 'Y-m-d H:i:s'),
+          date('Y') . '-01-01',
+          date('Y-m-d H:i:s', strtotime('12/31 +23 hours 59 minutes 59 seconds')),
         ]
       ],
       'financial_type_id' => $contributionFields['financial_type_id'],

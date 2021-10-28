@@ -3,7 +3,7 @@
 /**
  * Class provide Contribution filter methods
  */
-class CRM_CiviMobileAPI_Utils_ContributionFilter {
+class CRM_CiviMobileAPI_Utils_ContactFieldsFilter {
 
   /**
    * List of contact Id
@@ -18,9 +18,22 @@ class CRM_CiviMobileAPI_Utils_ContributionFilter {
    * @param $params
    * @return array
    */
-  public function filterContributionContacts($params) {
-    $listOfContributionContactsId = $this->getListOfContributionContactsId();
-    $this->filterContactByNameOrTypes($params['contact_display_name'], $params['contact_type'], $listOfContributionContactsId);
+  public function filterContacts($params) {
+    if (!empty($params['is_membership'])) {
+      if (!empty($params['membership_contact_id']) && !empty($params['membership_contact_id']['IN'])) {
+        $listOfContactsId = $params['membership_contact_id']['IN'];
+      } elseif (!empty($params['membership_contact_id']) && !empty((int)$params['membership_contact_id'])) {
+        $listOfContactsId = [$params['membership_contact_id']];
+      } else {
+        $listOfContactsId = CRM_CiviMobileAPI_Utils_Statistic_Utils::getListOfMembershipContactIds();
+      }
+
+      $listOfContactsId = CRM_Contact_BAO_Contact_Permission::allowList($listOfContactsId);
+    } else {
+      $listOfContactsId = $this->getListOfContributionContactsId();
+    }
+
+    $this->filterContactByNameOrTypes($params['contact_display_name'], $params['contact_type'], $listOfContactsId);
     $this->filterContactByTags($params['contact_tags']);
     $this->filterContactByGroup($params['contact_groups']["IN"]);
 
@@ -136,9 +149,9 @@ class CRM_CiviMobileAPI_Utils_ContributionFilter {
       $select = "SELECT DISTINCT(`contact_id`)";
       $fromGroupContact = " FROM civicrm_group_contact";
       $fromGroupContactCache = " FROM civicrm_group_contact_cache";
-      $where = " WHERE contact_id IN ( $prepareContactId ) ";
-      $and = " AND group_id IN ( $prepareSelectedGroupId ) ";
-      $sql = $select . $fromGroupContact . $where . $and . " UNION " . $select . $fromGroupContactCache . $where . $and;
+      $where = " WHERE contact_id IN ( $prepareContactId ) AND group_id IN ( $prepareSelectedGroupId ) ";
+      $and = " AND status = 'Added' ";
+      $sql = $select . $fromGroupContact . $where . $and . " UNION " . $select . $fromGroupContactCache . $where;
 
       $contactGroupsRelationList = [];
       try {
@@ -168,7 +181,7 @@ class CRM_CiviMobileAPI_Utils_ContributionFilter {
    *
    * @return array
    */
-  public function getListOfContributionContactsId() {
+  public static function getListOfContributionContactsId() {
     $contributionTable = CRM_Contribute_DAO_Contribution::getTableName();
     $contactsId = [];
 
@@ -186,4 +199,5 @@ class CRM_CiviMobileAPI_Utils_ContributionFilter {
 
     return $contactsId;
   }
+
 }

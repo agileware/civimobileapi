@@ -9,16 +9,16 @@ use CRM_CiviMobileAPI_ExtensionUtil as E;
  * @return array
  */
 function civicrm_api3_civi_mobile_contribution_statistic_get($params) {
-  $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->getListOfContributionContactsId();
+  $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContactFieldsFilter)->getListOfContributionContactsId();
 
   if (!empty($params['contact_id'])) {
-    $statistic = (new CRM_CiviMobileAPI_Utils_ContactsContributionStatistic)->getSingleContactContributionStatistic($params);
+    $statistic = (new CRM_CiviMobileAPI_Utils_Statistic_ContactsContribution)->getSingleContactContributionStatistic($params);
   } else {
     if ($params['contact_display_name'] || $params['contact_type'] || $params['contact_tags'] || $params['contact_groups']) {
-      $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->filterContributionContacts($params);
+      $listOfContactId = (new CRM_CiviMobileAPI_Utils_ContactFieldsFilter)->filterContacts($params);
     }
 
-    $statistic = (new CRM_CiviMobileAPI_Utils_ContactsContributionStatistic)->getSelectedContactsContributionStatistic($params, $listOfContactId);
+    $statistic = (new CRM_CiviMobileAPI_Utils_Statistic_ContactsContribution)->getSelectedContactsContributionStatistic($params, $listOfContactId);
   }
 
   if (!empty($params['contact_id'])) {

@@ -178,6 +178,24 @@ class CRM_CiviMobileAPI_Upgrader extends CRM_CiviMobileAPI_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_0021() {
+    try {
+      $customGroupId = (int) civicrm_api3('CustomGroup', 'getvalue', [
+        'name' => CRM_CiviMobileAPI_Install_Entity_CustomGroup::ALLOW_MOBILE_REGISTRATION,
+        'return' => 'id'
+      ]);
+
+      civicrm_api3('CustomGroup', 'create', [
+        'id' => $customGroupId,
+        'is_public' => 0
+      ]);
+    } catch (Exception $e) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
   /**
    * Installs scheduled job
    *
