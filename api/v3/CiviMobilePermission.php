@@ -29,7 +29,7 @@ function civicrm_api3_civi_mobile_permission_get() {
     $editEventParticipants = CRM_Core_Permission::check('edit event participants');
     $viewEventParticipants = CRM_Core_Permission::check('view event participants');
     $registerForEvents = CRM_Core_Permission::check('register for events');
-	  $deleteInEvent = CRM_Core_Permission::check('delete in CiviEvent');
+    $deleteInEvent = CRM_Core_Permission::check('delete in CiviEvent');
     $accessCiviMember = CRM_Core_Permission::check('access CiviMember');
     $editMemberships = CRM_Core_Permission::check('edit memberships');
     $deleteInCiviMember = CRM_Core_Permission::check('delete in CiviMember');
@@ -44,6 +44,7 @@ function civicrm_api3_civi_mobile_permission_get() {
     $makeOnlineContributions = CRM_Core_Permission::check('make online contributions');
     $civimobileSeeGroups = CRM_Core_Permission::check('see groups');
     $civimobileSeeTags = CRM_Core_Permission::check('see tags');
+    $administerCiviCrm = CRM_Core_Permission::check('administer CiviCRM');
 
     $permissions['access'] = [
       'accessCiviCRM' => $accessToCiviCrm && $viewMyContact ? 1 : 0,
@@ -60,8 +61,8 @@ function civicrm_api3_civi_mobile_permission_get() {
       ],
       'create' => $accessToCiviCrm && $viewMyContact && $addContact ? 1 : 0,
       'delete' => [
-		    'all' => $accessToCiviCrm && $viewMyContact && $deleteContact && ($viewAllContacts || $editAllContacts) ? 1 : 0,
-		    'my' => $accessToCiviCrm && $viewMyContact && $deleteContact ? 1 : 0,
+        'all' => $accessToCiviCrm && $viewMyContact && $deleteContact && ($viewAllContacts || $editAllContacts) ? 1 : 0,
+        'my' => $accessToCiviCrm && $viewMyContact && $deleteContact ? 1 : 0,
       ],
       'search' => $accessToCiviCrm && $viewMyContact && $viewAllContacts ? 1 : 0,
       'access_uploaded_files' => $accessUploadedFiles ? 1 : 0,
@@ -181,6 +182,7 @@ function civicrm_api3_civi_mobile_permission_get() {
         'all' => $accessToCiviCrm && $viewMyContact && $accessCiviMember && $deleteInCiviMember && $deleteInCiviContribute && ($viewAllContacts || $editAllContacts) ? 1 : 0,
         'my' =>  $accessToCiviCrm && $viewMyContact && $accessCiviMember && $deleteInCiviMember && $deleteInCiviContribute ? 1 : 0,
       ],
+      'membership_dashboard' => $administerCiviCrm ? 1 : 0,
     ];
 
     $permissions['contribution'] = [
@@ -201,7 +203,7 @@ function civicrm_api3_civi_mobile_permission_get() {
         'my' =>  $accessToCiviCrm && $viewMyContact && $accessCiviContribute && $deleteInCiviContribute ? 1 : 0,
       ],
       'make_contributions' => $accessToCiviCrm && $accessCiviContribute && $makeOnlineContributions ? 1 : 0,
-      'contribution_dashboard' => CRM_Core_Permission::check('administer CiviCRM') ? 1 : 0,
+      'contribution_dashboard' => $administerCiviCrm ? 1 : 0,
     ];
 
     $permissions['note'] = [

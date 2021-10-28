@@ -297,17 +297,6 @@ class CRM_CiviMobileAPI_Utils_Permission {
   }
 
   /**
-   * Is enough permissions for getting Participant for Agenda
-   */
-  public static function isEnoughPermissionForGetParticipant() {
-    if (CRM_Core_Permission::check('view Agenda')) {
-      return TRUE;
-    }
-
-    return FALSE;
-  }
-
-  /**
    * Is enough permissions to set favourite EventSession
    */
   public static function isEnoughPermissionToSetFavouriteEventSession() {

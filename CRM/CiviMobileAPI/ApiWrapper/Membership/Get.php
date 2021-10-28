@@ -13,6 +13,30 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
    * @return array
    */
   public function fromApiInput($apiRequest) {
+    if (is_mobile_request()) {
+      $apiRequest['params']['is_membership'] = 1;
+      $contactsId = (new CRM_CiviMobileAPI_Utils_ContactFieldsFilter())->filterContacts($apiRequest['params']);
+
+      $receiveDate = !empty($apiRequest['params']['receive_date']) ? (new CRM_CiviMobileAPI_Utils_Statistic_ChartBar())->getPrepareReceiveDate($apiRequest['params']) : NULL;
+
+      if (!empty($apiRequest['params']['activity_type_id']) && $apiRequest['params']['activity_type_id'] == 'renew') {
+        $renewalMembershipsId = CRM_CiviMobileAPI_Utils_Statistic_Utils::getRenewalMembershipIds();
+        $renewalMembershipsParam = (!empty($renewalMembershipsId)) ? ["IN" => $renewalMembershipsId] : NULL;
+
+        $apiRequest['params']['id'] = $renewalMembershipsParam;
+      }
+
+      if (!empty($contactsId)) {
+        $apiRequest['params']['contact_id'] = ['IN' => $contactsId];
+
+        if (!empty($receiveDate)) {
+          $apiRequest['params']['start_date'] = ['BETWEEN' => [$receiveDate['start_date'], $receiveDate['end_date']]];
+        }
+      } else {
+        $apiRequest['params']['contact_id'] = ['IS NULL' => 1];
+      }
+    }
+
     return $apiRequest;
   }
 
@@ -27,6 +51,10 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
   public function toApiOutput($apiRequest, $result) {
     if (is_string($apiRequest['params']['return'])) {
       $apiRequest['params']['return'] = explode(',', $apiRequest['params']['return']);
+    }
+
+    if (!empty($apiRequest['params']['options']['is_count']) && $apiRequest['params']['options']['is_count'] == 1) {
+      return $result;
     }
 
     $result = $this->fillAdditionalInfo($apiRequest, $result);
@@ -75,8 +103,15 @@ class CRM_CiviMobileAPI_ApiWrapper_Membership_Get implements API_Wrapper {
   private function getAdditionalInfo($membership, $apiRequest) {
     $config = CRM_Core_Config::singleton();
     $additionalInfo = [];
+    $contactId = NULL;
 
     if (!empty($apiRequest['params']['membership_contact_id'])) {
+      $contactId = $apiRequest['params']['membership_contact_id'];
+    } elseif (!empty($membership['contact_id'])) {
+      $contactId = $membership['contact_id'];
+    }
+
+    if (!empty($contactId)) {
       try {
         $lastPayment = civicrm_api3('MembershipPayment', 'getsingle', [
           'return' => ["contribution_id.receive_date", "membership_id.contact_id", "contribution_id.payment_instrument_id"],

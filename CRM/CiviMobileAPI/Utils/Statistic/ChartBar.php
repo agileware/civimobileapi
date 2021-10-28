@@ -1,6 +1,6 @@
 <?php
 
-class CRM_CiviMobileAPI_Utils_ContributionChartBar {
+class CRM_CiviMobileAPI_Utils_Statistic_ChartBar {
 
   /**
    * Separator for currency formatting
@@ -69,7 +69,12 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
       $statistics = $this->yearPeriodDivide($listOfContactId, $params);
     }
 
-    return self::addExtraAmountsToStatistics($statistics);
+    if ($params['is_membership'] == 1) {
+      return $statistics;
+    } else {
+      return self::addExtraAmountsToStatistics($statistics);
+    }
+
   }
 
   /**
@@ -83,7 +88,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $startDate = date_create($startDate);
     $endDate = date_create($endDate);
     $interval = date_diff($startDate, $endDate);
-    $isNextYear = $interval->y > 0 && !($interval->y == 1 && $endDate->format('m-d') == '01-01');
+    $isNextYear = $interval->y > 0 && !($interval->y == 1 && $interval->m == 0 && $endDate->format('m-d') == '01-01');
 
     if ($interval->days <= 14) {
       return 'days';
@@ -139,6 +144,17 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $secondDate = clone $firstDate;
     $statistic = [];
 
+    if (!empty($params['is_membership'])) {
+      $membershipTypes = $this->getMembershipTypes($params);
+
+      foreach ($membershipTypes as $typeId => $typeName) {
+        $params['membership_type_id'] = $typeName;
+        $statistic[$typeId] = $this->getMembershipStatistic($firstDate, $secondDate, $endDate, $listOfContactId, $params, '1 days');
+      }
+
+      return $statistic;
+    }
+
     while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
       $secondDate = date_add($secondDate, date_interval_create_from_date_string("1 days"));
 
@@ -167,10 +183,21 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
   public function weekPeriodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
     $endDate = date_create($preparedReceiveDate['end_date']);
-
     $firstDate = date_create($preparedReceiveDate['start_date']);
     $secondDate = clone $firstDate;
+
     $statistic = [];
+
+    if (!empty($params['is_membership'])) {
+      $membershipTypes = $this->getMembershipTypes($params);
+
+      foreach ($membershipTypes as $typeId => $typeName) {
+        $params['membership_type_id'] = $typeName;
+        $statistic[$typeId] = $this->getMembershipStatistic($firstDate, $secondDate, $endDate, $listOfContactId, $params, '7 days');
+      }
+
+      return $statistic;
+    }
 
     while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
       $secondDate = date_add($secondDate, date_interval_create_from_date_string('7 days'));
@@ -203,13 +230,22 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
    */
   public function monthPeriodDivide($listOfContactId, $params) {
     $preparedReceiveDate = $this->getPrepareReceiveDate($params);
-
     $endDate = date_create($preparedReceiveDate['end_date']);
-
     $firstDate = date_create($preparedReceiveDate['start_date']);
     $secondDate = date_create(date("Y-m", strtotime($preparedReceiveDate['start_date'])) . '-01');
 
     $statistic = [];
+
+    if (!empty($params['is_membership'])) {
+      $membershipTypes = $this->getMembershipTypes($params);
+
+      foreach ($membershipTypes as $typeId => $typeName) {
+        $params['membership_type_id'] = $typeName;
+        $statistic[$typeId] = $this->getMembershipStatistic($firstDate, $secondDate, $endDate, $listOfContactId, $params, '1 month');
+      }
+
+      return $statistic;
+    }
 
     while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
       $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 months'));
@@ -248,6 +284,17 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $secondDate = date_create(date('Y', $date->getTimestamp()) . '-01-01');
     $statistic = [];
 
+    if (!empty($params['is_membership'])) {
+      $membershipTypes = $this->getMembershipTypes($params);
+
+      foreach ($membershipTypes as $typeId => $typeName) {
+        $params['membership_type_id'] = $typeName;
+        $statistic[$typeId] = $this->getMembershipStatistic($firstDate, $secondDate, $endDate, $listOfContactId, $params, '1 year');
+      }
+
+      return $statistic;
+    }
+
     while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
       $secondDate = date_add($secondDate, date_interval_create_from_date_string('1 year'));
 
@@ -279,7 +326,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
    */
   public function getContributeSelector($listOfContactId, $params, $firstDate, $secondDate) {
     $contactQuery = ["IN" => $listOfContactId];
-    $contributionFields = (new CRM_CiviMobileAPI_Utils_ContactsContributionStatistic)->getContributionFieldsParams($params);
+    $contributionFields = (new CRM_CiviMobileAPI_Utils_Statistic_ContactsContribution)->getContributionFieldsParams($params);
 
     $totalQueryParams = [
       'contact_id' => (!empty($listOfContactId)) ? $contactQuery : ['IS NULL' => 1],
@@ -296,9 +343,67 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     ];
 
     $selectedContributions = CRM_Contact_BAO_Query::convertFormValues($totalQueryParams);
-    $selector = new CRM_Contribute_Selector_Search($selectedContributions);
+    return new CRM_Contribute_Selector_Search($selectedContributions);
+  }
 
-    return $selector;
+  /**
+   * Get membership types
+   *
+   * @param $params
+   * @return array
+   */
+  public function getMembershipTypes($params) {
+    $membershipTypes = [];
+
+    if (!empty($params['membership_type_id'])) {
+      foreach ($params['membership_type_id']['IN'] as $membershipId) {
+        $membershipDetails = CRM_Member_BAO_MembershipType::getMembershipTypeDetails($membershipId);
+        $membershipTypes[$membershipId] = $membershipDetails['name'];
+      }
+    } else {
+      $membershipTypes = CRM_Member_BAO_MembershipType::getMembershipTypes(FALSE);
+    }
+
+    return $membershipTypes;
+  }
+
+
+  /**
+   * Get membership statistic
+   *
+   * @param $firstDate
+   * @param $secondDate
+   * @param $endDate
+   * @param $listOfContactId
+   * @param $params
+   * @param $period
+   * @return array
+   */
+  public function getMembershipStatistic($firstDate, $secondDate, $endDate, $listOfContactId, $params, $period) {
+    $statistic = [];
+    $secondDate = clone $secondDate;
+
+    while ($secondDate->getTimestamp() < $endDate->getTimestamp()) {
+      $secondDate = date_add($secondDate, date_interval_create_from_date_string($period));
+
+      if ($secondDate->getTimestamp() > $endDate->getTimestamp()) {
+        $secondDate = clone $endDate;
+      }
+
+      $formattedFirstDate = $firstDate->format('Y-m-d');
+      $prevSecondDate = clone $secondDate;
+      $prevSecondDate->modify('-1 day');
+
+      $statistic[] = [
+        'count' => $this->getMembershipCount($listOfContactId, $params, $formattedFirstDate, $prevSecondDate->format('Y-m-d')),
+        'first_date' => $formattedFirstDate,
+        'second_date' => $secondDate->format('Y-m-d')
+      ];
+
+      $firstDate = clone $secondDate;
+    }
+
+    return $statistic;
   }
 
   /**
@@ -313,7 +418,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     $newAmount = [];
 
     if (!empty($statistic['total'])) {
-      $statistic['total']['amount'] = static::transform($statistic['total']['amount']);
+      $statistic['total']['amount'] = CRM_CiviMobileAPI_Utils_Statistic_Utils::explodesString($statistic['total']['amount']);
       $clearAmounts = [];
       foreach ($statistic['total']['amount'] as $moneyString) {
         $amountParts = explode(self::$currencySeparator, $moneyString);
@@ -323,7 +428,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
         $clearAmounts[] = $clearAmount;
 
         $newAmount[] = [
-          'amount' => (float) $clearAmount,
+          'amount' => (float)$clearAmount,
           'currency' => $currencyName,
           'formattedAmount' => $formattedAmount,
         ];
@@ -334,7 +439,7 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
     }
 
     if (!empty($statistic['cancel'])) {
-      $statistic['cancel']['amount'] = static::transform($statistic['cancel']['amount']);
+      $statistic['cancel']['amount'] = CRM_CiviMobileAPI_Utils_Statistic_Utils::explodesString($statistic['cancel']['amount']);
     }
 
     return [
@@ -346,50 +451,13 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
   }
 
   /**
-   * Explodes and trims string
-   *
-   * @param $string
-   * @return array
-   */
-  private static function transform($string) {
-    return !empty($string) ? explode(",&nbsp;", $string) : [];
-  }
-
-  /**
-   * Returns contribution date interval
-   *
-   * @return array
-   */
-  public static function getDefaultContributionDateInterval() {
-    $select = 'SELECT MIN(civicrm_contribution.receive_date) as min_receive_date, MAX(civicrm_contribution.receive_date) as max_receive_date';
-    $from = ' FROM civicrm_contribution';
-    $sql = $select . $from;
-
-    $dates = [
-      'min_receive_date' => '',
-      'max_receive_date' => ''
-    ];
-
-    try {
-      $dao = CRM_Core_DAO::executeQuery($sql);
-
-      if ($dao->fetch()) {
-        $dates['min_receive_date'] = $dao->min_receive_date;
-        $dates['max_receive_date'] = ((int)date('Y', strtotime($dao->max_receive_date)) + 1) . '-01-01';
-      }
-    } catch (Exception $e) {}
-
-    return $dates;
-  }
-
-  /**
    * Returns prepared receive date
    *
    * @param $params
    * @return array
    */
   public function getPrepareReceiveDate($params) {
-    $defaultIntervals = CRM_CiviMobileAPI_Utils_ContributionChartBar::getDefaultContributionDateInterval();
+    $defaultIntervals = CRM_CiviMobileAPI_Utils_Statistic_Utils::getDefaultContributionDateInterval();
 
     if (!empty($params['receive_date']['BETWEEN']) || empty($params['receive_date'])) {
       $startDate = !empty($params['receive_date']['BETWEEN'][0]) ? $params['receive_date']['BETWEEN'][0] : $defaultIntervals['min_receive_date'];
@@ -406,6 +474,28 @@ class CRM_CiviMobileAPI_Utils_ContributionChartBar {
       'start_date' => $startDate,
       'end_date' => $endDate
     ];
+  }
+
+  /**
+   * Get count of membership for chart bar
+   *
+   * @param $contactsId
+   * @param $params
+   * @param $startDate
+   * @param $endDate
+   * @return int
+   */
+  public function getMembershipCount($contactsId, $params, $startDate, $endDate) {
+    try {
+      return civicrm_api3('Membership', 'getcount', [
+        'options' => ['limit' => 0],
+        'start_date' => ['BETWEEN' => [$startDate, $endDate]],
+        'contact_id' => !empty($contactsId) ? ['IN' => $contactsId] : NULL,
+        'membership_type_id' => !empty($params['membership_type_id']) ? ['IN' => [$params['membership_type_id']]] : NULL,
+      ]);
+    } catch (CiviCRM_API3_Exception $e) {
+      return 0;
+    }
   }
 
 }

@@ -26,7 +26,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Contribution implements API_Wrapper {
         || $apiRequest['params']['contact_groups']
       ) {
 
-        $contactsId = (new CRM_CiviMobileAPI_Utils_ContributionFilter)->filterContributionContacts($apiRequest['params']);
+        $contactsId = (new CRM_CiviMobileAPI_Utils_ContactFieldsFilter)->filterContacts($apiRequest['params']);
 
         if (!empty($contactsId)) {
           $apiRequest['params']['contact_id'] = ['IN' => $contactsId];
