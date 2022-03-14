@@ -35,6 +35,7 @@ class CRM_CiviMobileAPI_Page_PublicSettings extends CRM_Core_Page {
         'is_civimobile_ext_has_right_folder_name' => (int) CRM_CiviMobileAPI_Utils_Extension::hasExtensionRightFolderName(),
         'is_allow_cms_registration' => CRM_CiviMobileAPI_Utils_Extension::isAllowCmsRegistration(),
         'is_showed_events_in_public_area' => CRM_CiviMobileAPI_Utils_Extension::isShowedEventsInPublicArea(),
+        'is_showed_donations_in_public_area' => CRM_CiviMobileAPI_Utils_Extension::isShowedDonationsInPublicArea(),
         'is_showed_news_in_public_area' => CRM_CiviMobileAPI_Utils_Extension::isShowedNewsInPublicArea(),
         'news_rss_feed_url' => CRM_CiviMobileAPI_Utils_Extension::newsRssFeedUrl(),
         'cms_registration_requirements' => [

@@ -116,6 +116,7 @@ class CRM_CiviMobileAPI_Utils_ContactFieldsFilter {
           'sequential' => 1,
           'display_name' => $contactDisplayNameParam,
           'contact_id' => ["IN" => $listOfContributionContactsId],
+          'contact_is_deleted' => 0,
           'contact_type' => $contactTypesParam,
           'options' => ['limit' => 0],
           'return' => ["id"]

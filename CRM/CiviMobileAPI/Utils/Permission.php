@@ -160,6 +160,7 @@ class CRM_CiviMobileAPI_Utils_Permission {
       $accessAllCustomData = CRM_Core_Permission::check('access all custom data');
       $accessCiviContribute = CRM_Core_Permission::check('access CiviContribute');
       $makeOnlineContributions = CRM_Core_Permission::check('make online contributions');
+      $accessCiviCrm = CRM_Core_Permission::check('access CiviCRM');
     } catch (Exception $e) {
       return [];
     }
@@ -174,6 +175,7 @@ class CRM_CiviMobileAPI_Utils_Permission {
       'view_petition' => $signPetition && $profileView && $accessAllCustomData ? 1 : 0,
       'sign_petition' => $signPetition && $profileCreate && $accessAllCustomData ? 1 : 0,
       'view_public_donation' => $accessCiviContribute && $makeOnlineContributions ? 1 : 0,
+      'access_civicrm' => $accessCiviCrm ? 1 : 0,
     ];
   }
 

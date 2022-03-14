@@ -192,6 +192,11 @@ class CRM_CiviMobileAPI_Utils_Extension {
     return (Civi::settings()->get('civimobile_is_allow_public_info_api') == 1 && in_array('CiviEvent', $enabledComponents)) ? 1 : 0;
   }
 
+  public static function isShowedDonationsInPublicArea() {
+    $enabledComponents = CRM_CiviMobileAPI_Utils_CiviCRM::getEnabledComponents();
+    return (Civi::settings()->get('civimobile_is_allow_public_info_api') == 1 && in_array('CiviContribute', $enabledComponents)) ? 1 : 0;
+  }
+
   /**
    * Is showed news
    *

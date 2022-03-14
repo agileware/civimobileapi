@@ -40,7 +40,7 @@ class CRM_CiviMobileAPI_Utils_Statistic_Utils {
     $contactsId = [];
 
     try {
-      $membershipsContactIds = CRM_Core_DAO::executeQuery("SELECT DISTINCT(contact_id) FROM $membershipsTable")->fetchAll();
+      $membershipsContactIds = CRM_Core_DAO::executeQuery("SELECT DISTINCT(contact_id) FROM $membershipsTable RIGHT JOIN civicrm_contact ON civicrm_membership.contact_id = civicrm_contact.id AND civicrm_contact.is_deleted = 0 WHERE civicrm_membership.contact_id IS NOT NULL")->fetchAll();
     } catch (Exception $e) {
       return [];
     }

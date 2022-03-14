@@ -45,6 +45,18 @@ class CRM_CiviMobileAPI_ApiWrapper_Activity_Get implements API_Wrapper {
       $value['can_edit'] = 0;
       $value['can_delete'] = 0;
 
+      if (isset($value['details'])) {
+        $value['details'] = preg_replace('/&nbsp;/', ' ', $value['details']);
+        $value['details'] = preg_replace('/&#39;/', "'", $value['details']);
+        $value['details'] = html_entity_decode($value['details']);
+
+        if (!isset($value['short_description']) && isset($value['details'])) {
+          $value['short_description'] = $value['details'] ? (strip_tags(preg_replace('/\s\s+/', ' ', $value['details']))) : '';
+        }
+      } else {
+        $value['short_description'] = '';
+      }
+
       if ($checkCaseActivity->find(TRUE)) {
         $case = new CRM_Case_DAO_Case();
         $case->id = $checkCaseActivity->case_id;

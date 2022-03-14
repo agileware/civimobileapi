@@ -148,7 +148,7 @@ function civimobileapi_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 
     $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Activity_Notification();
   }
-  elseif ($apiRequest['entity'] == 'Case' && $apiRequest['action'] == 'getsingle') {
+  elseif ($apiRequest['entity'] == 'Case' && ($apiRequest['action'] == 'getsingle' || $apiRequest['action'] == 'get')) {
     $wrappers[] = new CRM_CiviMobileAPI_ApiWrapper_Case();
   }
   elseif ($apiRequest['entity'] == 'Event' && ($apiRequest['action'] == 'getsingle' || $apiRequest['action'] == 'get')) {
@@ -259,8 +259,8 @@ function civimobileapi_civicrm_alterAPIPermissions($entity, $action, &$params, &
       ($entity == 'civi_mobile_survey' and $action == 'sign') ||
       ($entity == 'civi_mobile_survey' and $action == 'get_signed_values') ||
       ($entity == 'civi_mobile_survey_interviewer' and $action == 'get') ||
-      ($entity == 'civi_mobile_contact_group' and $action == 'delete') ||
       ($entity == 'contribution_page' and $action == 'get') ||
+      ($entity == 'civi_mobile_contact_group' and $action == 'delete') ||
       ($entity == 'financial_type' and $action == 'get')
     ) {
       $params['check_permissions'] = FALSE;
