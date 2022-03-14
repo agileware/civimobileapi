@@ -38,7 +38,7 @@ class CRM_CiviMobileAPI_ApiWrapper_Activity_Notification implements API_Wrapper 
         $notificationManager->sendNotification();
       }
     } elseif ($apiRequest['action'] == 'delete') {
-      $notificationManager = new CRM_CiviMobileAPI_PushNotification_Utils_Hook_PostProcess_CasePushNotification($apiRequest['entity'], $apiRequest['action'], key($result['values']));
+      $notificationManager = new CRM_CiviMobileAPI_PushNotification_Utils_Hook_PostProcess_CasePushNotification($apiRequest['entity'], $apiRequest['action'], key([$result['values']]));
       $notificationManager->sendNotification();
     }
 

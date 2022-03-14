@@ -142,6 +142,13 @@ class CRM_CiviMobileAPI_Utils_CaseRole {
     ]);
   }
 
+  public function getContactType($contactId) {
+    return civicrm_api3('Contact', 'getvalue', [
+      'return' => "contact_type",
+      'id' => $contactId,
+    ]);
+  }
+
   /**
    *  Sets clients and unassigned role
    */
@@ -185,15 +192,16 @@ class CRM_CiviMobileAPI_Utils_CaseRole {
    * Converts roles list
    *
    * @param $listOfRoles
+   * @param $contactId
    *
    * @return array
    * @throws \CiviCRM_API3_Exception
    */
-  public function convertListOfRoles($listOfRoles) {
+  public function convertListOfRoles($listOfRoles, $contactId) {
     $role = [];
 
     foreach ($listOfRoles as $id => $relation) {
-      $role[] = $this->convertRole($relation);
+      $role[] = $this->convertRole($relation,$contactId);
     }
 
     return $role;
@@ -207,7 +215,7 @@ class CRM_CiviMobileAPI_Utils_CaseRole {
    * @return array
    * @throws \CiviCRM_API3_Exception
    */
-  public function convertRole($listOfRoles) {
+  public function convertRole($listOfRoles, $contactId) {
     return [
       'contact_id' => $this->validateEntityExistence($listOfRoles['cid']) ? $listOfRoles['cid'] : '',
       'relation' => $this->validateEntityExistence($listOfRoles['relation']) ? $listOfRoles['relation'] : '',
@@ -217,6 +225,7 @@ class CRM_CiviMobileAPI_Utils_CaseRole {
       'can_edit' => $this->canEdit(),
       'can_delete' => $this->canEdit(),
       'image_URL' => $this->validateEntityExistence($listOfRoles['image_URL']) ? $listOfRoles['image_URL'] : '',
+      'contact_type' => $this->getContactType($contactId),
     ];
   }
 

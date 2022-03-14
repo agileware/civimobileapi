@@ -12,7 +12,7 @@ use CRM_CiviMobileAPI_ExtensionUtil as E;
 function civicrm_api3_civi_mobile_case_role_get($params) {
   $caseRoleManager = new CRM_CiviMobileAPI_Utils_CaseRole($params['case_id'], $params['contact_id']);
   $listOfRolesForCurrentCase = $caseRoleManager->getListOfRolesForCurrentCase();
-  $convertedListOfRolesForCurrentCase = $caseRoleManager->convertListOfRoles($listOfRolesForCurrentCase);
+  $convertedListOfRolesForCurrentCase = $caseRoleManager->convertListOfRoles($listOfRolesForCurrentCase,$params['contact_id']);
 
   return civicrm_api3_create_success($convertedListOfRolesForCurrentCase);
 }

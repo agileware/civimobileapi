@@ -106,6 +106,7 @@ function civicrm_api3_civi_mobile_permission_get() {
         ],
       ],
       'role' => 0,
+      'case_dashboard' => $administerCiviCrm ? 1 : 0,
     ];
 
     $permissions['event'] = [
