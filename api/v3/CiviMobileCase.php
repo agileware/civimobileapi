@@ -16,7 +16,7 @@ function civicrm_api3_civi_mobile_case_get($params) {
 
   $id = 1;
   foreach ($allStatuses['values'] as $value) {
-    $summary[] = ['status' => $value['label'],'amount' => (new CRM_CiviMobileAPI_Utils_CaseSummary)->getCountOfCases($value['value'], $params), 'id' => $id++];
+    $summary[] = ['status' => $value['label'], 'amount' => (new CRM_CiviMobileAPI_Utils_CaseSummary)->getCountOfCases($value['value'], $params), 'id' => $id++];
   }
 
   return civicrm_api3_create_success($summary, $params);
@@ -90,15 +90,14 @@ function civicrm_api3_civi_mobile_case_create($params) {
       $params['reset_date_time'] = $params['start_date'];
       CRM_Case_Form_Activity_ChangeCaseType::beginPostProcess($form, $params);
       CRM_Case_Form_Activity_ChangeCaseType::endPostProcess($form, $params, $activity);
-
     }
 
     if ($params['reassign_contact_id']) {
-      return ['new_case_id' => $reassign_id];
+      $newReassign = implode(',', $reassign_id);
+      return ['updated_case_id' => $newReassign];
     }
 
-    return ['message' => 'success'];
-
+    return ['updated_case_id' => $params['id']];
   }
 }
 
