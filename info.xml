@@ -16,8 +16,8 @@
         <url desc="Support">https://civimobile.org</url>
         <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
     </urls>
-    <releaseDate>2023-07-06</releaseDate>
-    <version>6.2.1</version>
+    <releaseDate>2023-07-10</releaseDate>
+    <version>6.2.2</version>
     <compatibility>
         <ver>5.14</ver>
     </compatibility>
