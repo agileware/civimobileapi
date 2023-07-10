@@ -203,15 +203,13 @@ class CRM_CiviMobileAPI_BAO_EventSession extends CRM_CiviMobileAPI_DAO_EventSess
     $limit = isset($params['options']['limit']) ? $params['options']['limit'] : 25;
     $offset = isset($params['options']['offset']) ? $params['options']['offset'] : 0;
 
-    if ($limit != 0) {
-      $query->limit($limit, $offset);
-    } else {
-      return CRM_Core_DAO::executeQuery($query->toSQL())->fetchAll();
-    }
-
     if (CRM_Core_Session::getLoggedInContactID()) {
       $query->select('COUNT(fes.id) > 0 as is_favourite');
       $query->join('fes', 'LEFT join civicrm_civimobile_favourite_event_session fes ON evs.id = fes.event_session_id AND fes.contact_id = ' . (int)CRM_Core_Session::getLoggedInContactID());
+    }
+
+    if ($limit != 0) {
+      $query->limit($limit, $offset);
     }
 
     return CRM_Core_DAO::executeQuery($query->toSQL())->fetchAll();
